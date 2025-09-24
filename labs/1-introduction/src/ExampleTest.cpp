@@ -146,26 +146,17 @@ TEST(ParseUrlEncodedTest, KeepsNormalTextUnchanged)
     EXPECT_EQ(example::parse_url_encoded(kPlainText), kPlainText);
 }
 
-// ---
-
-// Test case 2: only percent encoded
 TEST(ParseUrlEncodedTest, DecodesFullyPercentEncodedString)
 {
     EXPECT_EQ(example::parse_url_encoded("%48%65%6C%6C%6F"), "Hello");
     EXPECT_EQ(example::parse_url_encoded("%20%21%22"), " !\"");
 }
 
-// ---
-
-// Test case 4: mix %'s and normal text
 TEST(ParseUrlEncodedTest, DecodesMixedContent)
 {
     EXPECT_EQ(example::parse_url_encoded("Hello%20World%21"), "Hello World!");
 }
 
-// ---
-
-// Test case 5: different cases of hexadecimal numbers
 TEST(ParseUrlEncodedTest, HandlesDifferentHexadecimalCases)
 {
     EXPECT_EQ(example::parse_url_encoded("%2f"), "/");
@@ -175,12 +166,8 @@ TEST(ParseUrlEncodedTest, HandlesDifferentHexadecimalCases)
     EXPECT_EQ(example::parse_url_encoded("%aA%bB%cC"), "\xAA\xBB\xCC");
 }
 
-// ---
-
-// Test case 8: decode "%00" and "%FF"
 TEST(ParseUrlEncodedTest, DecodesBoundaryHexValues)
 {
-    // Constructing expected string with explicit char codes
     std::string expected;
     expected += static_cast<char>(0x00);
     expected += "and";
@@ -189,27 +176,18 @@ TEST(ParseUrlEncodedTest, DecodesBoundaryHexValues)
     EXPECT_EQ(example::parse_url_encoded("%00and%FF"), expected);
 }
 
-// ---
-
-// Test case 6: too short "%"
 TEST(ParseUrlEncodedTest, ThrowsOnTrailingPercent)
 {
     EXPECT_THROW(example::parse_url_encoded("%"), example::ParsingException);
     EXPECT_THROW(example::parse_url_encoded("some-text%"), example::ParsingException);
 }
 
-// ---
-
-// Test case 3: too short "%a"
 TEST(ParseUrlEncodedTest, ThrowsOnIncompletePercentSequence)
 {
     EXPECT_THROW(example::parse_url_encoded("%a"), example::ParsingException);
     EXPECT_THROW(example::parse_url_encoded("starts_ok%1"), example::ParsingException);
 }
 
-// ---
-
-// Test case 7: "%zz", "%%"
 TEST(ParseUrlEncodedTest, ThrowsOnInvalidHexCharacters)
 {
     EXPECT_THROW(example::parse_url_encoded("%zz"), example::ParsingException);
