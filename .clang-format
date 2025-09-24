@@ -1,0 +1,54 @@
+Language: Cpp
+Standard: Latest
+
+ColumnLimit: 0
+IndentWidth: 4
+UseTab: Never
+
+ReflowComments: Never
+
+PointerAlignment: Left
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+
+AlignAfterOpenBracket: Align
+BinPackParameters: BinPack
+BinPackArguments: true
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: true
+AllowShortLambdasOnASingleLine: All
+
+BreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: false
+RequiresClausePosition: OwnLine
+IndentRequiresClause: true
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterRequiresInClause: true
+
+PackConstructorInitializers: Never
+ConstructorInitializerIndentWidth: 4
+BreakConstructorInitializers: BeforeColon
+
+AccessModifierOffset: -4
+
+# --- Penalties ---
+
+# Forbid this formatting:
+# LongType longName =
+#     expression;
+PenaltyBreakAssignment: 9999
+
+# Forbid this formatting:
+# call(
+#     foo,
+#     bar);
+PenaltyBreakBeforeFirstCallParameter: 9999
+
+# Forbid this formatting:
+# T
+# function(int foo, int bar);
+PenaltyReturnTypeOnItsOwnLine: 9999
