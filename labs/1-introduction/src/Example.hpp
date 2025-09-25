@@ -55,21 +55,21 @@ inline auto filter_duplicate_lines(std::string_view source,
     }
 
     auto input = std::ifstream{std::string{source}};
-    if (input.fail()) {
+    if (!input.is_open()) {
         throw std::runtime_error{"Failed to open source file."};
     }
 
     auto output = std::ofstream{std::string{destination}};
-    if (output.fail()) {
+    if (!output.is_open()) {
         throw std::runtime_error{"Failed to open destination file."};
     }
 
     auto line_set = std::unordered_set<std::string>{};
     auto line = std::string{};
     while (std::getline(input, line)) {
-        auto [it, inserted] = line_set.insert(line);
+        auto [_, inserted] = line_set.insert(line);
         if (inserted) {
-            output << *it << "\n";
+            output << line << "\n";
 
             if (output.bad()) {
                 throw std::runtime_error{"Error while writing to destination file."};

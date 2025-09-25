@@ -8,29 +8,33 @@
 
 #include "Example.hpp"
 
+using namespace std::literals::string_view_literals;
+
 class FilterDuplicateLinesTest : public ::testing::Test {
 protected:
-    void SetUp() override
+    auto SetUp() -> void override
     {
-        auto test_id = std::string{::testing::UnitTest::GetInstance()->current_test_info()->name()};
+        auto test_id = std::string{::testing::UnitTest::GetInstance()
+                                       ->current_test_info()
+                                       ->name()};
         source_path_ = std::filesystem::temp_directory_path() / (test_id + "_source.txt");
         dest_path_ = std::filesystem::temp_directory_path() / (test_id + "_dest.txt");
     }
 
-    void TearDown() override
+    auto TearDown() -> void override
     {
         std::filesystem::remove(source_path_);
         std::filesystem::remove(dest_path_);
     }
 
-    void create_file(const std::filesystem::path& path, std::string_view content)
+    auto create_file(std::filesystem::path const& path, std::string_view content) -> void
     {
         auto file = std::ofstream{path};
         ASSERT_TRUE(file.is_open());
         file << content;
     }
 
-    void read_file(const std::filesystem::path& path, std::string& content)
+    auto read_file(std::filesystem::path const& path, std::string& content) -> void
     {
         auto file = std::ifstream{path};
         ASSERT_TRUE(file.is_open());
@@ -127,12 +131,20 @@ TEST_F(FilterDuplicateLinesTest, ThrowsWhenSourceAndDestinationAreSameFile)
 {
     create_file(source_path_, "content");
 
-    ASSERT_THROW(example::filter_duplicate_lines(source_path_.string(), source_path_.string()), std::runtime_error);
+    ASSERT_THROW(([&]() {
+                     example::filter_duplicate_lines(source_path_.string(),
+                                                     source_path_.string());
+                 })(),
+                 std::runtime_error);
 }
 
 TEST_F(FilterDuplicateLinesTest, ThrowsWhenSourceFileDoesNotExist)
 {
-    ASSERT_THROW(example::filter_duplicate_lines(source_path_.string(), dest_path_.string()), std::runtime_error);
+    ASSERT_THROW(([&]() {
+                     example::filter_duplicate_lines(source_path_.string(),
+                                                     dest_path_.string());
+                 })(),
+                 std::runtime_error);
 }
 
 TEST(ParseUrlEncodedTest, HandlesEmptyString)
@@ -142,7 +154,8 @@ TEST(ParseUrlEncodedTest, HandlesEmptyString)
 
 TEST(ParseUrlEncodedTest, KeepsNormalTextUnchanged)
 {
-    constexpr std::string_view kPlainText = "This is a simple test with numbers 123 and symbols.-_~";
+    constexpr std::string_view kPlainText = "Simple text. 123. ~_-\n";
+
     EXPECT_EQ(example::parse_url_encoded(kPlainText), kPlainText);
 }
 
@@ -159,21 +172,14 @@ TEST(ParseUrlEncodedTest, DecodesMixedContent)
 
 TEST(ParseUrlEncodedTest, HandlesDifferentHexadecimalCases)
 {
-    EXPECT_EQ(example::parse_url_encoded("%2f"), "/");
-    EXPECT_EQ(example::parse_url_encoded("%2F"), "/");
     EXPECT_EQ(example::parse_url_encoded("%3a"), ":");
     EXPECT_EQ(example::parse_url_encoded("%3A"), ":");
-    EXPECT_EQ(example::parse_url_encoded("%aA%bB%cC"), "\xAA\xBB\xCC");
+    EXPECT_EQ(example::parse_url_encoded("%aA%bB%cC%dD%eE%fF"), "\xAA\xBB\xCC\xDD\xEE\xFF");
 }
 
 TEST(ParseUrlEncodedTest, DecodesBoundaryHexValues)
 {
-    std::string expected;
-    expected += static_cast<char>(0x00);
-    expected += "and";
-    expected += static_cast<char>(0xFF);
-
-    EXPECT_EQ(example::parse_url_encoded("%00and%FF"), expected);
+    EXPECT_EQ(example::parse_url_encoded("%00%FF"), "\x00\xFF"sv);
 }
 
 TEST(ParseUrlEncodedTest, ThrowsOnTrailingPercent)
@@ -186,6 +192,7 @@ TEST(ParseUrlEncodedTest, ThrowsOnIncompletePercentSequence)
 {
     EXPECT_THROW(example::parse_url_encoded("%a"), example::ParsingException);
     EXPECT_THROW(example::parse_url_encoded("starts_ok%1"), example::ParsingException);
+    EXPECT_THROW(example::parse_url_encoded("%a%20"), example::ParsingException);
 }
 
 TEST(ParseUrlEncodedTest, ThrowsOnInvalidHexCharacters)
@@ -194,4 +201,5 @@ TEST(ParseUrlEncodedTest, ThrowsOnInvalidHexCharacters)
     EXPECT_THROW(example::parse_url_encoded("%GG"), example::ParsingException);
     EXPECT_THROW(example::parse_url_encoded("%%"), example::ParsingException);
     EXPECT_THROW(example::parse_url_encoded("%1G"), example::ParsingException);
+    EXPECT_THROW(example::parse_url_encoded("%G1"), example::ParsingException);
 }
