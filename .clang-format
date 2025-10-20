@@ -9,11 +9,15 @@ ReflowComments: Never
 
 PointerAlignment: Left
 
+ContinuationIndentWidth: 4
+
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterFunction: true
+  AfterStruct: true
+  AfterClass: true
 
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: DontAlign
 BinPackParameters: BinPack
 BinPackArguments: true
 
@@ -31,7 +35,9 @@ SpaceBeforeParensOptions:
 
 PackConstructorInitializers: Never
 ConstructorInitializerIndentWidth: 4
-BreakConstructorInitializers: BeforeColon
+BreakConstructorInitializers: BeforeComma
+
+BreakInheritanceList: BeforeComma
 
 AccessModifierOffset: -4
 
