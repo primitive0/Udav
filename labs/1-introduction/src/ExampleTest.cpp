@@ -96,12 +96,12 @@ TEST_F(FilterDuplicateLinesTest, HandlesFileWithNoDuplicates)
 
 TEST_F(FilterDuplicateLinesTest, HandlesFileWhereAllLinesAreDuplicates)
 {
-    const std::string_view kSource = "repeat\n"
-                                     "repeat\n"
-                                     "repeat\n"
-                                     "repeat\n";
+    constexpr std::string_view kSource = "repeat\n"
+                                         "repeat\n"
+                                         "repeat\n"
+                                         "repeat\n";
 
-    const std::string_view kExpected = "repeat\n";
+    constexpr std::string_view kExpected = "repeat\n";
 
     create_file(source_path_, kSource);
 
