@@ -1,6 +1,7 @@
 #ifndef UDAV_MODERN_NUMERICS_H_
 #define UDAV_MODERN_NUMERICS_H_
 
+#include <cstddef>
 #include <cstdint>
 
 using i8 = std::int8_t;
@@ -15,5 +16,7 @@ using u64 = std::uint64_t;
 
 using f32 = float;
 using f64 = double;
+
+using std::size_t;
 
 #endif // UDAV_MODERN_NUMERICS_H_
