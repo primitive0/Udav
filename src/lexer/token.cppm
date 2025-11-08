@@ -2,7 +2,7 @@ module;
 #include <cassert>
 #include <ostream>
 
-#include "modern/string.hpp"
+#include "support/string.hpp"
 
 export module udav.lexer:token;
 

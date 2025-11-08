@@ -1,5 +1,5 @@
-#ifndef UDAV_MODERN_NUMERICS_H_
-#define UDAV_MODERN_NUMERICS_H_
+#ifndef UDAV_SUPPORT_NUMERICS_H_
+#define UDAV_SUPPORT_NUMERICS_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -19,4 +19,4 @@ using f64 = double;
 
 using std::size_t;
 
-#endif // UDAV_MODERN_NUMERICS_H_
+#endif // UDAV_SUPPORT_NUMERICS_H_

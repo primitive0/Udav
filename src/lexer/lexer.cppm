@@ -1,8 +1,8 @@
 module;
 #include <exception>
 
-#include "modern/string.hpp"
-#include "modern/vector.hpp"
+#include "support/string.hpp"
+#include "support/vector.hpp"
 
 export module udav.lexer;
 
