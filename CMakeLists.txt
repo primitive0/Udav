@@ -21,11 +21,13 @@ enable_testing()
 add_executable(UdavInterpreterTest)
 target_sources(UdavInterpreterTest
   PRIVATE
-    src/lexer_test.cpp
+    src/lexer/lexer_test.cpp
   PRIVATE
     FILE_SET CXX_MODULES
     FILES
-      src/lexer.cppm)
+      src/lexer/lexer.cppm
+      src/lexer/token.cppm)
+target_include_directories(UdavInterpreterTest PRIVATE src/)
 target_link_libraries(UdavInterpreterTest GTest::gtest_main)
 
 include(GoogleTest)
