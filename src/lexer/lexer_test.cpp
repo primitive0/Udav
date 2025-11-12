@@ -673,7 +673,7 @@ TEST(LexerTest, MultilineCommentsCanBeNested)
         Token(TokenKind::Let, "let"),
         Token(TokenKind::Symbol, "x"),
         Token(TokenKind::Assign, "="),
-        Token(TokenKind::Comment, "#[ outer #[ inner ]# still outer ]#"),
+        Token(TokenKind::Comment, "#[outer #[inner]# still outer]#"),
         Token(TokenKind::IntegerLiteral, "123"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
