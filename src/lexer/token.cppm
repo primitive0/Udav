@@ -28,69 +28,69 @@ namespace udav::lexer {
         }                                                                  \
     }
 
-#define TOKEN_KIND_ITEMS(X)               \
-    /* Keywords */                        \
-    X(Fun)                                \
-    X(Return)                             \
-    X(Pass)                               \
-    X(Let)                                \
-    X(If)                                 \
-    X(ElseIf) /*  TODO: rename to Elif */ \
-    X(Else)                               \
-    X(While)                              \
-                                          \
-    X(Symbol)                             \
-                                          \
-    /* Operators */                       \
-    X(Equals)           /* ==  */         \
-    X(NotEquals)        /* !=  */         \
-    X(Less)             /* <   */         \
-    X(Greater)          /* >   */         \
-    X(LessOrEqual)      /* <=  */         \
-    X(GreaterOrEqual)   /* >=  */         \
-    X(Plus)             /* +   */         \
-    X(Minus)            /* -   */         \
-    X(Mul)              /* *   */         \
-    X(Div)              /* /   */         \
-    X(Modulo)           /* %   */         \
-    X(Power)            /* **  */         \
-    X(Or)               /* ||  */         \
-    X(And)              /* &&  */         \
-    X(BitwiseOr)        /* |   */         \
-    X(BitwiseAnd)       /* &   */         \
-    X(BitwiseXor)       /* ^   */         \
-    X(RightShift)       /* >>  */         \
-    X(LeftShift)        /* <<  */         \
-    X(Assign)           /* =   */         \
-    X(PlusAssign)       /* +=  */         \
-    X(MinusAssign)      /* -=  */         \
-    X(MulAssign)        /* *=  */         \
-    X(DivAssign)        /* /=  */         \
-    X(ModuloAssign)     /* %=  */         \
-    X(PowerAssign)      /* **= */         \
-    X(BitwiseOrAssign)  /* |=  */         \
-    X(BitwiseAndAssign) /* &=  */         \
-    X(BitwiseXorAssign) /* ^=  */         \
-    X(RightShiftAssign) /* >>= */         \
-    X(LeftShiftAssign)  /* <<= */         \
-                                          \
-    /* Auxiliary tokens */                \
-    X(Arrow)      /* -> */                \
-    X(Colon)      /* :  */                \
-    X(Dot)        /* .  */                \
-    X(Comma)      /* ,  */                \
-    X(ParenOpen)  /* (  */                \
-    X(ParenClose) /* )  */                \
-                                          \
-    /* Literals */                        \
-    X(IntegerLiteral)                     \
-    X(StringLiteral)                      \
-                                          \
-    X(Comment)                            \
-                                          \
-    X(NewLine)                            \
-    X(Indent)                             \
-    X(Dedent)                             \
+#define TOKEN_KIND_ITEMS(X)       \
+    /* Keywords */                \
+    X(Fun)                        \
+    X(Return)                     \
+    X(Pass)                       \
+    X(Let)                        \
+    X(If)                         \
+    X(Elif)                       \
+    X(Else)                       \
+    X(While)                      \
+                                  \
+    X(Symbol)                     \
+                                  \
+    /* Operators */               \
+    X(Equals)           /* ==  */ \
+    X(NotEquals)        /* !=  */ \
+    X(Less)             /* <   */ \
+    X(Greater)          /* >   */ \
+    X(LessOrEqual)      /* <=  */ \
+    X(GreaterOrEqual)   /* >=  */ \
+    X(Plus)             /* +   */ \
+    X(Minus)            /* -   */ \
+    X(Mul)              /* *   */ \
+    X(Div)              /* /   */ \
+    X(Modulo)           /* %   */ \
+    X(Power)            /* **  */ \
+    X(Or)               /* ||  */ \
+    X(And)              /* &&  */ \
+    X(BitwiseOr)        /* |   */ \
+    X(BitwiseAnd)       /* &   */ \
+    X(BitwiseXor)       /* ^   */ \
+    X(RightShift)       /* >>  */ \
+    X(LeftShift)        /* <<  */ \
+    X(Assign)           /* =   */ \
+    X(PlusAssign)       /* +=  */ \
+    X(MinusAssign)      /* -=  */ \
+    X(MulAssign)        /* *=  */ \
+    X(DivAssign)        /* /=  */ \
+    X(ModuloAssign)     /* %=  */ \
+    X(PowerAssign)      /* **= */ \
+    X(BitwiseOrAssign)  /* |=  */ \
+    X(BitwiseAndAssign) /* &=  */ \
+    X(BitwiseXorAssign) /* ^=  */ \
+    X(RightShiftAssign) /* >>= */ \
+    X(LeftShiftAssign)  /* <<= */ \
+                                  \
+    /* Auxiliary tokens */        \
+    X(Arrow)      /* -> */        \
+    X(Colon)      /* :  */        \
+    X(Dot)        /* .  */        \
+    X(Comma)      /* ,  */        \
+    X(ParenOpen)  /* (  */        \
+    X(ParenClose) /* )  */        \
+                                  \
+    /* Literals */                \
+    X(IntegerLiteral)             \
+    X(StringLiteral)              \
+                                  \
+    X(Comment)                    \
+                                  \
+    X(NewLine)                    \
+    X(Indent)                     \
+    X(Dedent)                     \
     X(Eof)
 
 DEFINE_TOKEN_ENUM(TokenKind, TOKEN_KIND_ITEMS)

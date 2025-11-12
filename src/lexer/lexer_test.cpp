@@ -151,7 +151,7 @@ TEST(LexerTest, LexerParsesKeywordTokens)
         Token(TokenKind::Pass, "pass"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Dedent, ""),
-        Token(TokenKind::ElseIf, "elif"),
+        Token(TokenKind::Elif, "elif"),
         Token(TokenKind::Symbol, "x"),
         Token(TokenKind::Greater, ">"),
         Token(TokenKind::IntegerLiteral, "0"),
@@ -847,7 +847,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Dedent, ""),
 
         //    elif:
-        Token(TokenKind::ElseIf, "elif"),
+        Token(TokenKind::Elif, "elif"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 

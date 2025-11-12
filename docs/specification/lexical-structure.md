@@ -37,7 +37,7 @@
 | `pass`         | Pass   |
 | `let`          | Let    |
 | `if`           | If     |
-| `elif`         | ElseIf |
+| `elif`         | Elif   |
 | `else`         | Else   |
 | `while`        | While  |
 
