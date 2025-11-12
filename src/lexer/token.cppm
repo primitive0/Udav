@@ -17,7 +17,6 @@ namespace udav::lexer {
 #define DEFINE_TOKEN_ENUM(EnumName, ENUM_ITEMS)                            \
     export enum class EnumName { ENUM_ITEMS(ENUM_ITEM_DECLARE) };          \
                                                                            \
-    /* TODO: should this function be inline? */                            \
     export auto operator<<(std::ostream& os, EnumName kind)->std::ostream& \
     {                                                                      \
         using enum EnumName;                                               \
