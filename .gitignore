@@ -1,4 +1,9 @@
+# MacOS
 .DS_Store
+
 .idea
+
+# CMake
 build/
 .cache/
+CMakeUserPresets.json
