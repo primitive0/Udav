@@ -1,29 +1,19 @@
 #include <exception>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "support/numerics.hpp"
 #include "support/vector.hpp"
 
 import udav.lexer;
 
 using namespace udav::lexer;
 
-#define EXPECT_TOKENS(code, ...)                               \
-    do {                                                       \
-        auto tokens = collect_tokens(Lexer{code});             \
-        auto expected_tokens = Vec<Token>{__VA_ARGS__};        \
-        EXPECT_EQ(tokens.size(), expected_tokens.size());      \
-        if (tokens.size() == expected_tokens.size()) {         \
-            for (auto i = size_t{0}; i < tokens.size(); ++i) { \
-                if (tokens[i] != expected_tokens[i]) {         \
-                    ADD_FAILURE()                              \
-                        << "Expected " << expected_tokens[i]   \
-                        << ", but found " << tokens[i];        \
-                    break;                                     \
-                }                                              \
-            }                                                  \
-        }                                                      \
+#define EXPECT_TOKENS(code, ...)                                         \
+    do {                                                                 \
+        auto tokens = collect_tokens(Lexer{code});                       \
+        auto expected_tokens = Vec<Token>{__VA_ARGS__};                  \
+        EXPECT_THAT(tokens, testing::ElementsAreArray(expected_tokens)); \
     } while (false)
 
 #define EXPECT_LEX_FAILURE(code, ExceptionType) \
