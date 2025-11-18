@@ -19,31 +19,14 @@ using namespace udav::lexer;
 #define EXPECT_LEX_FAILURE(code, ExceptionType) \
     EXPECT_THROW(collect_tokens(Lexer(code)), ExceptionType)
 
-// NOTE: Я думаю, что от такого количества тестов пострадало
-// удобство сопровождения кода. Я также думаю, что тестирование
-// каждого токена отдельно не проверяет реальных сценариев
-// использования лексера. Вопрос: как сохранить сопровождаемость
-// кода и сделать кейсы достаточно реалистичными?
-
-// TODO: maybe make newline tokens greedy?
-
-// TODO: test case: first line can be indented
-// TODO: invalid utf-8 encoding test (also bom utf-8 between text)
-// TODO: test case: string literal must be closed
-
 // TODO: add more negative tests
-// TODO: add test case for trailing spaces and new line token
-// TODO: Single line / multi line comment can be empty test case
 
 TEST(LexerTest, LexerParsesEmptyFile)
 {
-    EXPECT_TOKENS(
-        "",
-        //
-        Token(TokenKind::Eof, ""));
+    EXPECT_TOKENS("", Token::Eof);
 }
 
-TEST(LexerTest, LexerIgnoresUtf8BomAtTheBeginning)
+TEST(LexerTest, LexerIgnoresBomAtTheBeginning)
 {
     EXPECT_TOKENS(
         "\xEF\xBB\xBF"
@@ -55,6 +38,27 @@ TEST(LexerTest, LexerIgnoresUtf8BomAtTheBeginning)
         Token(TokenKind::ParenClose, ")"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
+}
+
+TEST(LexerTest, LexerFailsOnBomNotAtBeginning)
+{
+    EXPECT_LEX_FAILURE(
+        "fun main():\n"
+        "\x{EF}\x{BB}\x{BF}pass\n",
+        UnexpectedCharacterException);
+
+    EXPECT_LEX_FAILURE(
+        " \x{EF}\x{BB}\x{BF}fun main():\n",
+        UnexpectedCharacterException);
+}
+
+TEST(LexerTest, LexerFailsOnInvalidUtf8)
+{
+    EXPECT_LEX_FAILURE("\x80", InvalidUtf8Exception);
+
+    EXPECT_LEX_FAILURE("\xC0\xAF", InvalidUtf8Exception);
+
+    EXPECT_LEX_FAILURE("let x = \xD0", InvalidUtf8Exception);
 }
 
 TEST(LexerTest, LexerParsesKeywordTokens)
@@ -588,16 +592,21 @@ TEST(LexerTest, LexerParsesStringLiterals)
         Token(TokenKind::Eof, ""));
 }
 
-TEST(LexerTest, LineBreaksInsideStringLiteralsAreNotAllowed)
+TEST(LexerTest, LexerFailsOnUnterminatedStringLiteral)
 {
-    EXPECT_LEX_FAILURE("let str = \"not\nallowed\"", std::exception);
-    EXPECT_LEX_FAILURE("let str = \"not\rallowed\"", std::exception);
-    EXPECT_LEX_FAILURE("let str = \"not\r\nallowed\"", std::exception);
-
-    FAIL(); // TODO: make exception type more specific
+    EXPECT_LEX_FAILURE(
+        "let s = \"hello",
+        UnexpectedCharacterException);
 }
 
-TEST(LexerTest, LexerParsesSingleLineComment)
+TEST(LexerTest, LineBreaksInsideStringLiteralsAreNotAllowed)
+{
+    EXPECT_LEX_FAILURE("let str = \"not\nallowed\"", UnexpectedCharacterException);
+    EXPECT_LEX_FAILURE("let str = \"not\rallowed\"", UnexpectedCharacterException);
+    EXPECT_LEX_FAILURE("let str = \"not\r\nallowed\"", UnexpectedCharacterException);
+}
+
+TEST(LexerTest, LexerParsesComment)
 {
     EXPECT_TOKENS(
         "#first comment\n"
@@ -608,6 +617,22 @@ TEST(LexerTest, LexerParsesSingleLineComment)
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Comment, "#second comment"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+}
+
+TEST(LexerTest, CommentsCanBeEmpty)
+{
+    EXPECT_TOKENS(
+        "#\n"
+        "#\n"
+        "#\n",
+        //
+        Token(TokenKind::Comment, "#"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Comment, "#"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Comment, "#"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
 }
@@ -637,6 +662,19 @@ TEST(LexerTest, LexerParsesNewLineToken)
         Token(TokenKind::ParenClose, ")"),
         Token(TokenKind::NewLine, ""), // lf
         Token(TokenKind::NewLine, ""), // cr
+        Token(TokenKind::Eof, ""));
+}
+
+TEST(LexerTest, LineWithOnlySpacesIsEmpty)
+{
+    EXPECT_TOKENS(
+        "    \n"
+        "        \n"
+        " \n",
+        //
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
 }
 
@@ -931,4 +969,27 @@ TEST(LexerTest, LexerThrowsOnInconsistentDedent)
         "      pass\n"
         "   pass\n",
         std::exception);
+}
+
+TEST(LexerTest, FirstLineCanBeIndented)
+{
+    EXPECT_TOKENS(
+        "    fun main():\n"
+        "        pass\n",
+        //
+        Token(TokenKind::Indent, ""),
+        Token(TokenKind::Fun, "fun"),
+        Token(TokenKind::Symbol, "main"),
+        Token(TokenKind::ParenOpen, "("),
+        Token(TokenKind::ParenClose, ")"),
+        Token(TokenKind::Colon, ":"),
+        Token(TokenKind::NewLine, ""),
+
+        Token(TokenKind::Indent, ""),
+        Token(TokenKind::Pass, "pass"),
+        Token(TokenKind::NewLine, ""),
+
+        Token(TokenKind::Dedent, ""),
+        Token(TokenKind::Dedent, ""),
+        Token(TokenKind::Eof, ""));
 }
