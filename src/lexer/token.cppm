@@ -75,7 +75,6 @@ namespace udav::lexer {
     X(LeftShiftAssign)  /* <<= */ \
                                   \
     /* Auxiliary tokens */        \
-    X(Arrow)      /* -> */        \
     X(Colon)      /* :  */        \
     X(Dot)        /* .  */        \
     X(Comma)      /* ,  */        \
