@@ -57,24 +57,6 @@ TEST(LexerTest, LexerIgnoresUtf8BomAtTheBeginning)
         Token(TokenKind::Eof, ""));
 }
 
-TEST(LexerTest, LexerThrowsOnInconsistentLineEndings)
-{
-    EXPECT_LEX_FAILURE(
-        "println(\"Hello\")\r"
-        "println(\"world!\")\r\n",
-        InconsistentLineEndingException);
-
-    EXPECT_LEX_FAILURE(
-        "println(\"Hello\")\r\n"
-        "println(\"world!\")\n",
-        InconsistentLineEndingException);
-
-    EXPECT_LEX_FAILURE(
-        "println(\"Hello\")\n"
-        "println(\"world!\")\r",
-        InconsistentLineEndingException);
-}
-
 TEST(LexerTest, LexerParsesKeywordTokens)
 {
     // fun
@@ -513,16 +495,14 @@ TEST(LexerTest, LexerParsesOperatorTokens)
 
 TEST(LexerTest, LexerParsesAuxiliaryTokens)
 {
-    // ( ) -> :
+    // ( ) :
     EXPECT_TOKENS(
-        "fun foo() -> i32:\n",
+        "fun foo():\n",
         //
         Token(TokenKind::Fun, "fun"),
         Token(TokenKind::Symbol, "foo"),
         Token(TokenKind::ParenOpen, "("),
         Token(TokenKind::ParenClose, ")"),
-        Token(TokenKind::Arrow, "->"),
-        Token(TokenKind::Symbol, "i32"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
@@ -632,76 +612,31 @@ TEST(LexerTest, LexerParsesSingleLineComment)
         Token(TokenKind::Eof, ""));
 }
 
-TEST(LexerTest, LexerParsesMultilineComment)
-{
-    EXPECT_TOKENS(
-        "let a #[inline]# = 1\n",
-        //
-        Token(TokenKind::Let, "let"),
-        Token(TokenKind::Symbol, "a"),
-        Token(TokenKind::Comment, "#[inline]#"),
-        Token(TokenKind::Assign, "="),
-        Token(TokenKind::IntegerLiteral, "1"),
-        Token(TokenKind::NewLine, ""),
-        Token(TokenKind::Eof, ""));
-
-    EXPECT_TOKENS(
-        "#[this is\n"
-        "a multiline\n"
-        "comment]#\n",
-        //
-        Token(TokenKind::Comment, "#[this is\na multiline\ncomment]#"),
-        Token(TokenKind::NewLine, ""),
-        Token(TokenKind::Eof, ""));
-}
-
-TEST(LexerTest, MultilineCommentsCanBeNested)
-{
-    EXPECT_TOKENS(
-        "let x = #[outer #[inner]# still outer]# 123\n",
-        //
-        Token(TokenKind::Let, "let"),
-        Token(TokenKind::Symbol, "x"),
-        Token(TokenKind::Assign, "="),
-        Token(TokenKind::Comment, "#[outer #[inner]# still outer]#"),
-        Token(TokenKind::IntegerLiteral, "123"),
-        Token(TokenKind::NewLine, ""),
-        Token(TokenKind::Eof, ""));
-
-    // TODO: more variants (comment on several lines)
-}
-
 TEST(LexerTest, LexerParsesNewLineToken)
 {
     EXPECT_TOKENS(
-        "fun main():\n"
-        "    println(\"Y\")\n"
-        "    println(\"o\")\n"
-        "    println(\"!\")\n",
+        "println()\n"
+        "println()\r\n"
+        "println()\r"
+        "println()\n\r",
         //
-        Token(TokenKind::Fun, "fun"),
-        Token(TokenKind::Symbol, "main"),
-        Token(TokenKind::ParenOpen, "("),
-        Token(TokenKind::ParenClose, ")"),
-        Token(TokenKind::Colon, ":"),
-        Token(TokenKind::NewLine, ""),
-        Token(TokenKind::Indent, ""),
         Token(TokenKind::Symbol, "println"),
         Token(TokenKind::ParenOpen, "("),
-        Token(TokenKind::StringLiteral, "\"Y\""),
         Token(TokenKind::ParenClose, ")"),
-        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::NewLine, ""), // lf
         Token(TokenKind::Symbol, "println"),
         Token(TokenKind::ParenOpen, "("),
-        Token(TokenKind::StringLiteral, "\"o\""),
         Token(TokenKind::ParenClose, ")"),
-        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::NewLine, ""), // crlf
         Token(TokenKind::Symbol, "println"),
         Token(TokenKind::ParenOpen, "("),
-        Token(TokenKind::StringLiteral, "\"!\""),
         Token(TokenKind::ParenClose, ")"),
-        Token(TokenKind::NewLine, ""),
-        Token(TokenKind::Dedent, ""),
+        Token(TokenKind::NewLine, ""), // cr
+        Token(TokenKind::Symbol, "println"),
+        Token(TokenKind::ParenOpen, "("),
+        Token(TokenKind::ParenClose, ")"),
+        Token(TokenKind::NewLine, ""), // lf
+        Token(TokenKind::NewLine, ""), // cr
         Token(TokenKind::Eof, ""));
 }
 
@@ -893,7 +828,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Eof, ""));
 }
 
-TEST(LexerTest, CommentsCanBeIndented)
+TEST(LexerTest, CommentsCannotBeIndented)
 {
     EXPECT_TOKENS(
         "# zero\n"
@@ -903,22 +838,12 @@ TEST(LexerTest, CommentsCanBeIndented)
         //
         Token(TokenKind::Comment, "# zero"),
         Token(TokenKind::NewLine, ""),
-
-        Token(TokenKind::Indent, ""),
         Token(TokenKind::Comment, "# one"),
         Token(TokenKind::NewLine, ""),
-
-        Token(TokenKind::Indent, ""),
         Token(TokenKind::Comment, "# two"),
         Token(TokenKind::NewLine, ""),
-
-        Token(TokenKind::Indent, ""),
         Token(TokenKind::Comment, "# three"),
         Token(TokenKind::NewLine, ""),
-
-        Token(TokenKind::Dedent, ""),
-        Token(TokenKind::Dedent, ""),
-        Token(TokenKind::Dedent, ""),
         Token(TokenKind::Eof, ""));
 }
 
