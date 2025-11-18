@@ -888,11 +888,11 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Pass, "pass"),
         Token(TokenKind::NewLine, ""),
 
-        // dedent 1 -> 0 (exit fun main)
-        Token(TokenKind::Dedent, ""),
-
         // empty line
         Token(TokenKind::NewLine, ""),
+
+        // dedent 1 -> 0 (exit fun main)
+        Token(TokenKind::Dedent, ""),
 
         // let a = 1
         Token(TokenKind::Let, "let"),
@@ -945,7 +945,7 @@ TEST(LexerTest, LexerDoesNotDedentIfLineContainsOnlyWhitespaces)
         "    else:"                            // 4
         "\n"                                   // 0
         "                                  \n" // 34
-        "        println(\"x false\")"         // 8
+        "        println(\"x false\")\n"       // 8
         "        \n"                           // 8
         "        \n"                           // 8
         "        \n"                           // 8
