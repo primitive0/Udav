@@ -5,6 +5,6 @@
 #include <string_view>
 
 using String = std::string;
-using strview = std::string_view;
+using StrView = std::string_view;
 
 #endif // UDAV_SUPPORT_STRING_H_

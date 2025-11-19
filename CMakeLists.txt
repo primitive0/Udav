@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(GTest 1.17.0 EXACT REQUIRED)
+find_package(utf8cpp 4.0.8 EXACT REQUIRED)
 
 enable_testing()
 
@@ -19,8 +20,10 @@ target_sources(UdavInterpreterTest
     FILE_SET CXX_MODULES
     FILES
       src/lexer/lexer.cppm
-      src/lexer/token.cppm)
+      src/lexer/token.cppm
+      src/text/utf8/utf8.cppm)
 target_include_directories(UdavInterpreterTest PRIVATE src/)
+target_link_libraries(UdavInterpreterTest utf8cpp)
 target_link_libraries(UdavInterpreterTest GTest::gtest_main)
 
 include(GoogleTest)

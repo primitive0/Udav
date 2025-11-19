@@ -1,5 +1,6 @@
 [requires]
 gtest/1.17.0
+utfcpp/4.0.8
 
 [generators]
 CMakeToolchain

@@ -97,20 +97,30 @@ DEFINE_TOKEN_ENUM(TokenKind, TOKEN_KIND_ITEMS)
 export struct Token final
 {
     TokenKind kind;
-    strview value;
+    StrView span;
 
-    constexpr explicit Token(TokenKind kind_, strview value_)
-        : kind{kind_}
-        , value{value_}
+    constexpr explicit Token(TokenKind kind, StrView span)
+        : kind{kind}
+        , span{span}
     {
     }
 
     constexpr auto operator==(const Token&) const -> bool = default;
+
+    static const Token Eof;
 };
+
+constexpr Token Token::Eof{TokenKind::Eof, ""};
 
 export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
 {
-    return os << token.kind << " " << token.value;
+    os << token.kind;
+
+    if (!token.span.empty()) {
+        os << " `" << token.span << "`";
+    }
+
+    return os;
 }
 
 } // namespace udav::lexer

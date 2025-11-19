@@ -1,5 +1,3 @@
-#include <exception>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -962,13 +960,12 @@ TEST(LexerTest, LexerDoesNotDedentIfLineContainsOnlyWhitespaces)
 
 TEST(LexerTest, LexerThrowsOnInconsistentDedent)
 {
-    // TODO: make exception type more specific
     EXPECT_LEX_FAILURE(
         "fun main():\n"
         "    if true:\n"
         "      pass\n"
         "   pass\n",
-        std::exception);
+        InconsistentDedentException);
 }
 
 TEST(LexerTest, FirstLineCanBeIndented)
