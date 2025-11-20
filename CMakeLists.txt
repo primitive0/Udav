@@ -16,9 +16,11 @@ add_executable(UdavInterpreterTest)
 target_sources(UdavInterpreterTest
   PRIVATE
     src/lexer/lexer_test.cpp
+    src/lexer/lexer_stats_test.cpp
   PRIVATE
     FILE_SET CXX_MODULES
     FILES
+      src/lexer/lexer_stats.cppm
       src/lexer/lexer.cppm
       src/lexer/token.cppm
       src/text/utf8/utf8.cppm)
