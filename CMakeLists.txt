@@ -26,7 +26,7 @@ target_sources(UdavInterpreterTest
       src/text/utf8/utf8.cppm)
 target_include_directories(UdavInterpreterTest PRIVATE src/)
 target_link_libraries(UdavInterpreterTest utf8cpp)
-target_link_libraries(UdavInterpreterTest GTest::gtest_main)
+target_link_libraries(UdavInterpreterTest GTest::gmock_main)
 
 include(GoogleTest)
 gtest_discover_tests(UdavInterpreterTest)
