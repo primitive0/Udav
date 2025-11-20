@@ -34,10 +34,12 @@ Checks: [
   '-bugprone-forward-declaration-namespace',
   '-bugprone-nondeterministic-pointer-iteration-order',
   '-bugprone-sizeof-expression', # too aggressive
+  '-bugprone-macro-parentheses',
 
   '-cert-dcl16-c',
   '-cert-arr39-c', # alias of bugprone-sizeof-expression
   '-cert-err58-cpp',
+  '-cert-dcl03-c',
 
   '-clang-analyzer-core.BitwiseShift', # false positive on boost::dynamic_bitset::to_ulong
 
@@ -79,6 +81,7 @@ Checks: [
   '-hicpp-use-auto',
   '-hicpp-use-emplace',
   '-hicpp-vararg',
+  '-hicpp-static-assert',
 
   '-llvm-*',
 
@@ -90,6 +93,7 @@ Checks: [
   '-misc-non-private-member-variables-in-classes',
   '-misc-use-anonymous-namespace',
   '-misc-use-internal-linkage',
+  '-misc-static-assert',
 
   '-modernize-avoid-c-arrays',
   '-modernize-concat-nested-namespaces',
