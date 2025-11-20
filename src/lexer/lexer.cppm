@@ -1,8 +1,10 @@
 module;
 #include <cassert>
 #include <exception>
+#include <format>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 #include <utf8.h>
 
@@ -24,12 +26,27 @@ namespace udav::lexer {
 
 constexpr char32_t kNoChar32 = std::numeric_limits<char32_t>::max();
 
+// TODO: which exception class should I inherit?
 export class LexerException : public std::exception
 {
-};
+public:
+    explicit LexerException()
+        : message_{}
+    {
+    }
 
-export class InconsistentLineEndingException final : public LexerException
-{
+    explicit LexerException(String message)
+        : message_{std::move(message)}
+    {
+    }
+
+    auto what() const noexcept -> const char* override
+    {
+        return message_.c_str();
+    }
+
+private:
+    String message_;
 };
 
 export class InvalidUtf8Exception final : public LexerException
@@ -42,6 +59,11 @@ export class InconsistentDedentException final : public LexerException
 
 export class UnexpectedCharacterException final : public LexerException
 {
+public:
+    explicit UnexpectedCharacterException(String message_)
+        : LexerException(std::move(message_))
+    {
+    }
 };
 
 class TextSplitter final
@@ -49,7 +71,7 @@ class TextSplitter final
 public:
     explicit TextSplitter(StrView text)
         : begin_{text.begin()}
-        , it_{text.begin()}
+        , cursor_{text.begin()}
         , end_{text.end()}
     {
     }
@@ -61,12 +83,12 @@ public:
             return peeked_;
         }
 
-        if (it_ == end_) {
+        if (cursor_ == end_) {
             return kNoChar32;
         }
 
         try {
-            peeked_ = utf8::peek_next(it_, end_);
+            peeked_ = utf8::peek_next(cursor_, end_);
         } catch (utf8::exception&) {
             throw InvalidUtf8Exception{};
         }
@@ -78,17 +100,17 @@ public:
     auto advance() -> void
     {
         if (peeked_ != kNoChar32) {
-            it_ += get_utf8_sequence_size_by_char(peeked_);
+            cursor_ += get_utf8_sequence_size_for_char(peeked_);
             peeked_ = kNoChar32;
             return;
         }
 
-        if (it_ == end_) {
+        if (cursor_ == end_) {
             return;
         }
 
         try {
-            utf8::next(it_, end_);
+            utf8::next(cursor_, end_);
         } catch (utf8::exception&) {
             throw InvalidUtf8Exception{};
         }
@@ -98,29 +120,29 @@ public:
     {
         assert(!str.empty());
 
-        if (str.size() > end_ - it_) {
+        if (str.size() > end_ - cursor_) {
             return false;
         }
         for (auto i = 0uz; i < str.size(); ++i) {
-            if (str[i] != it_[i]) {
+            if (str[i] != cursor_[i]) {
                 return false;
             }
         }
 
-        it_ += str.size();
+        cursor_ += str.size();
         peeked_ = kNoChar32;
         return true;
     }
 
     auto split() -> StrView
     {
-        auto span = StrView{begin_, it_};
-        begin_ = it_;
+        auto span = StrView{begin_, cursor_};
+        begin_ = cursor_;
         return span;
     }
 
 private:
-    static auto get_utf8_sequence_size_by_char(char32_t ch) -> i32
+    static auto get_utf8_sequence_size_for_char(char32_t ch) -> i32
     {
         if (ch < 0x80) {
             return 1;
@@ -136,7 +158,7 @@ private:
     }
 
     const char* begin_;
-    const char* it_;
+    const char* cursor_;
     const char* end_;
     char32_t peeked_ = kNoChar32;
 };
@@ -170,7 +192,7 @@ public:
         }
 
         if (splitter_.peek() == kNoChar32) {
-            return parse_eof();
+            return on_eof();
         }
 
         return find_next_token();
@@ -183,7 +205,7 @@ private:
         Text,
     };
 
-    auto parse_eof() -> Token
+    auto on_eof() -> Token
     {
         if (part_ == PartKind::Text) {
             part_ = PartKind::Indentation;
@@ -195,7 +217,7 @@ private:
             return pop_token();
         }
 
-        return Token::Eof;
+        return Token{TokenKind::Eof, ""};
     }
 
     auto find_next_token() -> Token
@@ -220,7 +242,10 @@ private:
             return pop_token();
         }
 
-        throw UnexpectedCharacterException{};
+        throw UnexpectedCharacterException{
+            std::format(
+                "Unexpected character U+{:04X}.",
+                static_cast<u32>(splitter_.peek()))};
     }
 
     auto parse_newline_token() -> bool
@@ -235,14 +260,9 @@ private:
             splitter_.advance();
         }
 
-        move_to_next_line();
+        part_ = PartKind::Indentation; // Moving to next line
         push_virtual_token(TokenKind::NewLine);
         return true;
-    }
-
-    auto move_to_next_line() -> void
-    {
-        part_ = PartKind::Indentation;
     }
 
     auto parse_comment_token() -> bool
@@ -251,14 +271,13 @@ private:
             return false;
         }
 
-        part_ = PartKind::Text;
-
         auto ch = char32_t{};
         do {
             splitter_.advance();
             ch = splitter_.peek();
         } while (ch != U'\n' && ch != U'\r' && ch != kNoChar32);
 
+        part_ = PartKind::Text;
         push_token(TokenKind::Comment);
         return true;
     }
@@ -449,11 +468,13 @@ private:
             ch = splitter_.peek();
 
             if (ch == U'\n' || ch == U'\r') {
-                throw UnexpectedCharacterException{};
+                throw UnexpectedCharacterException{
+                    "Line breaks inside string literal are not allowed."};
             }
 
             if (ch == kNoChar32) {
-                throw UnexpectedCharacterException{};
+                throw UnexpectedCharacterException{
+                    "EOF inside string literal is not allowed."};
             }
         } while (ch != U'"');
         splitter_.advance();

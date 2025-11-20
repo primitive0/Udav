@@ -21,7 +21,7 @@ using namespace udav::lexer;
 
 TEST(LexerTest, LexerParsesEmptyFile)
 {
-    EXPECT_TOKENS("", Token::Eof);
+    EXPECT_TOKENS("", Token(TokenKind::Eof, ""));
 }
 
 TEST(LexerTest, LexerIgnoresBomAtTheBeginning)
