@@ -31,187 +31,187 @@ public:
     friend auto operator-(ExprDsl e) -> ExprDsl
     {
         auto node = std::make_unique<UnaryExpr>();
-        node->op_ = UnaryOperation::Minus;
-        node->expr_ = std::move(e.expr_);
+        node->op = UnaryOperation::Minus;
+        node->expr = std::move(e.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator!(ExprDsl e) -> ExprDsl
     {
         auto node = std::make_unique<UnaryExpr>();
-        node->op_ = UnaryOperation::Not;
-        node->expr_ = std::move(e.expr_);
+        node->op = UnaryOperation::Not;
+        node->expr = std::move(e.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator+(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Plus;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Plus;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator-(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Minus;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Minus;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator*(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Mul;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Mul;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator/(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Div;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Div;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator%(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Modulo;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Modulo;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator==(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Equals;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Equals;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator!=(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::NotEquals;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::NotEquals;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator<(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Less;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Less;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator<=(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::LessOrEqual;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::LessOrEqual;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator>(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Greater;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Greater;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator>=(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::GreaterOrEqual;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::GreaterOrEqual;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator||(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Or;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::Or;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator&&(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::And;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::And;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator|(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::BitwiseOr;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::BitwiseOr;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator&(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::BitwiseAnd;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::BitwiseAnd;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator^(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::BitwiseXor;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::BitwiseXor;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator<<(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::LeftShift;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::LeftShift;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto operator>>(ExprDsl lhs, ExprDsl rhs) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::RightShift;
-        node->left_ = std::move(lhs.expr_);
-        node->right_ = std::move(rhs.expr_);
+        node->op = BinaryOperation::RightShift;
+        node->left = std::move(lhs.expr_);
+        node->right = std::move(rhs.expr_);
         return ExprDsl{std::move(node)};
     }
 
     friend auto pow(ExprDsl base, ExprDsl exp) -> ExprDsl
     {
         auto node = std::make_unique<BinaryExpr>();
-        node->op_ = BinaryOperation::Power;
-        node->left_ = std::move(base.expr_);
-        node->right_ = std::move(exp.expr_);
+        node->op = BinaryOperation::Power;
+        node->left = std::move(base.expr_);
+        node->right = std::move(exp.expr_);
         return ExprDsl{std::move(node)};
     }
 
@@ -224,28 +224,28 @@ private:
 export auto VAR(StrView name) -> ExprDsl
 {
     auto node = std::make_unique<VariableExpr>();
-    node->name_ = name;
+    node->name = name;
     return ExprDsl{std::move(node)};
 }
 
 export auto INT(StrView literal) -> ExprDsl
 {
     auto node = std::make_unique<IntegerExpr>();
-    node->literal_ = literal;
+    node->literal = literal;
     return ExprDsl{std::move(node)};
 }
 
 export auto STR(StrView literal) -> ExprDsl
 {
     auto node = std::make_unique<StringExpr>();
-    node->literal_ = literal;
+    node->literal = literal;
     return ExprDsl{std::move(node)};
 }
 
 export auto BOOL(bool value) -> ExprDsl
 {
     auto node = std::make_unique<BoolExpr>();
-    node->value_ = value;
+    node->value = value;
     return ExprDsl{std::move(node)};
 }
 
@@ -302,7 +302,7 @@ public:
 
     auto stmt(Unique<Stmt> stmt) -> BuildBlock&
     {
-        value_.stmts_.push_back(std::move(stmt));
+        value_.stmts.push_back(std::move(stmt));
         return *this;
     }
 };
@@ -314,19 +314,19 @@ public:
 
     auto name(StrView name) -> BuildFunction&
     {
-        value_.name_ = name;
+        value_.name = name;
         return *this;
     }
 
-    auto arg(StrView argument) -> BuildFunction&
+    auto arg(StrView arg) -> BuildFunction&
     {
-        value_.arguments_.push_back(argument);
+        value_.args.push_back(arg);
         return *this;
     }
 
     auto body(Block body) -> BuildFunction&
     {
-        value_.body_ = std::move(body);
+        value_.body = std::move(body);
         return *this;
     }
 };
@@ -338,7 +338,25 @@ public:
 
     auto func(Function function) -> BuildProgram&
     {
-        value_.functions_.push_back(std::move(function));
+        value_.functions.push_back(std::move(function));
+        return *this;
+    }
+};
+
+export class BuildVariableDecl final : public Builder<VariableDecl>
+{
+public:
+    explicit BuildVariableDecl() = default;
+
+    auto name(StrView name) -> BuildVariableDecl&
+    {
+        value_.name = name;
+        return *this;
+    }
+
+    auto value(Unique<Expr> value) -> BuildVariableDecl&
+    {
+        value_.value = std::move(value);
         return *this;
     }
 };
@@ -350,10 +368,15 @@ public:
 
     auto decl(StrView name, Unique<Expr> value) -> BuildLetStmt&
     {
-        VariableDecl decl{};
-        decl.name_ = name;
-        decl.value_ = std::move(value);
-        value_.decls_.push_back(std::move(decl));
+        VariableDecl var_decl{};
+        var_decl.name = name;
+        var_decl.value = std::move(value);
+        return decl(std::move(var_decl));
+    }
+
+    auto decl(VariableDecl decl) -> BuildLetStmt&
+    {
+        value_.decls.push_back(std::move(decl));
         return *this;
     }
 };
@@ -363,18 +386,18 @@ export class BuildAssignStmt final : public Builder<AssignStmt>
 public:
     explicit BuildAssignStmt(AssignKind kind)
     {
-        value_.kind_ = kind;
+        value_.kind = kind;
     }
 
     auto target(StrView target) -> BuildAssignStmt&
     {
-        value_.target_ = target;
+        value_.target = target;
         return *this;
     }
 
     auto value(Unique<Expr> value) -> BuildAssignStmt&
     {
-        value_.value_ = std::move(value);
+        value_.value = std::move(value);
         return *this;
     }
 };
@@ -386,7 +409,7 @@ public:
 
     auto value(Unique<Expr> value) -> BuildReturnStmt&
     {
-        value_.value_ = std::move(value);
+        value_.value = std::move(value);
         return *this;
     }
 };
@@ -398,13 +421,13 @@ public:
 
     auto function(StrView function) -> BuildCallStmt&
     {
-        value_.call_.function_ = function;
+        value_.call.function = function;
         return *this;
     }
 
-    auto arg(Unique<Expr> argument) -> BuildCallStmt&
+    auto arg(Unique<Expr> arg) -> BuildCallStmt&
     {
-        value_.call_.arguments_.push_back(std::move(argument));
+        value_.call.args.push_back(std::move(arg));
         return *this;
     }
 };
@@ -416,13 +439,13 @@ public:
 
     auto condition(Unique<Expr> condition) -> BuildBranch&
     {
-        value_.condition_ = std::move(condition);
+        value_.condition = std::move(condition);
         return *this;
     }
 
     auto body(Block body) -> BuildBranch&
     {
-        value_.body_ = std::move(body);
+        value_.body = std::move(body);
         return *this;
     }
 };
@@ -434,13 +457,13 @@ public:
 
     auto branch(Branch branch) -> BuildIfStmt&
     {
-        value_.branches_.push_back(std::move(branch));
+        value_.branches.push_back(std::move(branch));
         return *this;
     }
 
     auto else_branch(Block block) -> BuildIfStmt&
     {
-        value_.else_branch_ = std::move(block);
+        value_.else_branch = std::move(block);
         return *this;
     }
 };
@@ -452,13 +475,13 @@ public:
 
     auto condition(Unique<Expr> condition) -> BuildWhileStmt&
     {
-        value_.condition_ = std::move(condition);
+        value_.condition = std::move(condition);
         return *this;
     }
 
     auto body(Block body) -> BuildWhileStmt&
     {
-        value_.body_ = std::move(body);
+        value_.body = std::move(body);
         return *this;
     }
 };

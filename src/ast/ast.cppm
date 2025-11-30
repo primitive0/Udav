@@ -7,137 +7,46 @@ module;
 
 export module udav.ast;
 
-// TODO: sort classes
+import udav.support.convert;
+
 namespace udav::ast {
 
-export class Node;
+// AST node declarations
 
-export class Expr;
-export class LiteralExpr;
-export class UnaryExpr;
-export class BinaryExpr;
-export class IntegerExpr;
-export class StringExpr;
-export class BoolExpr;
-export class CallExpr;
-export class VariableExpr;
+export struct Node;
 
-export class Stmt;
-export class Block;
-export class VariableDecl;
-export class LetStmt;
-export class AssignStmt;
-export class PassStmt;
-export class ContinueStmt;
-export class BreakStmt;
-export class ReturnStmt;
-export class CallStmt;
-export class Branch;
-export class IfStmt;
-export class WhileStmt;
+export struct Expr;
+export struct LiteralExpr;
+export struct UnaryExpr;
+export struct BinaryExpr;
+export struct IntegerExpr;
+export struct StringExpr;
+export struct BoolExpr;
+export struct CallExpr;
+export struct VariableExpr;
 
-export class Function;
-export class Program;
+export struct Stmt;
+export struct Block;
+export struct VariableDecl;
+export struct LetStmt;
+export struct AssignStmt;
+export struct PassStmt;
+export struct ContinueStmt;
+export struct BreakStmt;
+export struct ReturnStmt;
+export struct CallStmt;
+export struct Branch;
+export struct IfStmt;
+export struct WhileStmt;
 
-export class Visitor
-{
-public:
-    virtual ~Visitor() = default;
+export struct Function;
+export struct Program;
 
-    Visitor(const Visitor&) = default;
-    Visitor& operator=(const Visitor&) = default;
-
-    Visitor(Visitor&&) = default;
-    Visitor& operator=(Visitor&&) = default;
-
-    explicit Visitor() = default;
-
-    virtual auto visit(Program&) -> void {}
-    virtual auto visit(Function&) -> void {}
-    virtual auto visit(Block&) -> void {}
-
-    virtual auto visit(UnaryExpr&) -> void {}
-    virtual auto visit(BinaryExpr&) -> void {}
-    virtual auto visit(IntegerExpr&) -> void {}
-    virtual auto visit(StringExpr&) -> void {}
-    virtual auto visit(BoolExpr&) -> void {}
-    virtual auto visit(CallExpr&) -> void {}
-    virtual auto visit(VariableExpr&) -> void {}
-
-    virtual auto visit(LetStmt&) -> void {}
-    virtual auto visit(AssignStmt&) -> void {}
-    virtual auto visit(PassStmt&) -> void {}
-    virtual auto visit(ContinueStmt&) -> void {}
-    virtual auto visit(BreakStmt&) -> void {}
-    virtual auto visit(ReturnStmt&) -> void {}
-    virtual auto visit(CallStmt&) -> void {}
-    virtual auto visit(IfStmt&) -> void {}
-    virtual auto visit(WhileStmt&) -> void {}
-};
-
-template<typename Base, typename Derived>
-class Leaf : public Base
-{
-public:
-    auto accept(Visitor& v) -> void override
-    {
-        v.visit(static_cast<Derived&>(*this));
-    }
-
-protected:
-    Leaf(Leaf&&) = default;
-    Leaf& operator=(Leaf&&) = default;
-
-    Leaf() = default;
-};
-
-class Node
-{
-public:
-    virtual ~Node() = default;
-
-    Node(const Node&) = delete;
-    Node& operator=(const Node&) = delete;
-
-    virtual auto accept(Visitor&) -> void = 0;
-
-protected:
-    Node(Node&&) = default;
-    Node& operator=(Node&&) = default;
-
-    Node() = default;
-};
-
-class Expr : public Node
-{
-protected:
-    Expr(Expr&&) = default;
-    Expr& operator=(Expr&&) = default;
-
-    explicit Expr() = default;
-};
-
-class CallInfo final
-{
-public:
-    explicit CallInfo() = default;
-
-    StrView function_{};
-    Vec<Unique<Expr>> arguments_{};
-};
+// ---------------------------
 
 export enum class UnaryOperation {
     Minus,
     Not,
-};
-
-class UnaryExpr final : public Leaf<Expr, UnaryExpr>
-{
-public:
-    explicit UnaryExpr() = default;
-
-    UnaryOperation op_{};
-    Unique<Expr> expr_{};
 };
 
 export enum class BinaryOperation {
@@ -162,91 +71,6 @@ export enum class BinaryOperation {
     LeftShift,
 };
 
-class BinaryExpr final : public Leaf<Expr, BinaryExpr>
-{
-public:
-    explicit BinaryExpr() = default;
-
-    BinaryOperation op_{};
-    Unique<Expr> left_{};
-    Unique<Expr> right_{};
-};
-
-class LiteralExpr : public Expr
-{
-protected:
-    LiteralExpr(LiteralExpr&&) = default;
-    LiteralExpr& operator=(LiteralExpr&&) = default;
-
-    explicit LiteralExpr() = default;
-};
-
-class IntegerExpr final : public Leaf<LiteralExpr, IntegerExpr>
-{
-public:
-    explicit IntegerExpr() = default;
-
-    StrView literal_{};
-};
-
-class StringExpr final : public Leaf<LiteralExpr, StringExpr>
-{
-public:
-    explicit StringExpr() = default;
-
-    StrView literal_{};
-};
-
-class BoolExpr final : public Leaf<LiteralExpr, BoolExpr>
-{
-public:
-    explicit BoolExpr() = default;
-
-    bool value_{};
-};
-
-class CallExpr final : public Leaf<Expr, CallExpr>
-{
-public:
-    explicit CallExpr() = default;
-
-    CallInfo call_{};
-};
-
-class VariableExpr final : public Leaf<Expr, VariableExpr>
-{
-public:
-    explicit VariableExpr() = default;
-
-    StrView name_{};
-};
-
-class Stmt : public Node
-{
-protected:
-    Stmt(Stmt&&) = default;
-    Stmt& operator=(Stmt&&) = default;
-
-    explicit Stmt() = default;
-};
-
-class Block final : public Leaf<Node, Block>
-{
-public:
-    explicit Block() = default;
-
-    Vec<Unique<Stmt>> stmts_{};
-};
-
-class VariableDecl final
-{
-public:
-    explicit VariableDecl() = default;
-
-    StrView name_{};
-    Unique<Expr> value_{};
-};
-
 export enum class AssignKind {
     Assign,
     PlusAssign,
@@ -262,101 +86,437 @@ export enum class AssignKind {
     LeftShiftAssign,
 };
 
-class LetStmt final : public Leaf<Stmt, LetStmt>
+export class Visitor
 {
 public:
+    virtual ~Visitor() = default;
+
+    Visitor(const Visitor&) = default;
+    Visitor& operator=(const Visitor&) = default;
+
+    Visitor(Visitor&&) = default;
+    Visitor& operator=(Visitor&&) = default;
+
+    explicit Visitor() = default;
+
+    virtual auto visit(Program&) -> void {}
+    virtual auto visit(Function&) -> void {}
+    virtual auto visit(Block&) -> void {}
+
+    virtual auto visit(VariableDecl&) -> void {}
+    virtual auto visit(LetStmt&) -> void {}
+    virtual auto visit(AssignStmt&) -> void {}
+    virtual auto visit(PassStmt&) -> void {}
+    virtual auto visit(ContinueStmt&) -> void {}
+    virtual auto visit(BreakStmt&) -> void {}
+    virtual auto visit(ReturnStmt&) -> void {}
+    virtual auto visit(CallStmt&) -> void {}
+    virtual auto visit(IfStmt&) -> void {}
+    virtual auto visit(WhileStmt&) -> void {}
+
+    virtual auto visit(UnaryExpr&) -> void {}
+    virtual auto visit(BinaryExpr&) -> void {}
+    virtual auto visit(IntegerExpr&) -> void {}
+    virtual auto visit(StringExpr&) -> void {}
+    virtual auto visit(BoolExpr&) -> void {}
+    virtual auto visit(CallExpr&) -> void {}
+    virtual auto visit(VariableExpr&) -> void {}
+};
+
+// Node base class
+
+struct Node
+{
+public:
+    virtual ~Node() = default;
+
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
+
+    virtual auto accept(Visitor& v) -> void = 0;
+
+    virtual auto equals(const Node& rhs) const -> bool = 0;
+
+    template<typename T, typename U>
+    static auto check_equal(const Vec<T>& lhs, const Vec<U>& rhs) -> bool
+    {
+        if (lhs.size() != rhs.size()) {
+            return false;
+        }
+        for (auto i = 0uz; i < lhs.size(); ++i) {
+            const auto& left = support::as_ref(lhs[i]);
+            const auto& right = support::as_ref(rhs[i]);
+            if (!left.equals(right)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    template<typename T, typename U>
+    static auto check_equal(const Option<T>& lhs, const Option<U>& rhs) -> bool
+    {
+        if (lhs && rhs) {
+            return support::as_ref(*lhs).equals(support::as_ref(*rhs));
+        } else {
+            return !lhs && !rhs;
+        }
+    }
+
+protected:
+    Node(Node&&) = default;
+    Node& operator=(Node&&) = default;
+
+    explicit Node() = default;
+};
+
+template<typename Base, typename Derived>
+struct Leaf : public Base
+{
+public:
+    auto accept(Visitor& v) -> void override
+    {
+        v.visit(self());
+    }
+
+    auto equals(const Node& rhs) const -> bool override
+    {
+        auto same_type_rhs = dynamic_cast<const Derived*>(&rhs);
+        if (same_type_rhs == nullptr) {
+            return false;
+        }
+        return self().equals(*same_type_rhs);
+    }
+
+protected:
+    Leaf(Leaf&&) = default;
+    Leaf& operator=(Leaf&&) = default;
+
+    explicit Leaf() = default;
+
+private:
+    auto self() const -> const Derived&
+    {
+        return static_cast<const Derived&>(*this);
+    }
+
+    auto self() -> Derived&
+    {
+        return static_cast<Derived&>(*this);
+    }
+};
+
+// Expression nodes
+
+struct Expr : public Node
+{
+protected:
+    Expr(Expr&&) = default;
+    Expr& operator=(Expr&&) = default;
+
+    explicit Expr() = default;
+};
+
+export struct CallInfo final
+{
+    StrView function{};
+    Vec<Unique<Expr>> args{};
+
+    explicit CallInfo() = default;
+
+    auto equals(const CallInfo& rhs) const -> bool
+    {
+        return function == rhs.function &&
+               Node::check_equal(args, rhs.args);
+    }
+};
+
+struct UnaryExpr final : public Leaf<Expr, UnaryExpr>
+{
+    UnaryOperation op{};
+    Unique<Expr> expr{};
+
+    explicit UnaryExpr() = default;
+
+    auto equals(const UnaryExpr& rhs) const -> bool
+    {
+        return op == rhs.op && expr->equals(*rhs.expr);
+    }
+};
+
+struct BinaryExpr final : public Leaf<Expr, BinaryExpr>
+{
+    BinaryOperation op{};
+    Unique<Expr> left{};
+    Unique<Expr> right{};
+
+    explicit BinaryExpr() = default;
+
+    auto equals(const BinaryExpr& rhs) const -> bool
+    {
+        return op == rhs.op &&
+               left->equals(*rhs.left) &&
+               right->equals(*rhs.right);
+    }
+};
+
+struct LiteralExpr : public Expr
+{
+protected:
+    LiteralExpr(LiteralExpr&&) = default;
+    LiteralExpr& operator=(LiteralExpr&&) = default;
+
+    explicit LiteralExpr() = default;
+};
+
+struct IntegerExpr final : public Leaf<LiteralExpr, IntegerExpr>
+{
+    StrView literal{};
+
+    explicit IntegerExpr() = default;
+
+    auto equals(const IntegerExpr& rhs) const -> bool
+    {
+        return literal == rhs.literal;
+    }
+};
+
+struct StringExpr final : public Leaf<LiteralExpr, StringExpr>
+{
+    StrView literal{};
+
+    explicit StringExpr() = default;
+
+    auto equals(const StringExpr& rhs) const -> bool
+    {
+        return literal == rhs.literal;
+    }
+};
+
+struct BoolExpr final : public Leaf<LiteralExpr, BoolExpr>
+{
+    bool value{};
+
+    explicit BoolExpr() = default;
+
+    auto equals(const BoolExpr& rhs) const -> bool
+    {
+        return value == rhs.value;
+    }
+};
+
+struct CallExpr final : public Leaf<Expr, CallExpr>
+{
+    CallInfo call{};
+
+    explicit CallExpr() = default;
+
+    auto equals(const CallExpr& rhs) const -> bool
+    {
+        return call.equals(rhs.call);
+    }
+};
+
+struct VariableExpr final : public Leaf<Expr, VariableExpr>
+{
+    StrView name{};
+
+    explicit VariableExpr() = default;
+
+    auto equals(const VariableExpr& rhs) const -> bool
+    {
+        return name == rhs.name;
+    }
+};
+
+// Statements
+
+struct Stmt : public Node
+{
+protected:
+    Stmt(Stmt&&) = default;
+    Stmt& operator=(Stmt&&) = default;
+
+    explicit Stmt() = default;
+};
+
+struct Block final : public Leaf<Node, Block>
+{
+    Vec<Unique<Stmt>> stmts{};
+
+    explicit Block() = default;
+
+    auto equals(const Block& rhs) const -> bool
+    {
+        return check_equal(stmts, rhs.stmts);
+    }
+};
+
+struct VariableDecl final : public Leaf<Node, VariableDecl>
+{
+    StrView name{};
+    Unique<Expr> value{};
+
+    explicit VariableDecl() = default;
+
+    auto equals(const VariableDecl& rhs) const -> bool
+    {
+        return name == rhs.name && value->equals(*rhs.value);
+    }
+};
+
+struct LetStmt final : public Leaf<Stmt, LetStmt>
+{
+    Vec<VariableDecl> decls{};
+
     explicit LetStmt() = default;
 
-    Vec<VariableDecl> decls_{};
+    auto equals(const LetStmt& rhs) const -> bool
+    {
+        return check_equal(decls, rhs.decls);
+    }
 };
 
-class AssignStmt final : public Leaf<Stmt, AssignStmt>
+struct AssignStmt final : public Leaf<Stmt, AssignStmt>
 {
-public:
+    AssignKind kind{};
+    StrView target{};
+    Unique<Expr> value{};
+
     explicit AssignStmt() = default;
 
-    AssignKind kind_{};
-    StrView target_{};
-    Unique<Expr> value_{};
+    auto equals(const AssignStmt& rhs) const -> bool
+    {
+        return kind == rhs.kind &&
+               target == rhs.target &&
+               value->equals(*rhs.value);
+    }
 };
 
-class PassStmt final : public Leaf<Stmt, PassStmt>
+struct PassStmt final : public Leaf<Stmt, PassStmt>
 {
-public:
     explicit PassStmt() = default;
+
+    auto equals(const PassStmt& rhs) const -> bool
+    {
+        return true;
+    }
 };
 
-class ContinueStmt final : public Leaf<Stmt, ContinueStmt>
+struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
 {
-public:
     explicit ContinueStmt() = default;
+
+    auto equals(const ContinueStmt& rhs) const -> bool
+    {
+        return true;
+    }
 };
 
-class BreakStmt final : public Leaf<Stmt, BreakStmt>
+struct BreakStmt final : public Leaf<Stmt, BreakStmt>
 {
-public:
     explicit BreakStmt() = default;
+
+    auto equals(const BreakStmt& rhs) const -> bool
+    {
+        return true;
+    }
 };
 
-class ReturnStmt final : public Leaf<Stmt, ReturnStmt>
+struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
 {
-public:
+    Unique<Expr> value{};
+
     explicit ReturnStmt() = default;
 
-    Unique<Expr> value_{};
+    auto equals(const ReturnStmt& rhs) const -> bool
+    {
+        return value->equals(*rhs.value);
+    }
 };
 
-class CallStmt final : public Leaf<Stmt, CallStmt>
+struct CallStmt final : public Leaf<Stmt, CallStmt>
 {
-public:
+    CallInfo call{};
+
     explicit CallStmt() = default;
 
-    CallInfo call_{};
+    auto equals(const CallStmt& rhs) const -> bool
+    {
+        return call.equals(rhs.call);
+    }
 };
 
-class Branch final
+export struct Branch final
 {
-public:
+    Unique<Expr> condition{};
+    Block body{};
+
     explicit Branch() = default;
 
-    Unique<Expr> condition_{};
-    Block body_{};
+    auto equals(const Branch& rhs) const -> bool
+    {
+        return condition->equals(*rhs.condition) &&
+               body.equals(rhs.body);
+    }
 };
 
-class IfStmt final : public Leaf<Stmt, IfStmt>
+struct IfStmt final : public Leaf<Stmt, IfStmt>
 {
-public:
+    Vec<Branch> branches{};
+    Option<Block> else_branch{};
+
     explicit IfStmt() = default;
 
-    Vec<Branch> branches_{};
-    Option<Block> else_branch_{};
+    auto equals(const IfStmt& rhs) const -> bool
+    {
+        return check_equal(branches, rhs.branches) &&
+               check_equal(else_branch, rhs.else_branch);
+    }
 };
 
-class WhileStmt final : public Leaf<Stmt, WhileStmt>
+struct WhileStmt final : public Leaf<Stmt, WhileStmt>
 {
-public:
+    Unique<Expr> condition{};
+    Block body{};
+
     explicit WhileStmt() = default;
 
-    Unique<Expr> condition_{};
-    Block body_{};
+    auto equals(const WhileStmt& rhs) const -> bool
+    {
+        return condition->equals(*rhs.condition) &&
+               body.equals(rhs.body);
+    }
 };
 
-class Function final : public Leaf<Node, Function>
+// Top level nodes
+
+struct Function final : public Leaf<Node, Function>
 {
-public:
+    StrView name{};
+    Vec<StrView> args{};
+    Block body{};
+
     explicit Function() = default;
 
-    StrView name_{};
-    Vec<StrView> arguments_{};
-    Block body_{};
+    auto equals(const Function& rhs) const -> bool
+    {
+        return name == rhs.name &&
+               args == rhs.args &&
+               body.equals(rhs.body);
+    }
 };
 
-class Program final : public Leaf<Node, Program>
+struct Program final : public Leaf<Node, Program>
 {
-public:
+    Vec<Function> functions{};
+
     explicit Program() = default;
 
-    Vec<Function> functions_{};
+    auto equals(const Program& rhs) const -> bool
+    {
+        return check_equal(functions, rhs.functions);
+    }
 };
 
 } // namespace udav::ast

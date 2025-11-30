@@ -25,6 +25,7 @@ target_sources(UdavInterpreterTest
       src/lexer/token.cppm
       src/ast/ast.cppm
       src/ast/builder.cppm
+      src/support/convert.cppm
       src/text/utf8/utf8.cppm)
 target_include_directories(UdavInterpreterTest PRIVATE src/)
 target_link_libraries(UdavInterpreterTest utf8cpp)
