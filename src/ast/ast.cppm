@@ -1,6 +1,7 @@
 module;
 
 #include <cassert>
+#include <functional>
 #include <ostream>
 
 #include "support/numerics.hpp"
@@ -185,11 +186,15 @@ public:
 
     auto equals(const Node& rhs) const -> bool override
     {
+        using OverloadedFuncPtrType = auto (Derived::*)(const Derived&) const->bool;
+
         auto same_type_rhs = dynamic_cast<const Derived*>(&rhs);
         if (same_type_rhs == nullptr) {
             return false;
         }
-        return self().equals(*same_type_rhs);
+
+        auto overloaded_equals = static_cast<OverloadedFuncPtrType>(&Derived::equals);
+        return std::mem_fn(overloaded_equals)(self(), *same_type_rhs);
     }
 
 protected:
@@ -242,6 +247,8 @@ struct UnaryExpr final : public Leaf<Expr, UnaryExpr>
 
     explicit UnaryExpr() = default;
 
+    using Node::equals;
+
     auto equals(const UnaryExpr& rhs) const -> bool
     {
         return op == rhs.op && expr->equals(*rhs.expr);
@@ -255,6 +262,8 @@ struct BinaryExpr final : public Leaf<Expr, BinaryExpr>
     Unique<Expr> right{};
 
     explicit BinaryExpr() = default;
+
+    using Node::equals;
 
     auto equals(const BinaryExpr& rhs) const -> bool
     {
@@ -279,6 +288,8 @@ struct IntegerExpr final : public Leaf<LiteralExpr, IntegerExpr>
 
     explicit IntegerExpr() = default;
 
+    using Node::equals;
+
     auto equals(const IntegerExpr& rhs) const -> bool
     {
         return literal == rhs.literal;
@@ -290,6 +301,8 @@ struct StringExpr final : public Leaf<LiteralExpr, StringExpr>
     StrView literal{};
 
     explicit StringExpr() = default;
+
+    using Node::equals;
 
     auto equals(const StringExpr& rhs) const -> bool
     {
@@ -303,6 +316,8 @@ struct BoolExpr final : public Leaf<LiteralExpr, BoolExpr>
 
     explicit BoolExpr() = default;
 
+    using Node::equals;
+
     auto equals(const BoolExpr& rhs) const -> bool
     {
         return value == rhs.value;
@@ -315,6 +330,8 @@ struct CallExpr final : public Leaf<Expr, CallExpr>
 
     explicit CallExpr() = default;
 
+    using Node::equals;
+
     auto equals(const CallExpr& rhs) const -> bool
     {
         return call.equals(rhs.call);
@@ -326,6 +343,8 @@ struct VariableExpr final : public Leaf<Expr, VariableExpr>
     StrView name{};
 
     explicit VariableExpr() = default;
+
+    using Node::equals;
 
     auto equals(const VariableExpr& rhs) const -> bool
     {
@@ -350,6 +369,8 @@ struct Block final : public Leaf<Node, Block>
 
     explicit Block() = default;
 
+    using Node::equals;
+
     auto equals(const Block& rhs) const -> bool
     {
         return check_equal(stmts, rhs.stmts);
@@ -363,6 +384,8 @@ struct VariableDecl final : public Leaf<Node, VariableDecl>
 
     explicit VariableDecl() = default;
 
+    using Node::equals;
+
     auto equals(const VariableDecl& rhs) const -> bool
     {
         return name == rhs.name && value->equals(*rhs.value);
@@ -374,6 +397,8 @@ struct LetStmt final : public Leaf<Stmt, LetStmt>
     Vec<VariableDecl> decls{};
 
     explicit LetStmt() = default;
+
+    using Node::equals;
 
     auto equals(const LetStmt& rhs) const -> bool
     {
@@ -389,6 +414,8 @@ struct AssignStmt final : public Leaf<Stmt, AssignStmt>
 
     explicit AssignStmt() = default;
 
+    using Node::equals;
+
     auto equals(const AssignStmt& rhs) const -> bool
     {
         return kind == rhs.kind &&
@@ -401,6 +428,8 @@ struct PassStmt final : public Leaf<Stmt, PassStmt>
 {
     explicit PassStmt() = default;
 
+    using Node::equals;
+
     auto equals(const PassStmt& rhs) const -> bool
     {
         return true;
@@ -411,6 +440,8 @@ struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
 {
     explicit ContinueStmt() = default;
 
+    using Node::equals;
+
     auto equals(const ContinueStmt& rhs) const -> bool
     {
         return true;
@@ -420,6 +451,8 @@ struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
 struct BreakStmt final : public Leaf<Stmt, BreakStmt>
 {
     explicit BreakStmt() = default;
+
+    using Node::equals;
 
     auto equals(const BreakStmt& rhs) const -> bool
     {
@@ -433,6 +466,8 @@ struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
 
     explicit ReturnStmt() = default;
 
+    using Node::equals;
+
     auto equals(const ReturnStmt& rhs) const -> bool
     {
         return value->equals(*rhs.value);
@@ -444,6 +479,8 @@ struct CallStmt final : public Leaf<Stmt, CallStmt>
     CallInfo call{};
 
     explicit CallStmt() = default;
+
+    using Node::equals;
 
     auto equals(const CallStmt& rhs) const -> bool
     {
@@ -473,6 +510,8 @@ struct IfStmt final : public Leaf<Stmt, IfStmt>
 
     explicit IfStmt() = default;
 
+    using Node::equals;
+
     auto equals(const IfStmt& rhs) const -> bool
     {
         return check_equal(branches, rhs.branches) &&
@@ -486,6 +525,8 @@ struct WhileStmt final : public Leaf<Stmt, WhileStmt>
     Block body{};
 
     explicit WhileStmt() = default;
+
+    using Node::equals;
 
     auto equals(const WhileStmt& rhs) const -> bool
     {
@@ -504,6 +545,8 @@ struct Function final : public Leaf<Node, Function>
 
     explicit Function() = default;
 
+    using Node::equals;
+
     auto equals(const Function& rhs) const -> bool
     {
         return name == rhs.name &&
@@ -517,6 +560,8 @@ struct Program final : public Leaf<Node, Program>
     Vec<Function> functions{};
 
     explicit Program() = default;
+
+    using Node::equals;
 
     auto equals(const Program& rhs) const -> bool
     {
