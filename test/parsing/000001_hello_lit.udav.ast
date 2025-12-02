@@ -1,0 +1,9 @@
+Program
+  functions:
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            PassStmt

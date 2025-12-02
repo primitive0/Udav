@@ -1,0 +1,4 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun main():
+    pass
