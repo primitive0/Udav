@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(GTest 1.17.0 EXACT REQUIRED)
-find_package(utf8cpp 4.0.8 EXACT REQUIRED)
+find_package(GTest REQUIRED)
+find_package(utf8cpp REQUIRED)
 
 enable_testing()
 
