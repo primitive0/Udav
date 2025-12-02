@@ -279,12 +279,12 @@ public:
     Builder(Builder&&) = delete;
     Builder& operator=(Builder&&) = delete;
 
-    auto build() && -> T
+    auto build() -> T
     {
         return std::move(value_);
     }
 
-    auto build_unique() && -> Unique<T>
+    auto build_unique() -> Unique<T>
     {
         return std::make_unique<T>(std::move(value_));
     }
