@@ -15,7 +15,7 @@ auto as_ref(T& value) -> T&
 export template<typename T>
 auto as_ref(const T& value) -> const T&
 {
-    return value;
+    return value; // NOLINT(bugprone-return-const-ref-from-parameter)
 }
 
 export template<typename T>
