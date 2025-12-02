@@ -55,7 +55,15 @@ public:
 
     auto parse_program() -> Unique<ast::Program>
     {
-        std::abort();
+        // This is a stub
+        return ast::BuildProgram{}
+            .func(ast::BuildFunction{}
+                    .name("main")
+                    .body(ast::BuildBlock{}
+                            .stmt(std::make_unique<ast::PassStmt>())
+                            .build())
+                    .build())
+            .build_unique();
     }
 
     auto parse_function() -> Unique<ast::Function>

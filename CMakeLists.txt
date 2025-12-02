@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(GTest REQUIRED)
 find_package(utf8cpp REQUIRED)
+find_package(CLI11 REQUIRED)
 
 enable_testing()
 
@@ -38,6 +39,12 @@ target_sources(UdavTest
     src/lexer/lexer_stats_test.cpp
     src/parsing/parsing_test.cpp)
 target_link_libraries(UdavTest PRIVATE Udav GTest::gmock_main)
+
+add_executable(UdavMain)
+target_sources(UdavMain
+  PRIVATE
+    src/main.cpp)
+target_link_libraries(UdavMain PRIVATE Udav CLI11::CLI11)
 
 include(GoogleTest)
 gtest_discover_tests(UdavTest)
