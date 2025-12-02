@@ -12,24 +12,32 @@ find_package(utf8cpp REQUIRED)
 
 enable_testing()
 
-add_executable(UdavInterpreterTest)
-target_sources(UdavInterpreterTest
+add_library(Udav OBJECT)
+target_sources(Udav
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS
+      src/
+  PUBLIC
+    FILE_SET CXX_MODULES
+    FILES
+      src/support/convert.cppm
+      src/ast/ast.cppm
+      src/ast/builder.cppm
+      src/text/utf8/utf8.cppm
+      src/lexer/token.cppm
+      src/lexer/lexer.cppm
+      src/lexer/lexer_stats.cppm
+      src/parsing/parser.cppm)
+target_link_libraries(Udav PUBLIC utf8cpp)
+
+add_executable(UdavTest)
+target_sources(UdavTest
   PRIVATE
     src/lexer/lexer_test.cpp
     src/lexer/lexer_stats_test.cpp
-  PRIVATE
-    FILE_SET CXX_MODULES
-    FILES
-      src/lexer/lexer_stats.cppm
-      src/lexer/lexer.cppm
-      src/lexer/token.cppm
-      src/ast/ast.cppm
-      src/ast/builder.cppm
-      src/support/convert.cppm
-      src/text/utf8/utf8.cppm)
-target_include_directories(UdavInterpreterTest PRIVATE src/)
-target_link_libraries(UdavInterpreterTest utf8cpp)
-target_link_libraries(UdavInterpreterTest GTest::gmock_main)
+    src/parsing/parsing_test.cpp)
+target_link_libraries(UdavTest PRIVATE Udav GTest::gmock_main)
 
 include(GoogleTest)
-gtest_discover_tests(UdavInterpreterTest)
+gtest_discover_tests(UdavTest)
