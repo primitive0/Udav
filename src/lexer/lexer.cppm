@@ -555,6 +555,10 @@ private:
             return TokenKind::Else;
         } else if (str == "while") {
             return TokenKind::While;
+        } else if (str == "false") {
+            return TokenKind::False;
+        } else if (str == "true") {
+            return TokenKind::True;
         }
 
         return std::nullopt;

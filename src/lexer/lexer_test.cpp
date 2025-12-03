@@ -155,6 +155,16 @@ TEST(LexerTest, LexerParsesKeywordTokens)
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
+
+    // false true
+    EXPECT_TOKENS(
+        "false || true\n",
+        //
+        Token(TokenKind::False, "false"),
+        Token(TokenKind::Or, "||"),
+        Token(TokenKind::True, "true"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
 }
 
 TEST(LexerTest, LexerParsesSymbols)
@@ -743,7 +753,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //  if true:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "true"),
+        Token(TokenKind::True, "true"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 
@@ -751,7 +761,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //   if true:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "true"),
+        Token(TokenKind::True, "true"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 
@@ -759,7 +769,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //       if false:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "false"),
+        Token(TokenKind::False, "false"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 
@@ -782,7 +792,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //    if true:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "true"),
+        Token(TokenKind::True, "true"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 
@@ -790,7 +800,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //                 if true:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "true"),
+        Token(TokenKind::True, "true"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 
@@ -826,7 +836,7 @@ TEST(LexerTest, LexerHandlesIndentation)
         Token(TokenKind::Indent, ""),
         //     if false:
         Token(TokenKind::If, "if"),
-        Token(TokenKind::Symbol, "false"),
+        Token(TokenKind::False, "false"),
         Token(TokenKind::Colon, ":"),
         Token(TokenKind::NewLine, ""),
 

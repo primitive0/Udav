@@ -38,6 +38,8 @@ namespace udav::lexer {
     X(Elif)                       \
     X(Else)                       \
     X(While)                      \
+    X(False)                      \
+    X(True)                       \
                                   \
     X(Symbol)                     \
                                   \
