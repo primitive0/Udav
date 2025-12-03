@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 4.0)
-project(Udav)
+cmake_minimum_required(VERSION 3.28)
+
+project(Udav LANGUAGES CXX)
+enable_testing()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -10,8 +12,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(GTest REQUIRED)
 find_package(utf8cpp REQUIRED)
 find_package(CLI11 REQUIRED)
-
-enable_testing()
 
 add_library(Udav OBJECT)
 target_sources(Udav
