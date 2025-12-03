@@ -47,4 +47,10 @@ target_sources(UdavMain
 target_link_libraries(UdavMain PRIVATE Udav CLI11::CLI11)
 
 include(GoogleTest)
-gtest_discover_tests(UdavTest)
+gtest_discover_tests(UdavTest
+  TEST_PREFIX "UnitTest.")
+
+# TODO: improve lit compatibility
+add_test(
+  NAME Lit
+  COMMAND lit ${CMAKE_CURRENT_SOURCE_DIR}/test/)
