@@ -17,7 +17,7 @@ last=$(
 if [ -z "$last" ]; then
     next=1
 else
-    next=$((last + 1))
+    next=$((10#$last + 1))
 fi
 prefix=$(printf "%06d" "$next")
 
