@@ -42,6 +42,7 @@ namespace udav::lexer {
     X(Symbol)                     \
                                   \
     /* Operators */               \
+    X(Not)              /* !   */ \
     X(Equals)           /* ==  */ \
     X(NotEquals)        /* !=  */ \
     X(Less)             /* <   */ \

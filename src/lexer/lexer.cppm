@@ -414,6 +414,9 @@ private:
         } else if (splitter_.match("-")) {
             push_token(TokenKind::Minus);
             return true;
+        } else if (splitter_.match("!")) {
+            push_token(TokenKind::Not);
+            return true;
         } else if (splitter_.match("*")) {
             push_token(TokenKind::Mul);
             return true;

@@ -211,6 +211,15 @@ TEST(LexerTest, KeywordTokensAreCaseDependent)
 
 TEST(LexerTest, LexerParsesOperatorTokens)
 {
+    // !
+    EXPECT_TOKENS(
+        "!a\n",
+        //
+        Token(TokenKind::Not, "!"),
+        Token(TokenKind::Symbol, "a"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
     // ==  !=  <  >  <=  >=
     EXPECT_TOKENS(
         "a == b\n",
