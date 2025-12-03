@@ -147,6 +147,7 @@ TEST(LexerTest, LexerParsesKeywordTokens)
     // while
     EXPECT_TOKENS(
         "while x < 10:\n",
+        //
         Token(TokenKind::While, "while"),
         Token(TokenKind::Symbol, "x"),
         Token(TokenKind::Less, "<"),
