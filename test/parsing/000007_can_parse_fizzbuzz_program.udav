@@ -1,0 +1,17 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun fizzbuzz(n):
+    let i = 1
+    while i <= n:
+        if i % 15 == 0:
+            println("FizzBuzz")
+        elif i % 3 == 0:
+            println("Fizz")
+        elif i % 5 == 0:
+            println("Buzz")
+        else:
+            println(i)
+        i += 1
+
+fun main():
+    fizzbuzz(100)

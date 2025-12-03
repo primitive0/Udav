@@ -1,3 +1,6 @@
+# This test case is almost meaningless. Leaving it
+# just for historical purposes.
+
 # RUN: %udav -U dump_ast %s | diff -u %s.ast -
 
 fun main():

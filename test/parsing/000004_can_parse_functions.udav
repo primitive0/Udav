@@ -1,0 +1,10 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun foo():
+    pass
+
+fun bar(a):
+    pass
+
+fun baz(a, b, c):
+    pass

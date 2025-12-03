@@ -1,0 +1,237 @@
+Program
+  functions:
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                UnaryExpr
+                  op = Minus
+                  expr:
+                    IntegerExpr
+                      literal = 2
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                UnaryExpr
+                  op = Not
+                  expr:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Plus
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Minus
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Mul
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Div
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Modulo
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Power
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    IntegerExpr
+                      literal = 2
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = BitwiseOr
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = BitwiseXor
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = BitwiseAnd
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = RightShift
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = LeftShift
+                  left:
+                    IntegerExpr
+                      literal = 2
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Or
+                  left:
+                    BoolExpr
+                      value = true
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = And
+                  left:
+                    BoolExpr
+                      value = false
+                  right:
+                    VariableExpr
+                      name = a
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BoolExpr
+                  value = true
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                UnaryExpr
+                  op = Minus
+                  expr:
+                    IntegerExpr
+                      literal = 1
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                IntegerExpr
+                  literal = 1
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                CallExpr
+                  function = f
+                  args:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                CallExpr
+                  function = f
+                  args:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                UnaryExpr
+                  op = Minus
+                  expr:
+                    CallExpr
+                      function = f
+                      args:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                UnaryExpr
+                  op = Not
+                  expr:
+                    CallExpr
+                      function = f
+                      args:

@@ -1,0 +1,129 @@
+Program
+  functions:
+    Function
+      name = fizzbuzz
+      args:
+        n
+      body:
+        Block
+          stmts:
+            LetStmt
+              decls:
+                VariableDecl
+                  name = i
+                  value:
+                    IntegerExpr
+                      literal = 1
+            WhileStmt
+              condition:
+                BinaryExpr
+                  op = LessOrEqual
+                  left:
+                    VariableExpr
+                      name = i
+                  right:
+                    VariableExpr
+                      name = n
+              body:
+                Block
+                  stmts:
+                    IfStmt
+                      branches:
+                        Branch
+                          condition:
+                            BinaryExpr
+                              op = Equals
+                              left:
+                                BinaryExpr
+                                  op = Modulo
+                                  left:
+                                    VariableExpr
+                                      name = i
+                                  right:
+                                    IntegerExpr
+                                      literal = 15
+                              right:
+                                IntegerExpr
+                                  literal = 0
+                          body:
+                            Block
+                              stmts:
+                                CallStmt
+                                  function = println
+                                  args:
+                                    StringExpr
+                                      literal = FizzBuzz
+                        Branch
+                          condition:
+                            BinaryExpr
+                              op = Equals
+                              left:
+                                BinaryExpr
+                                  op = Modulo
+                                  left:
+                                    VariableExpr
+                                      name = i
+                                  right:
+                                    IntegerExpr
+                                      literal = 3
+                              right:
+                                IntegerExpr
+                                  literal = 0
+                          body:
+                            Block
+                              stmts:
+                                CallStmt
+                                  function = println
+                                  args:
+                                    StringExpr
+                                      literal = Fizz
+                        Branch
+                          condition:
+                            BinaryExpr
+                              op = Equals
+                              left:
+                                BinaryExpr
+                                  op = Modulo
+                                  left:
+                                    VariableExpr
+                                      name = i
+                                  right:
+                                    IntegerExpr
+                                      literal = 5
+                              right:
+                                IntegerExpr
+                                  literal = 0
+                          body:
+                            Block
+                              stmts:
+                                CallStmt
+                                  function = println
+                                  args:
+                                    StringExpr
+                                      literal = Buzz
+                      else_branch:
+                        some:
+                          Block
+                            stmts:
+                              CallStmt
+                                function = println
+                                args:
+                                  VariableExpr
+                                    name = i
+                    AssignStmt
+                      kind = PlusAssign
+                      target = i
+                      value:
+                        IntegerExpr
+                          literal = 1
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            CallStmt
+              function = fizzbuzz
+              args:
+                IntegerExpr
+                  literal = 100

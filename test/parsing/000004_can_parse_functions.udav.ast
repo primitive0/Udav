@@ -1,0 +1,27 @@
+Program
+  functions:
+    Function
+      name = foo
+      args:
+      body:
+        Block
+          stmts:
+            PassStmt
+    Function
+      name = bar
+      args:
+        a
+      body:
+        Block
+          stmts:
+            PassStmt
+    Function
+      name = baz
+      args:
+        a
+        b
+        c
+      body:
+        Block
+          stmts:
+            PassStmt
