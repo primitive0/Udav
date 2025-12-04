@@ -13,13 +13,6 @@ func main():
     pass
 ```
 
-**Правила на antlr4:**
-```
-program
-    : func main '(' ')' ':' NL INDENT statement
-    ;
-```
-
 ## Область действия переменных
 
 ### Правила:
@@ -86,20 +79,6 @@ fun main():
     let b = readln()
 ```
 
-**Правило на antlr4:**
-```
-statement
-    : variable_declaration
-    | assignment
-    | pass_statement
-    | function_call
-    | if_statement
-    | while_statement
-    | print_statement
-    | readln_statement
-    ;
-```
-
 ## Правила объявления переменных
 
 ### Объявление символов
@@ -131,18 +110,6 @@ let a = 1, b = "string", c = 3
 ```
 i = 2
 i = "another string"
-```
-
-**Правило на antlr4:**
-```
-variable_declaration
-    : 'let' IDENTIFIER ('=' expression (',' IDENTIFIER '=' expression)*)?
-    ;
-
-assignment
-    : IDENTIFIER '=' expression
-    ;
-
 ```
 
 ## Инструкции ввода-вывода
@@ -181,21 +148,77 @@ readln()
 let a = readln()
 ```
 
-**Правило на antlr4:**
+**Правила:**
 ```
-print_statement
-    : 'print' arguments
-    ;
+program =
+    [ newline ] , { function } , EOF ;
 
-println_statement
-    : 'println' arguments
-    ;
+function =
+    "fun" , SYMBOL , "(" , [ argument_list ] , ")" , ":" , block ;
 
-readln_statement
-    : 'readln' '(' ')'
-    ;
-    
-arguments
-    : expression (',' expression)*
-    ;
+argument_list =
+    SYMBOL , { "," , SYMBOL } ;
+
+block =
+    newline , INDENT , { stmt } , DEDENT ;
+
+stmt =
+    let_stmt |
+    assign_stmt |
+    pass_stmt |
+    continue_stmt |
+    break_stmt |
+    return_stmt |
+    call_stmt |
+    if_stmt |
+    while_stmt ;
+
+let_stmt =
+    "let" , variable_decl , { "," , variable_decl } , newline ;
+
+variable_decl =
+    SYMBOL , "=" , expr ;
+
+assign_stmt =
+    SYMBOL , assign_op , expr , newline ;
+
+assign_op =
+    "=" |
+    "+=" |
+    "-=" |
+    "*=" |
+    "/=" |
+    "%=" |
+    "**=" |
+    "|=" |
+    "&=" |
+    "^=" |
+    ">>=" |
+    "<<=" ;
+
+pass_stmt =
+    "pass" , newline ;
+
+continue_stmt =
+    "continue" , newline ;
+
+break_stmt =
+    "break" , newline ;
+
+return_stmt =
+    "return" , [ expr ] , newline ;
+
+call_stmt =
+    SYMBOL , "(" , [ expr_list ] , ")" , newline ;
+
+if_stmt =
+    "if" , expr , ":" , block ,
+    { "elif" , expr , ":" , block }
+    [ "else" , ":" , block ] ;
+
+while_stmt =
+    "while" expr ":" block ;
+
+expr_list =
+    expr , { "," , expr } ;
 ```

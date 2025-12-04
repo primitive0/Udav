@@ -89,54 +89,79 @@ flag = true || false && true || !false
 
 ## Грамматика в формате ANTLR4
 
-```antlr4
-expression
-    : or_expression
-    ;
+```ebnf
+expr =
+    or_expr ;
 
-or_expression
-    : and_expression ('||' and_expression)*
-    ;
+or_expr =
+    and_expr |
+    or_expr , "||" , and_expr ;
 
-and_expression
-    : bitwise_expression ('&&' bitwise_expression)*
-    ;
+and_expr =
+    relational_expr |
+    and_expr , "&&" , relational_expr ;
 
-bitwise_expression
-    : equality_expression
-    | bitwise_expression ('&' | '|' | '^') equality_expression
-    ;
+relational_expr =
+    bitwise_or_expr |
+    relational_expr , relational_op , bitwise_or_expr ;
 
-equality_expression
-    : relational_expression
-    | equality_expression ('==' | '!=') relational_expression
-    ;
+relational_op = "==" | "!=" | ">=" | "<=" | ">" | "<" ;
 
-relational_expression
-    : additive_expression
-    | relational_expression ('<' | '>' | '<=' | '>=') additive_expression
-    ;
+bitwise_or_expr =
+    bitwise_xor_expr |
+    bitwise_or_expr , "|" , bitwise_xor_expr ;
 
-additive_expression
-    : multiplicative_expression
-    | additive_expression ('+' | '-') multiplicative_expression
-    ;
+bitwise_xor_expr =
+    bitwise_and_expr |
+    bitwise_xor_expr , "^" , bitwise_and_expr ;
 
-multiplicative_expression
-    : power_expression
-    | multiplicative_expression ('*' | '/' | '%') power_expression
-    ;
+bitwise_and_expr =
+    shift_expr |
+    bitwise_and_expr , "&" , shift_expr ;
 
-power_expression
-    : primary_expression
-    | power_expression '**' primary_expression
-    ;
+shift_expr =
+    add_expr |
+    shift_expr , shift_op , add_expr ;
 
-primary_expression
-    : IDENTIFIER
-    | NUMBER
-    | STRING
-    | 'true' | 'false'
-    | '(' expression ')'
-    ;
+shift_op = "<<" | ">>" ;
+
+add_expr =
+    mul_expr |
+    add_expr , add_op , mul_expr ;
+
+add_op = "+" | "-" ;
+
+mul_expr =
+    unary_expr |
+    mul_expr , mul_op , unary_expr ;
+
+mul_op = "*" | "/" | "%" ;
+
+unary_expr =
+    power_expr |
+    unary_op , power_expr ;
+
+unary_op = "!" | "-" ;
+
+power_expr =
+    postfix_expr,
+    | postfix_expr "**" power_expr ; (* Правая рекурсия для правой ассоциативности *)
+
+postfix_expr =
+    primary_expr |
+    primary_expr , "(" , [ expr_list ] , ")" ;
+
+primary_expr =
+    literal |
+    SYMBOL |
+    "(" , expr , ")" ;
+
+literal =
+    INTEGER_LITERAL |
+    STRING_LITERAL |
+    "true" |
+    "false" ;
+
+newline =
+    NEWLINE , { NEWLINE } ;
 ```
