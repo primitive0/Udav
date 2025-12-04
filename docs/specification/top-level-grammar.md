@@ -148,6 +148,15 @@ readln()
 let a = readln()
 ```
 
+## Приведения типов
+Учитывая, что функция `readln()` всегда возвращает строку, в языке будут встроенные функции для приведения типов
+
+```
+let b = "123"
+let a = int(b) # тип а - число
+let c = string(a)
+```
+
 ## Правила:
 ```
 program =
@@ -225,7 +234,47 @@ expr_list =
 
 ## Пример кода
 ```udav
-fun foo():
-    let a = readln()
-    println()
+fun nothing():
+    pass
+    return
+
+fun all_features(a, b):
+    let x = 1, y = 2, z = 3
+    let s = "hello", t = "world"
+    let flag = true, flag2 = false
+
+    x = 10
+    x += 1
+
+    let neg = -x
+    let eq = a == b
+    let bits = (a | b) ^ (a & b)
+    let pow = a ** b ** 2
+    let call_expr = max(a, b, x + y)
+
+    if a > b:
+        println("a > b")
+    elif a == b:
+        println("a == b")
+    else:
+        println("a < b")
+
+    while true && flag:
+        bits += 1
+
+        if bits & 1 == 0:
+            println("even")
+            continue
+
+        if bits > 100:
+            println("stop")
+            break
+
+        println(bits)
+    return bits
+
+fun main():
+    let a = 3, b = 5
+    let result = all_features(a, b)
+    println(result)
 ```
