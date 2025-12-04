@@ -1,0 +1,21 @@
+fun fib(n):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        let a = 0, b = 1
+        let i = 2
+
+        while i <= n:
+            let next = a + b
+            a = b
+            b = next
+            i += 1
+
+        return b
+
+fun main():
+    let n = read_int()
+    let result = fib(n)
+    println(result)
