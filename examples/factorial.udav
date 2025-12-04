@@ -1,0 +1,10 @@
+fun fact(n):
+    if n <= 1:
+        return 1
+    else:
+        return n * fact(n - 1)
+
+fun main():
+    let n = int(readln())
+    let result = fact(n)
+    println(result)
