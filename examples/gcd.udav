@@ -7,6 +7,6 @@ fun gcd(a, b):
     return a
 
 fun main():
-    let a = read_int(), b = read_int()
+    let a = int(readln()), b = int(readln())
     let result = gcd(a, b)
     println(result)

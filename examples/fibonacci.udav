@@ -16,6 +16,6 @@ fun fib(n):
         return b
 
 fun main():
-    let n = read_int()
+    let n = int(readln())
     let result = fib(n)
     println(result)
