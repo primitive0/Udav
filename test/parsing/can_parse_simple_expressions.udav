@@ -1,0 +1,27 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun main():
+    e = -2
+    e = !a
+    e = 2 + a
+    e = 2 - a
+    e = 2 * a
+    e = 2 / a
+    e = 2 % a
+    e = 2 ** 2
+    e = 2 | a
+    e = 2 ^ a
+    e = 2 & a
+    e = 2 >> a
+    e = 2 << a
+    e = true || a
+    e = false && a
+
+    e = (true)
+    e = -(1)
+    e = (((((1)))))
+
+    e = f()
+    e = (((f())))
+    e = -f()
+    e = !f()

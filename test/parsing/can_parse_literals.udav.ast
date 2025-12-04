@@ -1,0 +1,63 @@
+Program
+  functions:
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            AssignStmt
+              kind = Assign
+              target = i
+              value:
+                IntegerExpr
+                  literal = 0000007
+            AssignStmt
+              kind = Assign
+              target = i
+              value:
+                IntegerExpr
+                  literal = 1234567890
+            AssignStmt
+              kind = Assign
+              target = i
+              value:
+                IntegerExpr
+                  literal = 1
+            AssignStmt
+              kind = Assign
+              target = i
+              value:
+                IntegerExpr
+                  literal = 0
+            AssignStmt
+              kind = Assign
+              target = i
+              value:
+                IntegerExpr
+                  literal = 00000
+
+            AssignStmt
+              kind = Assign
+              target = s
+              value:
+                StringExpr
+                  literal = "Hello"
+            AssignStmt
+              kind = Assign
+              target = s
+              value:
+                StringExpr
+                  literal = ""
+            AssignStmt
+              kind = Assign
+              target = s
+              value:
+                StringExpr
+                  literal = "\"\"\""
+            AssignStmt
+              kind = Assign
+              target = s
+              value:
+                StringExpr
+                  literal = "\n\r\t\0"

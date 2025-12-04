@@ -1,0 +1,21 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun main():
+    if true:
+        if false:
+            pass
+        else:
+            pass
+    elif false:
+        pass
+    else:
+        pass
+
+    while true:
+        if true:
+            pass
+        else:
+            pass
+
+    if true:
+        pass

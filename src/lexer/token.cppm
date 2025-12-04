@@ -38,10 +38,13 @@ namespace udav::lexer {
     X(Elif)                       \
     X(Else)                       \
     X(While)                      \
+    X(False)                      \
+    X(True)                       \
                                   \
     X(Symbol)                     \
                                   \
     /* Operators */               \
+    X(Not)              /* !   */ \
     X(Equals)           /* ==  */ \
     X(NotEquals)        /* !=  */ \
     X(Less)             /* <   */ \
@@ -106,11 +109,7 @@ export struct Token final
     }
 
     constexpr auto operator==(const Token&) const -> bool = default;
-
-    static const Token Eof;
 };
-
-constexpr Token Token::Eof{TokenKind::Eof, ""};
 
 export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
 {

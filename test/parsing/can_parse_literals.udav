@@ -1,0 +1,17 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun main():
+    # Integer literals
+    i = 0000007
+    i = 1234567890
+    i = 1
+    i = 0
+    i = 00000
+
+    # String literals
+    s = "Hello"
+    s = ""
+    s = "\"\"\""
+    s = "\n\r\t\0"
+
+    # TODO: test boolean literals

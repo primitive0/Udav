@@ -1,0 +1,167 @@
+Program
+  functions:
+    Function
+      name = stmt_let
+      args:
+      body:
+        Block
+          stmts:
+            LetStmt
+              decls:
+                VariableDecl
+                  name = a
+                  value:
+                    IntegerExpr
+                      literal = 1
+                VariableDecl
+                  name = b
+                  value:
+                    IntegerExpr
+                      literal = 2
+                VariableDecl
+                  name = c
+                  value:
+                    IntegerExpr
+                      literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = single
+                  value:
+                    IntegerExpr
+                      literal = 4
+    Function
+      name = stmt_assign
+      args:
+      body:
+        Block
+          stmts:
+            AssignStmt
+              kind = Assign
+              target = x
+              value:
+                IntegerExpr
+                  literal = 10
+            AssignStmt
+              kind = PlusAssign
+              target = x
+              value:
+                IntegerExpr
+                  literal = 1
+            AssignStmt
+              kind = MinusAssign
+              target = y
+              value:
+                IntegerExpr
+                  literal = 2
+            AssignStmt
+              kind = MulAssign
+              target = z
+              value:
+                IntegerExpr
+                  literal = 3
+            AssignStmt
+              kind = DivAssign
+              target = u
+              value:
+                IntegerExpr
+                  literal = 4
+            AssignStmt
+              kind = ModuloAssign
+              target = v
+              value:
+                IntegerExpr
+                  literal = 5
+            AssignStmt
+              kind = PowerAssign
+              target = w
+              value:
+                IntegerExpr
+                  literal = 6
+            AssignStmt
+              kind = BitwiseOrAssign
+              target = aa
+              value:
+                IntegerExpr
+                  literal = 7
+            AssignStmt
+              kind = BitwiseAndAssign
+              target = bb
+              value:
+                IntegerExpr
+                  literal = 8
+            AssignStmt
+              kind = BitwiseXorAssign
+              target = cc
+              value:
+                IntegerExpr
+                  literal = 9
+            AssignStmt
+              kind = RightShiftAssign
+              target = dd
+              value:
+                IntegerExpr
+                  literal = 1
+            AssignStmt
+              kind = LeftShiftAssign
+              target = ee
+              value:
+                IntegerExpr
+                  literal = 2
+    Function
+      name = stmt_call
+      args:
+      body:
+        Block
+          stmts:
+            CallStmt
+              function = println
+              args:
+            CallStmt
+              function = println
+              args:
+                StringExpr
+                  literal = ok
+            CallStmt
+              function = println
+              args:
+                VariableExpr
+                  name = a
+                VariableExpr
+                  name = b
+                VariableExpr
+                  name = c
+    Function
+      name = stmt_return
+      args:
+      body:
+        Block
+          stmts:
+            ReturnStmt
+              value:
+                none
+            ReturnStmt
+              value:
+                IntegerExpr
+                  literal = 42
+    Function
+      name = stmt_pass
+      args:
+      body:
+        Block
+          stmts:
+            PassStmt
+    Function
+      name = stmt_break
+      args:
+      body:
+        Block
+          stmts:
+            BreakStmt
+    Function
+      name = stmt_continue
+      args:
+      body:
+        Block
+          stmts:
+            ContinueStmt

@@ -17,6 +17,4 @@ using u64 = std::uint64_t;
 using f32 = float;
 using f64 = double;
 
-using std::size_t;
-
 #endif // UDAV_SUPPORT_NUMERICS_H_

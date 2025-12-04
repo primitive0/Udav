@@ -1,0 +1,80 @@
+Program
+  functions:
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            IfStmt
+              branches:
+                Branch
+                  condition:
+                    BoolExpr
+                      value = true
+                  body:
+                    Block
+                      stmts:
+                        IfStmt
+                          branches:
+                            Branch
+                              condition:
+                                BoolExpr
+                                  value = false
+                              body:
+                                Block
+                                  stmts:
+                                    PassStmt
+                          else_branch:
+                            some:
+                              Block
+                                stmts:
+                                  PassStmt
+                Branch
+                  condition:
+                    BoolExpr
+                      value = false
+                  body:
+                    Block
+                      stmts:
+                        PassStmt
+              else_branch:
+                some:
+                  Block
+                    stmts:
+                      PassStmt
+
+            WhileStmt
+              condition:
+                BoolExpr
+                  value = true
+              body:
+                Block
+                  stmts:
+                    IfStmt
+                      branches:
+                        Branch
+                          condition:
+                            BoolExpr
+                              value = true
+                          body:
+                            Block
+                              stmts:
+                                PassStmt
+                      else_branch:
+                        some:
+                          Block
+                            stmts:
+                              PassStmt
+            IfStmt
+              branches:
+                Branch
+                  condition:
+                    BoolExpr
+                      value = true
+                  body:
+                    Block
+                      stmts:
+                        PassStmt
+              else_branch:
+                none

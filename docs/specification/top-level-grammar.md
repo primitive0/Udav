@@ -148,7 +148,7 @@ readln()
 let a = readln()
 ```
 
-**Правила:**
+## Правила:
 ```
 program =
     [ newline ] , { function } , EOF ;
@@ -221,4 +221,11 @@ while_stmt =
 
 expr_list =
     expr , { "," , expr } ;
+```
+
+## Пример кода
+```udav
+fun foo():
+    let a = readln()
+    println()
 ```

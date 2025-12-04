@@ -1,0 +1,39 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun stmt_let():
+    let a = 1, b = 2, c = 3
+
+    let single = 4
+
+fun stmt_assign():
+    x = 10
+
+    x += 1
+    y -= 2
+    z *= 3
+    u /= 4
+    v %= 5
+    w **= 6
+    aa |= 7
+    bb &= 8
+    cc ^= 9
+    dd >>= 1
+    ee <<= 2
+
+fun stmt_call():
+    println()
+    println("ok")
+    println(a, b, c)
+
+fun stmt_return():
+    return
+    return 42
+
+fun stmt_pass():
+    pass
+
+fun stmt_break():
+    break
+
+fun stmt_continue():
+    continue
