@@ -1,0 +1,137 @@
+program =
+    [ newline ] , { function } , EOF ;
+
+function =
+    "fun" , SYMBOL , "(" , [ argument_list ] , ")" , ":" , block ;
+
+argument_list =
+    SYMBOL , { "," , SYMBOL } ;
+
+block =
+    newline , INDENT , { stmt } , DEDENT ;
+
+stmt =
+    "let" , let_stmt |
+    SYMBOL , "(" , [ expr_list ] , ")" , newline |
+    SYMBOL , assign_op , expr , newline  |
+    "pass" , newline |
+    "continue" , newline |
+    "break" , newline |
+    "return" , [ expr ] , newline |
+    "if" if_stmt |
+    "while" while_stmt ;
+
+let_stmt =
+    variable_decl , { "," , variable_decl } , newline ;
+
+variable_decl =
+    SYMBOL , "=" , expr ;
+
+assign_op =
+    "=" |
+    "+=" |
+    "-=" |
+    "*=" |
+    "/=" |
+    "%=" |
+    "**=" |
+    "|=" |
+    "&=" |
+    "^=" |
+    ">>=" |
+    "<<=" ;
+
+if_stmt =
+    expr , ":" , block ,
+    { "elif" , expr , ":" , block } ,
+    [ "else" , ":" , block ] ;
+
+while_stmt =
+    expr , ":" , block ;
+
+expr_list =
+    expr , { "," , expr } ;
+
+expr =
+    or_expr ;
+
+or_expr =
+    and_expr |
+    or_expr , "||" , and_expr ;
+
+and_expr =
+    relational_expr |
+    and_expr , "&&" , relational_expr ;
+
+relational_expr =
+    bitwise_or_expr |
+    relational_expr , relational_op , bitwise_or_expr ;
+
+relational_op =
+    "==" |
+    "!=" |
+    ">=" |
+    "<=" |
+    ">" |
+    "<" ;
+
+bitwise_or_expr =
+    bitwise_xor_expr |
+    bitwise_or_expr , "|" , bitwise_xor_expr ;
+
+bitwise_xor_expr =
+    bitwise_and_expr |
+    bitwise_xor_expr , "^" , bitwise_and_expr ;
+
+bitwise_and_expr =
+    shift_expr |
+    bitwise_and_expr , "&" , shift_expr ;
+
+shift_expr =
+    add_expr |
+    shift_expr , shift_op , add_expr ;
+
+shift_op =
+    "<<" |
+    ">>" ;
+
+add_expr =
+    mul_expr |
+    add_expr , add_op , mul_expr ;
+
+add_op =
+    "+" |
+    "-" ;
+
+mul_expr =
+    unary_expr |
+    mul_expr , mul_op , unary_expr ;
+
+mul_op =
+    "*" |
+    "/" |
+    "%" ;
+
+unary_expr =
+    power_expr |
+    unary_op , power_expr ;
+
+unary_op =
+    "!" |
+    "-" ;
+
+power_expr =
+    primary_expr |
+    primary_expr , "**" , power_expr ; (* Правая рекурсия для правой ассоциативности *)
+
+primary_expr =
+    INTEGER_LITERAL |
+    STRING_LITERAL |
+    "true" |
+    "false" |
+    SYMBOL |
+    SYMBOL , "(" , [ expr_list ] , ")" |
+    "(" , expr , ")" ;
+
+newline =
+    NEWLINE , { NEWLINE } ;
