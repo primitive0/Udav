@@ -66,6 +66,7 @@ public:
     }
 };
 
+// TODO: check move constructor is correct, write test case for this
 class TextSplitter final
 {
 public:
@@ -555,6 +556,10 @@ private:
             return TokenKind::Else;
         } else if (str == "while") {
             return TokenKind::While;
+        } else if (str == "continue") {
+            return TokenKind::Continue;
+        } else if (str == "break") {
+            return TokenKind::Break;
         } else if (str == "false") {
             return TokenKind::False;
         } else if (str == "true") {

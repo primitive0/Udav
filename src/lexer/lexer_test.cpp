@@ -156,6 +156,22 @@ TEST(LexerTest, LexerParsesKeywordTokens)
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
 
+    // continue
+    EXPECT_TOKENS(
+        "continue\n",
+        //
+        Token(TokenKind::Continue, "continue"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
+    // break
+    EXPECT_TOKENS(
+        "break\n",
+        //
+        Token(TokenKind::Break, "break"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
     // false true
     EXPECT_TOKENS(
         "false || true\n",

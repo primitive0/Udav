@@ -38,18 +38,20 @@
 
 Каждому ключевому слову сопоставляется токен. Ниже представлена таблица, показывающая эту связь.
 
-| Ключевое слово | Токен  |
-|:---------------|:-------|
-| `fun`          | Fun    |
-| `return`       | Return |
-| `pass`         | Pass   |
-| `let`          | Let    |
-| `if`           | If     |
-| `elif`         | Elif   |
-| `else`         | Else   |
-| `while`        | While  |
-| `false`        | False  |
-| `true`         | True   |
+| Ключевое слово | Токен    |
+|:---------------|:---------|
+| `fun`          | Fun      |
+| `return`       | Return   |
+| `pass`         | Pass     |
+| `let`          | Let      |
+| `if`           | If       |
+| `elif`         | Elif     |
+| `else`         | Else     |
+| `while`        | While    |
+| `break`        | Break    |
+| `continue`     | Continue |
+| `false`        | False    |
+| `true`         | True     |
 
 ### Идентификаторы
 Идентификатор (Symbol) состоит из символов `a-zA-Z0-9_`, но первый символ идентификатора не может быть цифрой.
