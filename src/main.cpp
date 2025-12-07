@@ -88,8 +88,8 @@ auto dump_ast(const Options& opts) -> i32
         return 1;
     }
 
-    auto lexer = lexer::Lexer{source_text};
-    auto parser = Parser{lexer};
+    auto stream = SemanticTokenStream{lexer::Lexer{source_text}};
+    auto parser = Parser{stream};
     // TODO: handle parser and lexer exceptions!
 
     auto program_node = parser.parse_program();

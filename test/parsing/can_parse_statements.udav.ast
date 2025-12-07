@@ -121,7 +121,7 @@ Program
               function = println
               args:
                 StringExpr
-                  literal = ok
+                  literal = "ok"
             CallStmt
               function = println
               args:
@@ -142,8 +142,9 @@ Program
                 none
             ReturnStmt
               value:
-                IntegerExpr
-                  literal = 42
+                some:
+                  IntegerExpr
+                    literal = 42
     Function
       name = stmt_pass
       args:

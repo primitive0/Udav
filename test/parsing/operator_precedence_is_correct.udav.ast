@@ -1,0 +1,204 @@
+Program
+  functions:
+    Function
+      name = operator_precedence
+      args:
+      body:
+        Block
+          stmts:
+            LetStmt
+              decls:
+                VariableDecl
+                  name = a
+                  value:
+                    BinaryExpr
+                      op = Or
+                      left:
+                        IntegerExpr
+                          literal = 1
+                      right:
+                        BinaryExpr
+                          op = And
+                          left:
+                            IntegerExpr
+                              literal = 2
+                          right:
+                            IntegerExpr
+                              literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = b
+                  value:
+                    BinaryExpr
+                      op = Or
+                      left:
+                        BinaryExpr
+                          op = And
+                          left:
+                            IntegerExpr
+                              literal = 1
+                          right:
+                            IntegerExpr
+                              literal = 2
+                      right:
+                        IntegerExpr
+                          literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = c
+                  value:
+                    BinaryExpr
+                      op = BitwiseOr
+                      left:
+                        IntegerExpr
+                          literal = 1
+                      right:
+                        BinaryExpr
+                          op = BitwiseXor
+                          left:
+                            IntegerExpr
+                              literal = 2
+                          right:
+                            BinaryExpr
+                              op = BitwiseAnd
+                              left:
+                                IntegerExpr
+                                  literal = 3
+                              right:
+                                IntegerExpr
+                                  literal = 4
+            LetStmt
+              decls:
+                VariableDecl
+                  name = d
+                  value:
+                    BinaryExpr
+                      op = LeftShift
+                      left:
+                        BinaryExpr
+                          op = Plus
+                          left:
+                            IntegerExpr
+                              literal = 1
+                          right:
+                            BinaryExpr
+                              op = Mul
+                              left:
+                                IntegerExpr
+                                  literal = 2
+                              right:
+                                IntegerExpr
+                                  literal = 3
+                      right:
+                        IntegerExpr
+                          literal = 4
+            LetStmt
+              decls:
+                VariableDecl
+                  name = e
+                  value:
+                    BinaryExpr
+                      op = LeftShift
+                      left:
+                        IntegerExpr
+                          literal = 1
+                      right:
+                        BinaryExpr
+                          op = Plus
+                          left:
+                            IntegerExpr
+                              literal = 2
+                          right:
+                            IntegerExpr
+                              literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = f
+                  value:
+                    BinaryExpr
+                      op = Minus
+                      left:
+                        BinaryExpr
+                          op = Minus
+                          left:
+                            IntegerExpr
+                              literal = 1
+                          right:
+                            IntegerExpr
+                              literal = 2
+                      right:
+                        IntegerExpr
+                          literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = g
+                  value:
+                    BinaryExpr
+                      op = Power
+                      left:
+                        IntegerExpr
+                          literal = 2
+                      right:
+                        BinaryExpr
+                          op = Power
+                          left:
+                            IntegerExpr
+                              literal = 3
+                          right:
+                            IntegerExpr
+                              literal = 4
+            LetStmt
+              decls:
+                VariableDecl
+                  name = h
+                  value:
+                    UnaryExpr
+                      op = Minus
+                      expr:
+                        BinaryExpr
+                          op = Power
+                          left:
+                            IntegerExpr
+                              literal = 2
+                          right:
+                            IntegerExpr
+                              literal = 3
+            LetStmt
+              decls:
+                VariableDecl
+                  name = i
+                  value:
+                    BinaryExpr
+                      op = Equals
+                      left:
+                        UnaryExpr
+                          op = Not
+                          expr:
+                            IntegerExpr
+                              literal = 1
+                      right:
+                        IntegerExpr
+                          literal = 2
+            LetStmt
+              decls:
+                VariableDecl
+                  name = j
+                  value:
+                    BinaryExpr
+                      op = Less
+                      left:
+                        BinaryExpr
+                          op = Equals
+                          left:
+                            IntegerExpr
+                              literal = 1
+                          right:
+                            IntegerExpr
+                              literal = 2
+                      right:
+                        IntegerExpr
+                          literal = 3

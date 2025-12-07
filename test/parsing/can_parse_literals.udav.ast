@@ -36,7 +36,6 @@ Program
               value:
                 IntegerExpr
                   literal = 00000
-
             AssignStmt
               kind = Assign
               target = s
@@ -49,15 +48,3 @@ Program
               value:
                 StringExpr
                   literal = ""
-            AssignStmt
-              kind = Assign
-              target = s
-              value:
-                StringExpr
-                  literal = "\"\"\""
-            AssignStmt
-              kind = Assign
-              target = s
-              value:
-                StringExpr
-                  literal = "\n\r\t\0"

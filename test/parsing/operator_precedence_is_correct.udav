@@ -1,0 +1,13 @@
+# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+
+fun operator_precedence():
+    let a = 1 || 2 && 3
+    let b = 1 && 2 || 3
+    let c = 1 | 2 ^ 3 & 4
+    let d = 1 + 2 * 3 << 4
+    let e = 1 << 2 + 3
+    let f = 1 - 2 - 3
+    let g = 2 ** 3 ** 4
+    let h = -2 ** 3
+    let i = !1 == 2
+    let j = 1 == 2 < 3

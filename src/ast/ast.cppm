@@ -462,7 +462,7 @@ struct BreakStmt final : public Leaf<Stmt, BreakStmt>
 
 struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
 {
-    Unique<Expr> value{};
+    Option<Unique<Expr>> value{};
 
     explicit ReturnStmt() = default;
 
@@ -470,7 +470,7 @@ struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
 
     auto equals(const ReturnStmt& rhs) const -> bool
     {
-        return value->equals(*rhs.value);
+        return check_equal(value, rhs.value);
     }
 };
 

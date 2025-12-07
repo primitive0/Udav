@@ -52,7 +52,7 @@ Program
                                   function = println
                                   args:
                                     StringExpr
-                                      literal = FizzBuzz
+                                      literal = "FizzBuzz"
                         Branch
                           condition:
                             BinaryExpr
@@ -76,7 +76,7 @@ Program
                                   function = println
                                   args:
                                     StringExpr
-                                      literal = Fizz
+                                      literal = "Fizz"
                         Branch
                           condition:
                             BinaryExpr
@@ -100,7 +100,7 @@ Program
                                   function = println
                                   args:
                                     StringExpr
-                                      literal = Buzz
+                                      literal = "Buzz"
                       else_branch:
                         some:
                           Block

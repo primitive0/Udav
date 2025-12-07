@@ -1,0 +1,98 @@
+Program
+  functions:
+    Function
+      name = main
+      args:
+      body:
+        Block
+          stmts:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Minus
+                  left:
+                    BinaryExpr
+                      op = Minus
+                      left:
+                        VariableExpr
+                          name = a
+                      right:
+                        VariableExpr
+                          name = b
+                  right:
+                    VariableExpr
+                      name = c
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Div
+                  left:
+                    BinaryExpr
+                      op = Div
+                      left:
+                        VariableExpr
+                          name = a
+                      right:
+                        VariableExpr
+                          name = b
+                  right:
+                    VariableExpr
+                      name = c
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Power
+                  left:
+                    VariableExpr
+                      name = a
+                  right:
+                    BinaryExpr
+                      op = Power
+                      left:
+                        VariableExpr
+                          name = b
+                      right:
+                        VariableExpr
+                          name = c
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = And
+                  left:
+                    BinaryExpr
+                      op = And
+                      left:
+                        VariableExpr
+                          name = a
+                      right:
+                        VariableExpr
+                          name = b
+                  right:
+                    VariableExpr
+                      name = c
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                BinaryExpr
+                  op = Or
+                  left:
+                    BinaryExpr
+                      op = Or
+                      left:
+                        VariableExpr
+                          name = a
+                      right:
+                        VariableExpr
+                          name = b
+                  right:
+                    VariableExpr
+                      name = c
