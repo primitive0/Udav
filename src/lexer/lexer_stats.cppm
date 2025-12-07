@@ -1,4 +1,3 @@
-// TODO: fix module formatting everywhere
 // TODO: move to subproject in extra/
 module;
 

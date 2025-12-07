@@ -27,7 +27,6 @@ namespace udav::lexer {
 
 constexpr char32_t kNoChar32 = std::numeric_limits<char32_t>::max();
 
-// TODO: which exception class should I inherit?
 export class LexerException : public std::exception
 {
 public:
