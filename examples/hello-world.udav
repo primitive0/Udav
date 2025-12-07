@@ -1,2 +1,2 @@
 fun main():
-    return f()
+    println("Hello, world!")
