@@ -97,10 +97,10 @@ public:
     virtual ~Visitor() = default;
 
     Visitor(const Visitor&) = default;
-    Visitor& operator=(const Visitor&) = default;
+    auto operator=(const Visitor&) -> Visitor& = default;
 
     Visitor(Visitor&&) = default;
-    Visitor& operator=(Visitor&&) = default;
+    auto operator=(Visitor&&) -> Visitor& = default;
 
     explicit Visitor() = default;
 
@@ -136,7 +136,7 @@ public:
     virtual ~Node() = default;
 
     Node(const Node&) = delete;
-    Node& operator=(const Node&) = delete;
+    auto operator=(const Node&) -> Node& = delete;
 
     virtual auto accept(Visitor& v) -> void = 0;
 
@@ -170,7 +170,7 @@ public:
 
 protected:
     Node(Node&&) = default;
-    Node& operator=(Node&&) = default;
+    auto operator=(Node&&) -> Node& = default;
 
     explicit Node() = default;
 };
@@ -199,7 +199,7 @@ public:
 
 protected:
     Leaf(Leaf&&) = default;
-    Leaf& operator=(Leaf&&) = default;
+    auto operator=(Leaf&&) -> Leaf& = default;
 
     explicit Leaf() = default;
 
@@ -221,7 +221,7 @@ struct Expr : public Node
 {
 protected:
     Expr(Expr&&) = default;
-    Expr& operator=(Expr&&) = default;
+    auto operator=(Expr&&) -> Expr& = default;
 
     explicit Expr() = default;
 };
@@ -277,7 +277,7 @@ struct LiteralExpr : public Expr
 {
 protected:
     LiteralExpr(LiteralExpr&&) = default;
-    LiteralExpr& operator=(LiteralExpr&&) = default;
+    auto operator=(LiteralExpr&&) -> LiteralExpr& = default;
 
     explicit LiteralExpr() = default;
 };
@@ -358,7 +358,7 @@ struct Stmt : public Node
 {
 protected:
     Stmt(Stmt&&) = default;
-    Stmt& operator=(Stmt&&) = default;
+    auto operator=(Stmt&&) -> Stmt& = default;
 
     explicit Stmt() = default;
 };
@@ -430,7 +430,7 @@ struct PassStmt final : public Leaf<Stmt, PassStmt>
 
     using Node::equals;
 
-    auto equals(const PassStmt& rhs) const -> bool
+    auto equals([[maybe_unused]] const PassStmt& rhs) const -> bool
     {
         return true;
     }
@@ -442,7 +442,7 @@ struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
 
     using Node::equals;
 
-    auto equals(const ContinueStmt& rhs) const -> bool
+    auto equals([[maybe_unused]] const ContinueStmt& rhs) const -> bool
     {
         return true;
     }
@@ -454,7 +454,7 @@ struct BreakStmt final : public Leaf<Stmt, BreakStmt>
 
     using Node::equals;
 
-    auto equals(const BreakStmt& rhs) const -> bool
+    auto equals([[maybe_unused]] const BreakStmt& rhs) const -> bool
     {
         return true;
     }

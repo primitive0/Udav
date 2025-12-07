@@ -169,11 +169,11 @@ export class Lexer final
 {
 public:
     Lexer(Lexer&&) noexcept = default;
-    Lexer& operator=(Lexer&&) noexcept = default;
+    auto operator=(Lexer&&) noexcept -> Lexer& = default;
 
     // TODO: fix formatting
     Lexer(const Lexer&) = delete ("Lexer is move-only type.");
-    Lexer& operator=(const Lexer&) = delete ("Lexer is move-only type.");
+    auto operator=(const Lexer&) -> Lexer& = delete ("Lexer is move-only type.");
 
     explicit Lexer(StrView text)
         : splitter_{text}
