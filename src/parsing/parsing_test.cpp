@@ -12,7 +12,6 @@ import udav.parsing;
 import udav.lexer;
 
 using namespace udav;
-using namespace udav::lexer;
 
 #define EXPECT_AST(code, parse_func, ...)                      \
     do {                                                       \

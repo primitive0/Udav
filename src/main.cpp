@@ -89,13 +89,13 @@ auto dump_ast(const Options& opts) -> i32
         return 1;
     }
 
-    auto stream = SemanticTokenStream{lexer::Lexer{source_text}};
+    auto stream = SemanticTokenStream{Lexer{source_text}};
     auto parser = Parser{stream};
 
     auto program_node = Unique<ast::Program>{};
     try {
         program_node = parser.parse_program();
-    } catch (const lexer::LexerException&) {
+    } catch (const LexerException&) {
         std::cout << "Failed to lex code.\n";
     } catch (const ParserException&) {
         std::cout << "Failed to parse code.\n";

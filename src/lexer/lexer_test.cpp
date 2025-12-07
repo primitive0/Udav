@@ -5,7 +5,7 @@
 
 import udav.lexer;
 
-using namespace udav::lexer;
+using namespace udav;
 
 #define EXPECT_TOKENS(code, ...)                                         \
     do {                                                                 \

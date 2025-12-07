@@ -13,9 +13,6 @@ export module udav.parsing;
 import udav.lexer;
 import udav.ast;
 
-// TODO: remove later when Lexer is in udav namespace
-using namespace udav::lexer;
-
 namespace udav {
 
 export class ParserException : public std::exception

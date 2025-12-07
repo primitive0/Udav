@@ -7,7 +7,7 @@ module;
 
 export module udav.lexer:token;
 
-namespace udav::lexer {
+namespace udav {
 
 #define ENUM_ITEM_DECLARE(Item) Item,
 
@@ -125,4 +125,4 @@ export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
     return os;
 }
 
-} // namespace udav::lexer
+} // namespace udav

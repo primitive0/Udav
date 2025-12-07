@@ -23,7 +23,7 @@ import udav.text.utf8;
 
 // TODO: custom assert macros
 
-namespace udav::lexer {
+namespace udav {
 
 constexpr char32_t kNoChar32 = std::numeric_limits<char32_t>::max();
 
@@ -608,4 +608,4 @@ export auto collect_tokens(Lexer lexer) -> Vec<Token>
     return tokens;
 }
 
-} // namespace udav::lexer
+} // namespace udav
