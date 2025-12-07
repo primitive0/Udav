@@ -16,6 +16,7 @@
 #include "support/option.hpp"
 #include "support/string.hpp"
 #include "support/tree_map.hpp"
+#include "support/unique.hpp"
 
 import udav.lexer;
 import udav.ast;
@@ -90,9 +91,16 @@ auto dump_ast(const Options& opts) -> i32
 
     auto stream = SemanticTokenStream{lexer::Lexer{source_text}};
     auto parser = Parser{stream};
-    // TODO: handle parser and lexer exceptions!
 
-    auto program_node = parser.parse_program();
+    auto program_node = Unique<ast::Program>{};
+    try {
+        program_node = parser.parse_program();
+    } catch (const lexer::LexerException&) {
+        std::cout << "Failed to lex code.\n";
+    } catch (const ParserException&) {
+        std::cout << "Failed to parse code.\n";
+    }
+
     std::cout << *program_node;
 
     return 0;
