@@ -44,7 +44,3 @@ auto format_using_stream(T&& value) -> String
     operator<<(ss, std::forward<T>(value));
     return ss.str();
 }
-
-TEST(ParserTest, CanParseExpressions)
-{
-}
