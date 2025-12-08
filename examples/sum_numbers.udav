@@ -1,0 +1,3 @@
+fun main():
+    let a = int(readln()), b = int(readln())
+    println(a + b)
