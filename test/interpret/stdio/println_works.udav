@@ -1,0 +1,18 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println("Hello")              # CHECK:Hello
+
+    println()                     # CHECK-EMPTY:
+
+    # Concatenation works
+    println("a", "b")             # CHECK:ab
+    println("c", "d", "e")        # CHECK:cde
+    println("f", "g", "h", "i")   # CHECK:fghi
+
+    println("\"quotes\"")         # CHECK:"quotes"
+
+    println("First\nSecond")      # CHECK:First
+                                  # CHECK:Second
+
+    # TODO: add integer checks

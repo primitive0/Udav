@@ -1,0 +1,26 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    print("Привет ") # CHECK: Привет
+    println("мир!") # CHECK-SAME: мир!
+
+    print("Γειά σου ") # CHECK: Γειά σου
+    println("Κόσμε") # CHECK-SAME: Κόσμε
+
+    print("こんにちは") # CHECK: こんにちは
+    println("世界") # CHECK-SAME: 世界
+
+    print("你好，") # CHECK: 你好，
+    println("世界") # CHECK-SAME: 世界
+
+    print("مرحبا ") # CHECK: مرحبا
+    println("بالعالم") # CHECK-SAME: بالعالم
+
+    print("Olá, ") # CHECK: Olá,
+    println("mundo!") # CHECK-SAME: mundo!
+
+    print("Čau, ") # CHECK: Čau,
+    println("světe!") # CHECK-SAME: světe!
+
+    print("🙂😇") # CHECK: 🙂😇
+    println("🤦‍♂️🚀") # CHECK-SAME: 🤦‍♂️🚀
