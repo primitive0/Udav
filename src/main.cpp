@@ -97,8 +97,10 @@ auto dump_ast(const Options& opts) -> i32
         program_node = parser.parse_program();
     } catch (const LexerException&) {
         std::cout << "Failed to lex code.\n";
+        return 1;
     } catch (const ParserException&) {
         std::cout << "Failed to parse code.\n";
+        return 1;
     }
 
     std::cout << *program_node;
