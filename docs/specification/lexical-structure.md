@@ -236,7 +236,7 @@ IntegerLiteral "2"
 NewLine
 
 Dedent
-Letz
+Let
 Symbol "z"
 Assign
 IntegerLiteral "3"

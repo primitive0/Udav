@@ -13,4 +13,3 @@ cmake --list-presets
 cmake --preset <preset>
 cmake --build --preset <preset>
 ```
-
