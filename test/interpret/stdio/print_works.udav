@@ -1,0 +1,21 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    print("This")
+    print("Is", "Print")
+    print("Printing", "Text", "That")
+    print("Is")
+    print("Saying")
+    print("That")
+    print("Print", "Is")
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print("WorkingAsExpected")
+
+    # CHECK:ThisIsPrintPrintingTextThatIsSayingThatPrintIsWorkingAsExpected
