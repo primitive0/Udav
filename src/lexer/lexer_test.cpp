@@ -597,6 +597,13 @@ TEST(LexerTest, LexerParsesIntegerLiterals)
 TEST(LexerTest, LexerParsesStringLiterals)
 {
     EXPECT_TOKENS(
+        R"("")",
+        //
+        Token(TokenKind::StringLiteral, R"("")"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
+    EXPECT_TOKENS(
         "let hello_string = \"hello\"\n",
         //
         Token(TokenKind::Let, "let"),
