@@ -220,16 +220,22 @@ public:
             switch (stream_.peek().kind) {
             case TokenKind::Equals:
                 return v(ast::BinaryOperation::Equals);
+
             case TokenKind::NotEquals:
                 return v(ast::BinaryOperation::NotEquals);
+
             case TokenKind::Less:
                 return v(ast::BinaryOperation::Less);
+
             case TokenKind::Greater:
                 return v(ast::BinaryOperation::Greater);
+
             case TokenKind::LessOrEqual:
                 return v(ast::BinaryOperation::LessOrEqual);
+
             case TokenKind::GreaterOrEqual:
                 return v(ast::BinaryOperation::GreaterOrEqual);
+
             default:
                 return v(std::nullopt);
             }
@@ -284,8 +290,10 @@ public:
             switch (stream_.peek().kind) {
             case TokenKind::LeftShift:
                 return v(ast::BinaryOperation::LeftShift);
+
             case TokenKind::RightShift:
                 return v(ast::BinaryOperation::RightShift);
+
             default:
                 return v(std::nullopt);
             }
@@ -301,8 +309,10 @@ public:
             switch (stream_.peek().kind) {
             case TokenKind::Plus:
                 return v(ast::BinaryOperation::Plus);
+
             case TokenKind::Minus:
                 return v(ast::BinaryOperation::Minus);
+
             default:
                 return v(std::nullopt);
             }
@@ -318,10 +328,13 @@ public:
             switch (stream_.peek().kind) {
             case TokenKind::Mul:
                 return v(ast::BinaryOperation::Mul);
+
             case TokenKind::Div:
                 return v(ast::BinaryOperation::Div);
+
             case TokenKind::Modulo:
                 return v(ast::BinaryOperation::Modulo);
+
             default:
                 return v(std::nullopt);
             }
@@ -462,8 +475,10 @@ private:
         switch (kind) {
         case TokenKind::Not:
             return ast::UnaryOperation::Not;
+
         case TokenKind::Minus:
             return ast::UnaryOperation::Minus;
+
         default:
             return std::nullopt;
         }
@@ -566,20 +581,28 @@ public:
         switch (token.kind) {
         case TokenKind::Let:
             return parse_let_stmt();
+
         case TokenKind::Symbol:
             return match_call_or_assign_stmt(token.span);
+
         case TokenKind::Pass:
             return match_keyword_stmt<ast::PassStmt>();
+
         case TokenKind::Continue:
             return match_keyword_stmt<ast::ContinueStmt>();
+
         case TokenKind::Break:
             return match_keyword_stmt<ast::BreakStmt>();
+
         case TokenKind::Return:
             return match_return_stmt();
+
         case TokenKind::If:
             return parse_if_stmt();
+
         case TokenKind::While:
             return parse_while_stmt();
+
         default:
             throw UnexpectedTokenException{};
         }
@@ -719,28 +742,40 @@ private:
         switch (kind) {
         case TokenKind::Assign:
             return ast::AssignKind::Assign;
+
         case TokenKind::PlusAssign:
             return ast::AssignKind::PlusAssign;
+
         case TokenKind::MinusAssign:
             return ast::AssignKind::MinusAssign;
+
         case TokenKind::MulAssign:
             return ast::AssignKind::MulAssign;
+
         case TokenKind::DivAssign:
             return ast::AssignKind::DivAssign;
+
         case TokenKind::ModuloAssign:
             return ast::AssignKind::ModuloAssign;
+
         case TokenKind::PowerAssign:
             return ast::AssignKind::PowerAssign;
+
         case TokenKind::BitwiseOrAssign:
             return ast::AssignKind::BitwiseOrAssign;
+
         case TokenKind::BitwiseAndAssign:
             return ast::AssignKind::BitwiseAndAssign;
+
         case TokenKind::BitwiseXorAssign:
             return ast::AssignKind::BitwiseXorAssign;
+
         case TokenKind::RightShiftAssign:
             return ast::AssignKind::RightShiftAssign;
+
         case TokenKind::LeftShiftAssign:
             return ast::AssignKind::LeftShiftAssign;
+
         default:
             return std::nullopt;
         }
