@@ -1,5 +1,6 @@
 [requires]
 gtest/1.17.0
+doctest/2.4.12
 utfcpp/4.0.8
 cli11/2.6.0
 
