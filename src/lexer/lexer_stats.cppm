@@ -4,6 +4,8 @@ module;
 #include "support/numerics.hpp"
 #include "support/string.hpp"
 
+#include <doctest/doctest.h>
+
 export module udav.lexer.stats;
 
 import udav.lexer;
@@ -109,6 +111,53 @@ export auto collect(StrView text) -> LexicalStats
     }
 
     return stats;
+}
+
+TEST_CASE("udav::lexer::stats::collect counts tokens in simple program")
+{
+    auto s = stats::collect(
+        "fun main():\n"                           // kw: 1, sym: 1, oth: 4
+        "    let x = 1\n"                         // kw: 1, sym: 1, num: 1, op: 1 oth: 2
+        "    let y = 2\n"                         // kw: 1, sym: 1, num: 1, op: 1 oth: 1
+        "    io.println(\"sum = {}\", x + y)\n"); // sym: 4, str: 1, op: 1, oth: 5
+                                                  // oth: 2
+
+    // clang-format off
+    CHECK(s.keywords        == size_t{ 3});
+    CHECK(s.symbols         == size_t{ 7});
+    CHECK(s.number_literals == size_t{ 2});
+    CHECK(s.string_literals == size_t{ 1});
+    CHECK(s.operators       == size_t{ 3});
+    CHECK(s.other_tokens    == size_t{14});
+    // clang-format on
+}
+
+TEST_CASE("udav::lexer::stats::collect counts tokens in FizzBuzz program")
+{
+    auto s = stats::collect(
+        "# FizzBuzz program\n"                   // oth: 2
+        "fun main():\n"                          // kw: 1, sym: 1, oth: 4
+        "    let n = 1\n"                        // kw: 1, sym: 1, num: 1, op: 1, oth: 2
+        "    while n <= 100:\n"                  // kw: 1, sym: 1, num: 1, op: 1, oth: 2
+        "        if n % 15 == 0:\n"              // kw: 1, sym: 1, num: 2, op: 2, oth: 3
+        "            io.println(\"FizzBuzz\")\n" // sym: 2, str: 1, oth: 5
+        "        elif n % 3 == 0:\n"             // kw: 1, sym: 1, num: 2, op: 2, oth: 3
+        "            io.println(\"Fizz\")\n"     // sym: 2, str: 1, oth: 5
+        "        elif n % 5 == 0:\n"             // kw: 1, sym: 1, num: 2, op: 2, oth: 3
+        "            io.println(\"Buzz\")\n"     // sym: 2, str: 1, oth: 5
+        "        else:\n"                        // kw: 1, oth: 3
+        "            io.println(\"{}\", n)\n"    // sym: 3, str: 1, oth: 6
+        "        n += 1\n");                     // sym: 1, num: 1, op: 1, oth: 2
+                                                 // oth: 3
+
+    // clang-format off
+    CHECK(s.keywords        == size_t{ 7});
+    CHECK(s.symbols         == size_t{16});
+    CHECK(s.number_literals == size_t{ 9});
+    CHECK(s.string_literals == size_t{ 4});
+    CHECK(s.operators       == size_t{ 9});
+    CHECK(s.other_tokens    == size_t{48});
+    // clang-format on
 }
 
 } // namespace udav::lexer::stats

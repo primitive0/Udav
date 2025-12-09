@@ -61,7 +61,6 @@ add_executable(UdavGTestRunner)
 target_sources(UdavGTestRunner
   PRIVATE
     src/lexer/lexer_test.cpp
-    src/lexer/lexer_stats_test.cpp
     src/doctest_stub.cpp)
 target_link_libraries(UdavGTestRunner PRIVATE Udav GTest::gmock_main)
 
