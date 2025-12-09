@@ -1,6 +1,9 @@
+#include <array>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "support/string.hpp"
 #include "support/vector.hpp"
 
 import udav.lexer;
@@ -9,7 +12,7 @@ using namespace udav;
 
 #define EXPECT_TOKENS(code, ...)                                         \
     do {                                                                 \
-        auto tokens = collect_tokens(Lexer{code});                       \
+        auto tokens = collect_tokens(Lexer{StrView{code}});              \
         auto expected_tokens = Vec<Token>{__VA_ARGS__};                  \
         EXPECT_THAT(tokens, testing::ElementsAreArray(expected_tokens)); \
     } while (false)
@@ -629,6 +632,30 @@ TEST(LexerTest, LexerParsesStringLiterals)
         Token(TokenKind::Symbol, "lf"),
         Token(TokenKind::Assign, "="),
         Token(TokenKind::StringLiteral, "\"\\n\""),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+}
+
+TEST(LexerTest, StringLiteralCanContainEscapeSequences)
+{
+    EXPECT_TOKENS(
+        R"("\"")",
+        //
+        Token(TokenKind::StringLiteral, R"("\"")"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
+    EXPECT_TOKENS(
+        R"(" \" backslash \" \" backslashes! \"\"\" slash em \" all!")",
+        //
+        Token(TokenKind::StringLiteral, R"(" \" backslash \" \" backslashes! \"\"\" slash em \" all!")"),
+        Token(TokenKind::NewLine, ""),
+        Token(TokenKind::Eof, ""));
+
+    // Invalid escape sequences are handled later.
+    EXPECT_TOKENS(
+        R"("\n\t\\\"\r\0  \  \  \ \a    \b \c  \\\\\\\\\" mixed!\\\\\\")",
+        Token(TokenKind::StringLiteral, R"("\n\t\\\"\r\0  \  \  \ \a    \b \c  \\\\\\\\\" mixed!\\\\\\")"),
         Token(TokenKind::NewLine, ""),
         Token(TokenKind::Eof, ""));
 }

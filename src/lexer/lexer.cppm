@@ -466,11 +466,11 @@ private:
         if (ch != U'"') {
             return false;
         }
+        splitter_.advance();
 
-        do {
-            splitter_.advance();
-            ch = splitter_.peek();
-
+        auto escaped = false;
+        ch = splitter_.peek();
+        while (ch != U'"' || escaped) {
             if (ch == U'\n' || ch == U'\r') {
                 throw UnexpectedCharacterException{
                     "Line breaks inside string literal are not allowed."};
@@ -480,8 +480,13 @@ private:
                 throw UnexpectedCharacterException{
                     "EOF inside string literal is not allowed."};
             }
-        } while (ch != U'"');
-        splitter_.advance();
+
+            escaped = !escaped && ch == U'\\';
+
+            splitter_.advance();
+            ch = splitter_.peek();
+        }
+        splitter_.advance(); // Include closing " into span
 
         push_token(TokenKind::StringLiteral);
         return true;
