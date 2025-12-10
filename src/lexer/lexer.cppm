@@ -1,5 +1,6 @@
 module;
 
+#include <array>
 #include <cassert>
 #include <exception>
 #include <format>
@@ -12,6 +13,7 @@ module;
 #include "support/deque.hpp"
 #include "support/numerics.hpp"
 #include "support/option.hpp"
+#include "support/pair.hpp"
 #include "support/string.hpp"
 #include "support/vector.hpp"
 
@@ -51,19 +53,26 @@ private:
 
 export class InvalidUtf8Exception final : public LexerException
 {
+public:
+    using LexerException::LexerException;
+
+    explicit InvalidUtf8Exception() = default;
 };
 
 export class InconsistentDedentException final : public LexerException
 {
+public:
+    using LexerException::LexerException;
+
+    explicit InconsistentDedentException() = default;
 };
 
 export class UnexpectedCharacterException final : public LexerException
 {
 public:
-    explicit UnexpectedCharacterException(String message_)
-        : LexerException(std::move(message_))
-    {
-    }
+    using LexerException::LexerException;
+
+    explicit UnexpectedCharacterException() = default;
 };
 
 // TODO: check move constructor is correct, write test case for this
@@ -170,9 +179,8 @@ public:
     Lexer(Lexer&&) noexcept = default;
     auto operator=(Lexer&&) noexcept -> Lexer& = default;
 
-    // TODO: fix formatting
-    Lexer(const Lexer&) = delete ("Lexer is move-only type.");
-    auto operator=(const Lexer&) -> Lexer& = delete ("Lexer is move-only type.");
+    Lexer(const Lexer&) = delete;
+    auto operator=(const Lexer&) -> Lexer& = delete;
 
     explicit Lexer(StrView text)
         : splitter_{text}
@@ -309,14 +317,14 @@ private:
     auto parse_keyword_or_symbol_token() -> bool
     {
         auto ch = splitter_.peek();
-        if (!udav::text::utf8::is_ascii_alphabetic(ch) && ch != U'_') {
+        if (!is_first_symbol_char(ch)) {
             return false;
         }
 
         do {
             splitter_.advance();
             ch = splitter_.peek();
-        } while (udav::text::utf8::is_ascii_alphanumeric(ch) || ch == '_');
+        } while (is_symbol_char(ch));
 
         auto span = splitter_.split();
         pending_tokens_.push_front(
@@ -328,117 +336,69 @@ private:
 
     auto parse_auxiliary_token() -> bool
     {
-        auto ch = splitter_.peek();
-        if (auto kind = get_auxiliary_token_kind(ch); kind) {
-            splitter_.advance();
-            push_token(*kind);
-            return true;
-        }
-        return false;
+        static constexpr auto kTokenTable = std::to_array<Pair<StrView, TokenKind>>({
+            Pair{":", TokenKind::Colon},
+            Pair{".", TokenKind::Dot},
+            Pair{",", TokenKind::Comma},
+            Pair{"(", TokenKind::ParenOpen},
+            Pair{")", TokenKind::ParenClose},
+        });
+
+        return parse_token_using_table(kTokenTable);
     }
 
     auto parse_operator_token() -> bool
     {
-        if (splitter_.match("**=")) {
-            push_token(TokenKind::PowerAssign);
-            return true;
-        } else if (splitter_.match(">>=")) {
-            push_token(TokenKind::RightShiftAssign);
-            return true;
-        } else if (splitter_.match("<<=")) {
-            push_token(TokenKind::LeftShiftAssign);
-            return true;
-        }
+        static constexpr auto kTokenTable = std::to_array<Pair<StrView, TokenKind>>({
+            {"**=", TokenKind::PowerAssign},
+            {">>=", TokenKind::RightShiftAssign},
+            {"<<=", TokenKind::LeftShiftAssign},
 
-        if (splitter_.match("==")) {
-            push_token(TokenKind::Equals);
-            return true;
-        } else if (splitter_.match("!=")) {
-            push_token(TokenKind::NotEquals);
-            return true;
-        } else if (splitter_.match("<=")) {
-            push_token(TokenKind::LessOrEqual);
-            return true;
-        } else if (splitter_.match(">=")) {
-            push_token(TokenKind::GreaterOrEqual);
-            return true;
-        } else if (splitter_.match("**")) {
-            push_token(TokenKind::Power);
-            return true;
-        } else if (splitter_.match("||")) {
-            push_token(TokenKind::Or);
-            return true;
-        } else if (splitter_.match("&&")) {
-            push_token(TokenKind::And);
-            return true;
-        } else if (splitter_.match(">>")) {
-            push_token(TokenKind::RightShift);
-            return true;
-        } else if (splitter_.match("<<")) {
-            push_token(TokenKind::LeftShift);
-            return true;
-        } else if (splitter_.match("+=")) {
-            push_token(TokenKind::PlusAssign);
-            return true;
-        } else if (splitter_.match("-=")) {
-            push_token(TokenKind::MinusAssign);
-            return true;
-        } else if (splitter_.match("*=")) {
-            push_token(TokenKind::MulAssign);
-            return true;
-        } else if (splitter_.match("/=")) {
-            push_token(TokenKind::DivAssign);
-            return true;
-        } else if (splitter_.match("%=")) {
-            push_token(TokenKind::ModuloAssign);
-            return true;
-        } else if (splitter_.match("|=")) {
-            push_token(TokenKind::BitwiseOrAssign);
-            return true;
-        } else if (splitter_.match("&=")) {
-            push_token(TokenKind::BitwiseAndAssign);
-            return true;
-        } else if (splitter_.match("^=")) {
-            push_token(TokenKind::BitwiseXorAssign);
-            return true;
-        }
+            {"==", TokenKind::Equals},
+            {"!=", TokenKind::NotEquals},
+            {"<=", TokenKind::LessOrEqual},
+            {">=", TokenKind::GreaterOrEqual},
+            {"**", TokenKind::Power},
+            {"||", TokenKind::Or},
+            {"&&", TokenKind::And},
+            {">>", TokenKind::RightShift},
+            {"<<", TokenKind::LeftShift},
+            {"+=", TokenKind::PlusAssign},
+            {"-=", TokenKind::MinusAssign},
+            {"*=", TokenKind::MulAssign},
+            {"/=", TokenKind::DivAssign},
+            {"%=", TokenKind::ModuloAssign},
+            {"|=", TokenKind::BitwiseOrAssign},
+            {"&=", TokenKind::BitwiseAndAssign},
+            {"^=", TokenKind::BitwiseXorAssign},
 
-        if (splitter_.match("<")) {
-            push_token(TokenKind::Less);
-            return true;
-        } else if (splitter_.match(">")) {
-            push_token(TokenKind::Greater);
-            return true;
-        } else if (splitter_.match("+")) {
-            push_token(TokenKind::Plus);
-            return true;
-        } else if (splitter_.match("-")) {
-            push_token(TokenKind::Minus);
-            return true;
-        } else if (splitter_.match("!")) {
-            push_token(TokenKind::Not);
-            return true;
-        } else if (splitter_.match("*")) {
-            push_token(TokenKind::Mul);
-            return true;
-        } else if (splitter_.match("/")) {
-            push_token(TokenKind::Div);
-            return true;
-        } else if (splitter_.match("%")) {
-            push_token(TokenKind::Modulo);
-            return true;
-        } else if (splitter_.match("|")) {
-            push_token(TokenKind::BitwiseOr);
-            return true;
-        } else if (splitter_.match("&")) {
-            push_token(TokenKind::BitwiseAnd);
-            return true;
-        } else if (splitter_.match("^")) {
-            push_token(TokenKind::BitwiseXor);
-            return true;
-        } else if (splitter_.match("=")) {
-            push_token(TokenKind::Assign);
-            return true;
+            {"<", TokenKind::Less},
+            {">", TokenKind::Greater},
+            {"+", TokenKind::Plus},
+            {"-", TokenKind::Minus},
+            {"!", TokenKind::Not},
+            {"*", TokenKind::Mul},
+            {"/", TokenKind::Div},
+            {"%", TokenKind::Modulo},
+            {"|", TokenKind::BitwiseOr},
+            {"&", TokenKind::BitwiseAnd},
+            {"^", TokenKind::BitwiseXor},
+            {"=", TokenKind::Assign},
+        });
+
+        return parse_token_using_table(kTokenTable);
+    }
+
+    template<size_t N>
+    auto parse_token_using_table(
+        const std::array<Pair<StrView, TokenKind>, N>& table)
+        -> bool
+    {
+        for (const auto& entry : table) {
+            if (splitter_.match(entry.first)) {
+                push_token(entry.second);
+                return true;
+            }
         }
 
         return false;
@@ -543,6 +503,16 @@ private:
         return token;
     }
 
+    static auto is_first_symbol_char(char32_t ch) -> bool
+    {
+        return udav::text::utf8::is_ascii_alphabetic(ch) || ch == '_';
+    }
+
+    static auto is_symbol_char(char32_t ch) -> bool
+    {
+        return udav::text::utf8::is_ascii_alphanumeric(ch) || ch == '_';
+    }
+
     static auto get_keyword_token_kind(StrView str) -> Option<TokenKind>
     {
         if (str == "fun") {
@@ -572,24 +542,6 @@ private:
         }
 
         return std::nullopt;
-    }
-
-    static auto get_auxiliary_token_kind(char32_t ch) -> Option<TokenKind>
-    {
-        switch (ch) {
-        case U':':
-            return TokenKind::Colon;
-        case U'.':
-            return TokenKind::Dot;
-        case U',':
-            return TokenKind::Comma;
-        case U'(':
-            return TokenKind::ParenOpen;
-        case U')':
-            return TokenKind::ParenClose;
-        default:
-            return std::nullopt;
-        }
     }
 
     Deque<Token> pending_tokens_{};
