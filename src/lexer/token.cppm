@@ -2,103 +2,87 @@ module;
 
 #include <cassert>
 #include <ostream>
+#include <sstream>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "support/string.hpp"
+
+#include <doctest/doctest.h>
 
 export module udav.lexer:token;
 
 namespace udav {
 
-#define ENUM_ITEM_DECLARE(Item) Item,
+export enum class TokenKind {
+    // Keywords
+    Fun,
+    Return,
+    Pass,
+    Let,
+    If,
+    Elif,
+    Else,
+    While,
+    Continue,
+    Break,
+    False,
+    True,
 
-#define ENUM_ITEM_CASE(Item) \
-    case Item:               \
-        return os << #Item;
+    Symbol,
 
-#define DEFINE_TOKEN_ENUM(EnumName, ENUM_ITEMS)                            \
-    export enum class EnumName { ENUM_ITEMS(ENUM_ITEM_DECLARE) };          \
-                                                                           \
-    export auto operator<<(std::ostream& os, EnumName kind)->std::ostream& \
-    {                                                                      \
-        using enum EnumName;                                               \
-                                                                           \
-        switch (kind) {                                                    \
-            ENUM_ITEMS(ENUM_ITEM_CASE)                                     \
-        default:                                                           \
-            assert(false);                                                 \
-        }                                                                  \
-    }
+    // Operators
+    Not,              // !
+    Equals,           // ==
+    NotEquals,        // !=
+    Less,             // <
+    Greater,          // >
+    LessOrEqual,      // <=
+    GreaterOrEqual,   // >=
+    Plus,             // +
+    Minus,            // -
+    Mul,              // *
+    Div,              // /
+    Modulo,           // %
+    Power,            // **
+    Or,               // ||
+    And,              // &&
+    BitwiseOr,        // |
+    BitwiseAnd,       // &
+    BitwiseXor,       // ^
+    RightShift,       // >>
+    LeftShift,        // <<
+    Assign,           // =
+    PlusAssign,       // +=
+    MinusAssign,      // -=
+    MulAssign,        // *=
+    DivAssign,        // /=
+    ModuloAssign,     // %=
+    PowerAssign,      // **=
+    BitwiseOrAssign,  // |=
+    BitwiseAndAssign, // &=
+    BitwiseXorAssign, // ^=
+    RightShiftAssign, // >>=
+    LeftShiftAssign,  // <<=
 
-#define TOKEN_KIND_ITEMS(X)       \
-    /* Keywords */                \
-    X(Fun)                        \
-    X(Return)                     \
-    X(Pass)                       \
-    X(Let)                        \
-    X(If)                         \
-    X(Elif)                       \
-    X(Else)                       \
-    X(While)                      \
-    X(Continue)                   \
-    X(Break)                      \
-    X(False)                      \
-    X(True)                       \
-                                  \
-    X(Symbol)                     \
-                                  \
-    /* Operators */               \
-    X(Not)              /* !   */ \
-    X(Equals)           /* ==  */ \
-    X(NotEquals)        /* !=  */ \
-    X(Less)             /* <   */ \
-    X(Greater)          /* >   */ \
-    X(LessOrEqual)      /* <=  */ \
-    X(GreaterOrEqual)   /* >=  */ \
-    X(Plus)             /* +   */ \
-    X(Minus)            /* -   */ \
-    X(Mul)              /* *   */ \
-    X(Div)              /* /   */ \
-    X(Modulo)           /* %   */ \
-    X(Power)            /* **  */ \
-    X(Or)               /* ||  */ \
-    X(And)              /* &&  */ \
-    X(BitwiseOr)        /* |   */ \
-    X(BitwiseAnd)       /* &   */ \
-    X(BitwiseXor)       /* ^   */ \
-    X(RightShift)       /* >>  */ \
-    X(LeftShift)        /* <<  */ \
-    X(Assign)           /* =   */ \
-    X(PlusAssign)       /* +=  */ \
-    X(MinusAssign)      /* -=  */ \
-    X(MulAssign)        /* *=  */ \
-    X(DivAssign)        /* /=  */ \
-    X(ModuloAssign)     /* %=  */ \
-    X(PowerAssign)      /* **= */ \
-    X(BitwiseOrAssign)  /* |=  */ \
-    X(BitwiseAndAssign) /* &=  */ \
-    X(BitwiseXorAssign) /* ^=  */ \
-    X(RightShiftAssign) /* >>= */ \
-    X(LeftShiftAssign)  /* <<= */ \
-                                  \
-    /* Auxiliary tokens */        \
-    X(Colon)      /* :  */        \
-    X(Dot)        /* .  */        \
-    X(Comma)      /* ,  */        \
-    X(ParenOpen)  /* (  */        \
-    X(ParenClose) /* )  */        \
-                                  \
-    /* Literals */                \
-    X(IntegerLiteral)             \
-    X(StringLiteral)              \
-                                  \
-    X(Comment)                    \
-                                  \
-    X(NewLine)                    \
-    X(Indent)                     \
-    X(Dedent)                     \
-    X(Eof)
+    // Auxiliary tokens
+    Colon,      // :
+    Dot,        // .
+    Comma,      // ,
+    ParenOpen,  // (
+    ParenClose, // )
 
-DEFINE_TOKEN_ENUM(TokenKind, TOKEN_KIND_ITEMS)
+    // Literals
+    IntegerLiteral,
+    StringLiteral,
+
+    Comment,
+
+    NewLine,
+    Indent,
+    Dedent,
+    Eof,
+};
 
 export struct Token final
 {
@@ -114,6 +98,11 @@ export struct Token final
     constexpr auto operator==(const Token&) const -> bool = default;
 };
 
+export auto operator<<(std::ostream& os, TokenKind kind) -> std::ostream&
+{
+    return os << magic_enum::enum_name(kind);
+}
+
 export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
 {
     os << token.kind;
@@ -123,6 +112,27 @@ export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
     }
 
     return os;
+}
+
+TEST_CASE("udav::TokenKind is formatted to string")
+{
+    auto ss = std::ostringstream{};
+
+    ss << TokenKind::Fun << "\n"
+       << TokenKind::Return << "\n"
+       << TokenKind::Power << "\n";
+
+    CHECK(ss.str() == "Fun\nReturn\nPower\n");
+}
+
+TEST_CASE("udav::Token is formatted to string")
+{
+    auto ss = std::ostringstream{};
+
+    ss << Token{TokenKind::Break, "break"} << "\n"
+       << Token{TokenKind::Symbol, "foobar"} << "\n";
+
+    CHECK(ss.str() == "Break `break`\nSymbol `foobar`\n");
 }
 
 } // namespace udav

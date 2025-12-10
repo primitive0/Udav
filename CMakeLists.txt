@@ -13,6 +13,7 @@ find_package(GTest REQUIRED)
 find_package(doctest REQUIRED)
 find_package(utf8cpp REQUIRED)
 find_package(CLI11 REQUIRED)
+find_package(magic_enum REQUIRED)
 
 option(UDAV_BUILD_UNITTESTS "Build Udav unit tests" ON)
 
@@ -33,7 +34,11 @@ target_sources(Udav
       src/lexer/lexer.cppm
       src/lexer/lexer_stats.cppm
       src/parsing/parser.cppm)
-target_link_libraries(Udav PUBLIC utf8cpp doctest::doctest)
+target_link_libraries(Udav
+  PUBLIC
+    utf8cpp
+    doctest::doctest
+    magic_enum::magic_enum)
 
 if(UDAV_BUILD_UNITTESTS)
     message(STATUS "Udav unit tests: ON")
