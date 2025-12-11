@@ -5,6 +5,8 @@ module;
 #include <functional>
 #include <ostream>
 
+#include <magic_enum/magic_enum.hpp>
+
 #include "support/numerics.hpp"
 #include "support/option.hpp"
 #include "support/string.hpp"
@@ -843,103 +845,19 @@ private:
         }
     }
 
-    // TODO: automatically generate this for enum
-    static auto to_string(ast::UnaryOperation op) -> const char*
+    static auto to_string(ast::UnaryOperation op) -> StrView
     {
-        using enum ast::UnaryOperation;
-
-        switch (op) {
-        case Minus:
-            return "Minus";
-        case Not:
-            return "Not";
-        default:
-            assert(false && "Switch is not exhaustive.");
-        }
+        return magic_enum::enum_name(op);
     }
 
-    // TODO: automatically generate this for enum
-    static auto to_string(ast::BinaryOperation op) -> const char*
+    static auto to_string(ast::BinaryOperation op) -> StrView
     {
-        using enum ast::BinaryOperation;
-
-        switch (op) {
-        case Equals:
-            return "Equals";
-        case NotEquals:
-            return "NotEquals";
-        case Less:
-            return "Less";
-        case Greater:
-            return "Greater";
-        case LessOrEqual:
-            return "LessOrEqual";
-        case GreaterOrEqual:
-            return "GreaterOrEqual";
-        case Plus:
-            return "Plus";
-        case Minus:
-            return "Minus";
-        case Mul:
-            return "Mul";
-        case Div:
-            return "Div";
-        case Modulo:
-            return "Modulo";
-        case Power:
-            return "Power";
-        case Or:
-            return "Or";
-        case And:
-            return "And";
-        case BitwiseOr:
-            return "BitwiseOr";
-        case BitwiseAnd:
-            return "BitwiseAnd";
-        case BitwiseXor:
-            return "BitwiseXor";
-        case RightShift:
-            return "RightShift";
-        case LeftShift:
-            return "LeftShift";
-        default:
-            assert(false && "Switch is not exhaustive.");
-        }
+        return magic_enum::enum_name(op);
     }
 
-    // TODO: automatically generate this for enum
-    static auto to_string(ast::AssignKind kind) -> const char*
+    static auto to_string(ast::AssignKind kind) -> StrView
     {
-        using enum ast::AssignKind;
-
-        switch (kind) {
-        case Assign:
-            return "Assign";
-        case PlusAssign:
-            return "PlusAssign";
-        case MinusAssign:
-            return "MinusAssign";
-        case MulAssign:
-            return "MulAssign";
-        case DivAssign:
-            return "DivAssign";
-        case ModuloAssign:
-            return "ModuloAssign";
-        case PowerAssign:
-            return "PowerAssign";
-        case BitwiseOrAssign:
-            return "BitwiseOrAssign";
-        case BitwiseAndAssign:
-            return "BitwiseAndAssign";
-        case BitwiseXorAssign:
-            return "BitwiseXorAssign";
-        case RightShiftAssign:
-            return "RightShiftAssign";
-        case LeftShiftAssign:
-            return "LeftShiftAssign";
-        default:
-            assert(false && "Switch is not exhaustive.");
-        }
+        return magic_enum::enum_name(kind);
     }
 
     std::ostream& os_;
