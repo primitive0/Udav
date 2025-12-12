@@ -8,7 +8,7 @@ module;
 
 #include "support/string.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
 
 export module udav.lexer:token;
 
@@ -114,7 +114,7 @@ export auto operator<<(std::ostream& os, const Token& token) -> std::ostream&
     return os;
 }
 
-TEST_CASE("udav::TokenKind is formatted to string")
+TEST_CASE("TokenKind is formatted to string", "[lexer]")
 {
     auto ss = std::ostringstream{};
 
@@ -125,7 +125,7 @@ TEST_CASE("udav::TokenKind is formatted to string")
     CHECK(ss.str() == "Fun\nReturn\nPower\n");
 }
 
-TEST_CASE("udav::Token is formatted to string")
+TEST_CASE("Token is formatted to string", "[lexer]")
 {
     auto ss = std::ostringstream{};
 

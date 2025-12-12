@@ -1,6 +1,6 @@
 [requires]
 gtest/1.17.0
-doctest/2.4.12
+catch2/3.11.0
 utfcpp/4.0.8
 cli11/2.6.0
 magic_enum/0.9.7

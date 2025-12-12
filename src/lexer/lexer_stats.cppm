@@ -4,7 +4,7 @@ module;
 #include "support/numerics.hpp"
 #include "support/string.hpp"
 
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
 
 export module udav.lexer.stats;
 
@@ -113,7 +113,7 @@ export auto collect(StrView text) -> LexicalStats
     return stats;
 }
 
-TEST_CASE("udav::lexer::stats::collect counts tokens in simple program")
+TEST_CASE("stats::collect counts tokens in simple program", "[lex stats]")
 {
     auto s = stats::collect(
         "fun main():\n"                           // kw: 1, sym: 1, oth: 4
@@ -132,7 +132,7 @@ TEST_CASE("udav::lexer::stats::collect counts tokens in simple program")
     // clang-format on
 }
 
-TEST_CASE("udav::lexer::stats::collect counts tokens in FizzBuzz program")
+TEST_CASE("stats::collect counts tokens in FizzBuzz program", "[lex stats]")
 {
     auto s = stats::collect(
         "# FizzBuzz program\n"                   // oth: 2

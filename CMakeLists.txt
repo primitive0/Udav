@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(GTest REQUIRED)
-find_package(doctest REQUIRED)
+find_package(Catch2 REQUIRED)
 find_package(utf8cpp REQUIRED)
 find_package(CLI11 REQUIRED)
 find_package(magic_enum REQUIRED)
@@ -36,37 +36,35 @@ target_sources(Udav
       src/parsing/parser.cppm)
 target_link_libraries(Udav
   PUBLIC
+    Catch2::Catch2
     utf8cpp
-    doctest::doctest
     magic_enum::magic_enum)
 
 if(UDAV_BUILD_UNITTESTS)
     message(STATUS "Udav unit tests: ON")
+
+    add_executable(UdavTestRunner)
+    target_link_libraries(UdavTestRunner
+      PRIVATE
+        Udav
+        Catch2::Catch2WithMain)
+
+    include(Catch)
+    catch_discover_tests(UdavTestRunner
+      TEST_PREFIX "UnitTest|")
 else()
     message(STATUS "Udav unit tests: OFF")
-    target_compile_definitions(Udav PUBLIC DOCTEST_CONFIG_DISABLE)
+    target_compile_definitions(Udav PUBLIC CATCH_CONFIG_DISABLE)
 endif()
 
-add_executable(UdavTest src/doctest_runner.cpp)
-target_link_libraries(UdavTest PRIVATE Udav)
-
-include(doctest)
-doctest_discover_tests(UdavTest
-  TEST_PREFIX "UnitTest|")
-
-add_executable(UdavMain)
-target_sources(UdavMain
-  PRIVATE
-    src/main.cpp
-    src/doctest_stub.cpp)
+add_executable(UdavMain src/main.cpp)
 target_link_libraries(UdavMain PRIVATE Udav CLI11::CLI11)
 
 # TODO: remove GoogleTest
 add_executable(UdavGTestRunner)
 target_sources(UdavGTestRunner
   PRIVATE
-    src/lexer/lexer_test.cpp
-    src/doctest_stub.cpp)
+    src/lexer/lexer_test.cpp)
 target_link_libraries(UdavGTestRunner PRIVATE Udav GTest::gmock_main)
 
 include(GoogleTest)
