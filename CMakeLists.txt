@@ -48,6 +48,7 @@ target_sources(Udav
       src/text/utf8/utf8.cppm
       src/lexer/token.cppm
       src/lexer/lexer.cppm
+      src/parsing/token_stream.cppm
       src/parsing/parser.cppm)
 target_link_libraries(Udav
   PUBLIC
