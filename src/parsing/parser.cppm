@@ -737,4 +737,4 @@ private:
     }
 };
 
-}; // namespace udav
+} // namespace udav
