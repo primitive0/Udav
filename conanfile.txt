@@ -1,5 +1,4 @@
 [requires]
-gtest/1.17.0
 catch2/3.11.0
 utfcpp/4.0.8
 cli11/2.6.0

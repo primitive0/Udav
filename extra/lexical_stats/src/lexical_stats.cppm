@@ -1,4 +1,3 @@
-// TODO: move to subproject in extra/
 module;
 
 #include "support/numerics.hpp"
@@ -6,7 +5,7 @@ module;
 
 #include <catch2/catch_test_macros.hpp>
 
-export module udav.lexer.stats;
+export module udav.lexical_stats;
 
 import udav.lexer;
 
