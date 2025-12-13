@@ -80,7 +80,7 @@ public:
     explicit UnexpectedCharacterException() = default;
 };
 
-// TODO: check move constructor is correct, write test case for this
+// NOTE: Moving leaves this object in an unspecified state
 class TextSplitter final
 {
 public:
@@ -178,15 +178,10 @@ private:
     char32_t peeked_ = kNoChar32;
 };
 
+// NOTE: Moving leaves this object in an unspecified state
 export class Lexer final
 {
 public:
-    Lexer(Lexer&&) noexcept = default;
-    auto operator=(Lexer&&) noexcept -> Lexer& = default;
-
-    Lexer(const Lexer&) = delete;
-    auto operator=(const Lexer&) -> Lexer& = delete;
-
     explicit Lexer(StrView text)
         : splitter_{text}
     {
