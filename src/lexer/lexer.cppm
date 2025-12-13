@@ -4,6 +4,7 @@ module;
 #include <cassert>
 #include <exception>
 #include <format>
+#include <initializer_list>
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -16,6 +17,10 @@ module;
 #include "support/pair.hpp"
 #include "support/string.hpp"
 #include "support/vector.hpp"
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators_all.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
 
 export module udav.lexer;
 
@@ -564,5 +569,498 @@ export auto collect_tokens(Lexer lexer) -> Vec<Token>
     }
     return tokens;
 }
+
+namespace {
+
+template<typename R>
+auto expect_tokens(StrView code, R&& expected) -> void
+{
+    CHECK_THAT(
+        collect_tokens(Lexer(code)),
+        Catch::Matchers::RangeEquals(expected));
+}
+
+auto expect_tokens(StrView code, std::initializer_list<Token> expected) -> void
+{
+    expect_tokens<std::initializer_list<Token>&>(code, expected);
+}
+
+auto expect_single_token(StrView code, Token expected_token) -> void
+{
+    expect_tokens(
+        code,
+        {
+            expected_token,
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+template<typename E>
+auto expect_lex_throws(StrView code) -> void
+{
+    CHECK_THROWS_AS(collect_tokens(Lexer(code)), E);
+}
+
+TEST_CASE("Lexer parses empty source text", "[lexer]")
+{
+    expect_tokens("", {Token{TokenKind::Eof, ""}});
+}
+
+TEST_CASE("Lexer ignores BOM at the beginning", "[lexer]")
+{
+    expect_tokens(
+        "\xEF\xBB\xBF"
+        "println(\"hello\")\n",
+        {
+            Token{TokenKind::Symbol, "println"},
+            Token{TokenKind::ParenOpen, "("},
+            Token{TokenKind::StringLiteral, "\"hello\""},
+            Token{TokenKind::ParenClose, ")"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer rejects BOM when not at start of input", "[lexer]")
+{
+    expect_lex_throws<UnexpectedCharacterException>(
+        "fun main():\n"
+        "\x{EF}\x{BB}\x{BF}pass\n");
+
+    expect_lex_throws<UnexpectedCharacterException>(
+        " \x{EF}\x{BB}\x{BF}fun main():\n");
+}
+
+TEST_CASE("Lexer fails on invalid UTF-8", "[lexer]")
+{
+    expect_lex_throws<InvalidUtf8Exception>("\x80");
+
+    expect_lex_throws<InvalidUtf8Exception>("\xC0\xAF");
+
+    expect_lex_throws<InvalidUtf8Exception>("let x = \xD0");
+}
+
+TEST_CASE("Lexer parses keyword tokens", "[lexer]")
+{
+    // Test case
+    struct TC
+    {
+        StrView keyword;
+        TokenKind kind;
+    };
+
+    // clang-format off
+    auto [keyword, kind] = GENERATE(
+        TC{"fun",      TokenKind::Fun},
+        TC{"return",   TokenKind::Return},
+        TC{"pass",     TokenKind::Pass},
+        TC{"let",      TokenKind::Let},
+        TC{"if",       TokenKind::If},
+        TC{"elif",     TokenKind::Elif},
+        TC{"else",     TokenKind::Else},
+        TC{"while",    TokenKind::While},
+        TC{"continue", TokenKind::Continue},
+        TC{"break",    TokenKind::Break},
+        TC{"false",    TokenKind::False},
+        TC{"true",     TokenKind::True});
+    // clang-format on
+
+    expect_single_token(keyword, Token{kind, keyword});
+}
+
+TEST_CASE("Lexer parses symbols", "[lexer]")
+{
+    auto symbol = GENERATE(
+        as<StrView>{},
+        "l",
+        "L",
+        "foo",
+        "i1234567890",
+        "fizz_buzz",
+        "_",
+        "___",
+        "__i__love__udav",
+        "CaseCase");
+
+    expect_single_token(symbol, Token{TokenKind::Symbol, symbol});
+}
+
+TEST_CASE("Keyword tokens are case dependent", "[lexer]")
+{
+    struct TC
+    {
+        StrView word;
+        TokenKind kind;
+    };
+
+    auto [word, kind] = GENERATE(
+        TC{"fun", TokenKind::Fun},
+        TC{"fUn", TokenKind::Symbol});
+
+    expect_single_token(word, Token{kind, word});
+}
+
+TEST_CASE("Lexer parsers operator tokens", "[lexer]")
+{
+    struct TC
+    {
+        StrView op;
+        TokenKind kind;
+    };
+
+    // clang-format off
+    auto [op, kind] = GENERATE(
+        TC{"!",   TokenKind::Not},
+        TC{"==",  TokenKind::Equals},
+        TC{"!=",  TokenKind::NotEquals},
+        TC{"<",   TokenKind::Less},
+        TC{">",   TokenKind::Greater},
+        TC{"<=",  TokenKind::LessOrEqual},
+        TC{">=",  TokenKind::GreaterOrEqual},
+        TC{"+",   TokenKind::Plus},
+        TC{"-",   TokenKind::Minus},
+        TC{"*",   TokenKind::Mul},
+        TC{"/",   TokenKind::Div},
+        TC{"%",   TokenKind::Modulo},
+        TC{"**",  TokenKind::Power},
+        TC{"||",  TokenKind::Or},
+        TC{"&&",  TokenKind::And},
+        TC{"|",   TokenKind::BitwiseOr},
+        TC{"&",   TokenKind::BitwiseAnd},
+        TC{"^",   TokenKind::BitwiseXor},
+        TC{">>",  TokenKind::RightShift},
+        TC{"<<",  TokenKind::LeftShift},
+        TC{"=",   TokenKind::Assign},
+        TC{"+=",  TokenKind::PlusAssign},
+        TC{"-=",  TokenKind::MinusAssign},
+        TC{"*=",  TokenKind::MulAssign},
+        TC{"/=",  TokenKind::DivAssign},
+        TC{"%=",  TokenKind::ModuloAssign},
+        TC{"**=", TokenKind::PowerAssign},
+        TC{"|=",  TokenKind::BitwiseOrAssign},
+        TC{"&=",  TokenKind::BitwiseAndAssign},
+        TC{"^=",  TokenKind::BitwiseXorAssign},
+        TC{">>=", TokenKind::RightShiftAssign},
+        TC{"<<=", TokenKind::LeftShiftAssign}
+    );
+    // clang-format on
+
+    expect_single_token(op, Token{kind, op});
+}
+
+TEST_CASE("Lexer parses auxiliary tokens", "[lexer]")
+{
+    struct TC
+    {
+        StrView text;
+        TokenKind kind;
+    };
+
+    auto [text, kind] = GENERATE(
+        TC{":", TokenKind::Colon},
+        TC{".", TokenKind::Dot},
+        TC{",", TokenKind::Comma},
+        TC{"(", TokenKind::ParenOpen},
+        TC{")", TokenKind::ParenClose});
+
+    expect_single_token(text, Token{kind, text});
+}
+
+TEST_CASE("Adjacent operator and auxiliary tokens are parsed correctly", "[lexer]")
+{
+    SECTION("Adjacent operators and compound assignments")
+    {
+        struct TC
+        {
+            StrView op;
+            TokenKind op_kind;
+            TokenKind assign_kind;
+        };
+
+        // clang-format off
+        auto [op, op_kind, assign_kind] = GENERATE(
+            TC{"+",  TokenKind::Plus,       TokenKind::PlusAssign},
+            TC{"-",  TokenKind::Minus,      TokenKind::MinusAssign},
+            TC{"/",  TokenKind::Div,        TokenKind::DivAssign},
+            TC{"%",  TokenKind::Modulo,     TokenKind::ModuloAssign},
+            TC{"**", TokenKind::Power,      TokenKind::PowerAssign},
+            TC{"^",  TokenKind::BitwiseXor, TokenKind::BitwiseXorAssign},
+            TC{">>", TokenKind::RightShift, TokenKind::RightShiftAssign},
+            TC{"<<", TokenKind::LeftShift,  TokenKind::LeftShiftAssign});
+        // clang-format on
+
+        auto assign = std::format("{}=", op);
+
+        expect_tokens(
+            std::format("{0}{0}{0}{0}{1}", op, assign),
+            {
+                Token{op_kind, op},
+                Token{op_kind, op},
+                Token{op_kind, op},
+                Token{op_kind, op},
+                Token{assign_kind, assign},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+    }
+
+    SECTION("Adjacent relational operators")
+    {
+        expect_tokens(
+            "<==",
+            {
+                Token{TokenKind::LessOrEqual, "<="},
+                Token{TokenKind::Assign, "="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "<=>",
+            {
+                Token{TokenKind::LessOrEqual, "<="},
+                Token{TokenKind::Greater, ">"},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "!==",
+            {
+                Token{TokenKind::NotEquals, "!="},
+                Token{TokenKind::Assign, "="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            ">==",
+            {
+                Token{TokenKind::GreaterOrEqual, ">="},
+                Token{TokenKind::Assign, "="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "<===",
+            {
+                Token{TokenKind::LessOrEqual, "<="},
+                Token{TokenKind::Equals, "=="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            ">===",
+            {
+                Token{TokenKind::GreaterOrEqual, ">="},
+                Token{TokenKind::Equals, "=="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "!===",
+            {
+                Token{TokenKind::NotEquals, "!="},
+                Token{TokenKind::Equals, "=="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+    }
+
+    SECTION("Adjacent logical operators")
+    {
+        expect_tokens(
+            "!!=",
+            {
+                Token{TokenKind::Not, "!"},
+                Token{TokenKind::NotEquals, "!="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "&&=",
+            {
+                Token{TokenKind::And, "&&"},
+                Token{TokenKind::Assign, "="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+
+        expect_tokens(
+            "||=",
+            {
+                Token{TokenKind::Or, "||"},
+                Token{TokenKind::Assign, "="},
+                Token{TokenKind::NewLine, ""},
+                Token{TokenKind::Eof, ""},
+            });
+    }
+}
+
+TEST_CASE("Lexer parses integer literals", "[lexer]")
+{
+    auto integer = GENERATE(
+        as<StrView>{},
+        "123",
+        "0000", "007",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "1234567890",
+        "999999999999999999999999999999999999999999999999999999999999999999999999");
+
+    expect_single_token(integer, Token{TokenKind::IntegerLiteral, integer});
+}
+
+TEST_CASE("Minus is not part of integer literal token", "[lexer]")
+{
+    expect_tokens("-42",
+        {
+            Token{TokenKind::Minus, "-"},
+            Token{TokenKind::IntegerLiteral, "42"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer parses string literals", "[lexer]")
+{
+    auto string = GENERATE(
+        as<StrView>{},
+        R"("")",
+        R"("hello")",
+        R"("      ")",
+        R"("   spaces  ")",
+        R"("\"")",
+        R"(" \" backslash \" \" backslashes! \"\"\" slash em \" all!")",
+        R"("\n\t\\\"\r\0  \  \  \ \a    \b \c  \\\\\\\\\" mixed!\\\\\\")");
+
+    expect_single_token(string, Token{TokenKind::StringLiteral, string});
+}
+
+TEST_CASE("Lexer fails on unterminated string literal", "[lexer]")
+{
+    expect_lex_throws<UnexpectedCharacterException>("\"hello");
+}
+
+TEST_CASE("Line breaks inside string literals are not allowed", "[lexer]")
+{
+    expect_lex_throws<UnexpectedCharacterException>("\"not\nallowed\"");
+    expect_lex_throws<UnexpectedCharacterException>("\"not\rallowed\"");
+    expect_lex_throws<UnexpectedCharacterException>("\"not\r\nallowed\"");
+}
+
+TEST_CASE("Lexer parses adjacent string literals", "[lexer]")
+{
+    expect_tokens(
+        R"("hello"""  "foo" "bar""baz")",
+        {
+            Token{TokenKind::StringLiteral, R"("hello")"},
+            Token{TokenKind::StringLiteral, R"("")"},
+            Token{TokenKind::StringLiteral, R"("foo")"},
+            Token{TokenKind::StringLiteral, R"("bar")"},
+            Token{TokenKind::StringLiteral, R"("baz")"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer parses comment", "[lexer]")
+{
+    expect_tokens(
+        "#first comment\n"
+        "\n"
+        "# second comment\n"
+        "#\n"
+        "#\n"
+        "#\n",
+        {
+            Token{TokenKind::Comment, "#first comment"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Comment, "# second comment"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer parses NewLine token", "[lexer]")
+{
+    expect_tokens(
+        "#\n"
+        "#\r\n"
+        "#\r"
+        "#\n\r",
+        {
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""}, // lf
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""}, // crlf
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""}, // cr
+            Token{TokenKind::Comment, "#"},
+            Token{TokenKind::NewLine, ""}, // lf
+            Token{TokenKind::NewLine, ""}, // cr
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Line with only spaces is empty", "[lexer]")
+{
+    expect_tokens(
+        "    \n"
+        "        \n"
+        " \n",
+        {
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer adds final line break if missing", "[lexer]")
+{
+    expect_tokens(
+        "fun",
+        {
+            Token{TokenKind::Fun, "fun"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+TEST_CASE("Lexer fails on inconsistent dedent", "[lexer]")
+{
+    expect_lex_throws<InconsistentDedentException>(
+        "fun main():\n"
+        "    if true:\n"
+        "      pass\n"
+        "   pass\n"); // Indentation on this line is inconsistent with other lines
+}
+
+TEST_CASE("First line can be indented", "[lexer]")
+{
+    expect_tokens(
+        "    fun",
+        {
+            Token{TokenKind::Indent, ""},
+            Token{TokenKind::Fun, "fun"},
+            Token{TokenKind::NewLine, ""},
+            Token{TokenKind::Dedent, ""},
+            Token{TokenKind::Eof, ""},
+        });
+}
+
+} // namespace
 
 } // namespace udav
