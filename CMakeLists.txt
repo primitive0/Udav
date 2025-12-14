@@ -43,13 +43,18 @@ target_sources(Udav
     FILE_SET CXX_MODULES
     FILES
       src/support/convert.cppm
+      src/support/functional.cppm
       src/ast/ast.cppm
       src/ast/builder.cppm
       src/text/utf8/utf8.cppm
       src/lexer/token.cppm
       src/lexer/lexer.cppm
       src/parsing/token_stream.cppm
-      src/parsing/parser.cppm)
+      src/parsing/parser.cppm
+      src/runtime/runtime.cppm
+      src/eval/sema/common.cppm
+      src/eval/sema/eval_literals_pass.cppm
+      src/eval/sema/sema.cppm)
 target_link_libraries(Udav
   PUBLIC
     Catch2::Catch2
