@@ -88,7 +88,4 @@ add_executable(UdavMain src/main.cpp)
 target_link_libraries(UdavMain PRIVATE Udav CLI11::CLI11)
 
 
-# # TODO: improve lit compatibility
-# add_test(
-#   NAME Lit
-#   COMMAND lit ${CMAKE_CURRENT_SOURCE_DIR}/test/)
+add_subdirectory(test/)
