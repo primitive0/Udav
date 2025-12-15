@@ -21,6 +21,8 @@
 import udav.lexer;
 import udav.ast;
 import udav.parsing;
+import udav.sema;
+import udav.eval;
 
 namespace udav {
 
@@ -124,8 +126,36 @@ auto run(const Options& opts) -> i32
         return run_utility_routine(opts, *opts.utility_routine);
     }
 
-    std::println("Interpretation is WIP.");
-    return 1;
+    auto input = std::ifstream{opts.filename, std::ios::binary};
+    if (!input) {
+        std::println("Failed to open file {}.", opts.filename);
+        return 1;
+    }
+    auto source_text = String{std::istreambuf_iterator{input.rdbuf()}, {}};
+    if (!input) {
+        std::println("Error happened while reading file {}.", opts.filename);
+        return 1;
+    }
+
+    auto stream = SemanticTokenStream{Lexer{source_text}};
+    auto parser = Parser{stream};
+
+    auto program_node = Unique<ast::Program>{};
+    try {
+        program_node = parser.parse_program();
+    } catch (const LexerException&) {
+        std::cout << "Failed to lex code.\n";
+        return 1;
+    } catch (const ParserException&) {
+        std::cout << "Failed to parse code.\n";
+        return 1;
+    }
+
+    perform_semantic_analysis(*program_node);
+
+    Evaluator{*program_node}.eval();
+
+    return 0;
 }
 
 } // namespace udav

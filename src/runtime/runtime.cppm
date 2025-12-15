@@ -41,8 +41,7 @@ public:
     {
     }
 
-    // NOTE: This is intentionally implicit.
-    operator StrView() const // NOLINT(google-explicit-constructor)
+    explicit operator StrView() const
     {
         return *data_;
     }
@@ -54,7 +53,7 @@ private:
 TEST_CASE("UdavString default constructor creates empty string", "[runtime]")
 {
     const auto udav_string = UdavString{};
-    CHECK(static_cast<StrView>(udav_string) == "");
+    CHECK(StrView(udav_string) == "");
 }
 
 TEST_CASE("UdavString is created from StrView and converted back", "[runtime]")
@@ -67,7 +66,7 @@ TEST_CASE("UdavString is created from StrView and converted back", "[runtime]")
         "foobar");
 
     const auto udav_string = UdavString{input};
-    CHECK(udav_string == input);
+    CHECK(StrView(udav_string) == input);
 }
 
 TEST_CASE("UdavString is created from String", "[runtime]")
@@ -77,7 +76,7 @@ TEST_CASE("UdavString is created from String", "[runtime]")
     auto udav_string = UdavString{std::move(str)};
 
     CHECK(str.empty());
-    CHECK(static_cast<StrView>(udav_string) == "foo");
+    CHECK(StrView(udav_string) == "foo");
 }
 
 export class UdavValue final
@@ -100,11 +99,10 @@ public:
     {
     }
 
-    // TODO: use something like std::borrow::Cow from rust?
     auto format() const -> String
     {
         return visit(
-            [](const UdavString& str) { return String{str}; });
+            [](const UdavString& str) { return String{StrView{str}}; });
     }
 
 private:

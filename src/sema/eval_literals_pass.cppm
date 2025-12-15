@@ -6,15 +6,18 @@ module;
 #include "support/numerics.hpp"
 #include "support/option.hpp"
 #include "support/string.hpp"
+#include "support/unique.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-export module udav.eval.sema:eval_literals_pass;
+export module udav.sema:eval_literals_pass;
 
 import udav.runtime;
+import udav.ast;
 
-import :common;
+import :exceptions;
+import :annotations;
 
 namespace udav {
 
@@ -131,7 +134,7 @@ TEST_CASE("parse_string_literal parses correct literals", "[sema]")
         TC{R"("Mix \n \t \\\\ \0 ed")", "Mix \n \t \\\\ \0 ed"sv},
         TC{R"("Hello\nПривет!\n漢 🤗")", "Hello\nПривет!\n漢 🤗"});
 
-    CHECK(parse_string_literal(input) == expected);
+    CHECK(StrView(parse_string_literal(input)) == expected);
 }
 
 TEST_CASE("parse_string_literal throws on invalid escape sequence", "[sema]")
@@ -147,8 +150,28 @@ TEST_CASE("parse_string_literal throws on invalid escape sequence", "[sema]")
     CHECK_THROWS_AS(parse_string_literal(input), PassException);
 }
 
-export class EvalLiteralsPass final
+export class EvalLiteralsPass final : private ast::RecursiveVisitor
 {
+public:
+    explicit EvalLiteralsPass() = default;
+
+    auto process(ast::Node& node) -> void
+    {
+        node.accept(*this);
+    }
+
+private:
+    auto visit(ast::StringExpr& expr) -> void override
+    {
+        annotate_literal(expr, parse_string_literal(expr.literal));
+    }
+
+    template<typename V>
+    auto annotate_literal(ast::LiteralExpr& expr, V value) -> void
+    {
+        expr.annotation = std::make_unique<LiteralAnnotation>(
+            UdavValue{std::move(value)});
+    }
 };
 
 } // namespace udav

@@ -52,9 +52,11 @@ target_sources(Udav
       src/parsing/token_stream.cppm
       src/parsing/parser.cppm
       src/runtime/runtime.cppm
-      src/eval/sema/common.cppm
-      src/eval/sema/eval_literals_pass.cppm
-      src/eval/sema/sema.cppm)
+      src/sema/exceptions.cppm
+      src/sema/annotations.cppm
+      src/sema/eval_literals_pass.cppm
+      src/sema/sema.cppm
+      src/eval/eval.cppm)
 target_link_libraries(Udav
   PUBLIC
     Catch2::Catch2

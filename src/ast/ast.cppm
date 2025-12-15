@@ -133,15 +133,24 @@ public:
 
 // Node base class
 
+export struct Annotation
+{
+public:
+    virtual ~Annotation() = default;
+};
+
 struct Node
 {
 public:
+    Unique<Annotation> annotation;
+
     virtual ~Node() = default;
 
     Node(const Node&) = delete;
     auto operator=(const Node&) -> Node& = delete;
 
     virtual auto accept(Visitor& v) -> void = 0;
+    virtual auto visit_children(Visitor& v) -> void {}
 
     virtual auto equals(const Node& rhs) const -> bool = 0;
 
@@ -178,6 +187,7 @@ protected:
     explicit Node() = default;
 };
 
+// TODO: rename to NodeImpl
 template<typename Base, typename Derived>
 struct Leaf : public Base
 {
@@ -236,6 +246,13 @@ export struct CallInfo final
 
     explicit CallInfo() = default;
 
+    auto visit_children(Visitor& v) -> void
+    {
+        for (auto& arg : args) {
+            arg->accept(v);
+        }
+    }
+
     auto equals(const CallInfo& rhs) const -> bool
     {
         return function == rhs.function &&
@@ -249,6 +266,11 @@ struct UnaryExpr final : public Leaf<Expr, UnaryExpr>
     Unique<Expr> expr{};
 
     explicit UnaryExpr() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        expr->accept(v);
+    }
 
     using Node::equals;
 
@@ -265,6 +287,12 @@ struct BinaryExpr final : public Leaf<Expr, BinaryExpr>
     Unique<Expr> right{};
 
     explicit BinaryExpr() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        left->accept(v);
+        right->accept(v);
+    }
 
     using Node::equals;
 
@@ -333,6 +361,11 @@ struct CallExpr final : public Leaf<Expr, CallExpr>
 
     explicit CallExpr() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        call.visit_children(v);
+    }
+
     using Node::equals;
 
     auto equals(const CallExpr& rhs) const -> bool
@@ -372,6 +405,13 @@ struct Block final : public Leaf<Node, Block>
 
     explicit Block() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        for (auto& stmt : stmts) {
+            stmt->accept(v);
+        }
+    }
+
     using Node::equals;
 
     auto equals(const Block& rhs) const -> bool
@@ -387,6 +427,11 @@ struct VariableDecl final : public Leaf<Node, VariableDecl>
 
     explicit VariableDecl() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        value->accept(v);
+    }
+
     using Node::equals;
 
     auto equals(const VariableDecl& rhs) const -> bool
@@ -400,6 +445,13 @@ struct LetStmt final : public Leaf<Stmt, LetStmt>
     Vec<VariableDecl> decls{};
 
     explicit LetStmt() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        for (auto& decl : decls) {
+            decl.accept(v);
+        }
+    }
 
     using Node::equals;
 
@@ -416,6 +468,11 @@ struct AssignStmt final : public Leaf<Stmt, AssignStmt>
     Unique<Expr> value{};
 
     explicit AssignStmt() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        value->accept(v);
+    }
 
     using Node::equals;
 
@@ -469,6 +526,13 @@ struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
 
     explicit ReturnStmt() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        if (value) {
+            (*value)->accept(v);
+        }
+    }
+
     using Node::equals;
 
     auto equals(const ReturnStmt& rhs) const -> bool
@@ -482,6 +546,11 @@ struct CallStmt final : public Leaf<Stmt, CallStmt>
     CallInfo call{};
 
     explicit CallStmt() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        call.visit_children(v);
+    }
 
     using Node::equals;
 
@@ -499,6 +568,12 @@ export struct Branch final
 
     explicit Branch() = default;
 
+    auto visit_children(Visitor& v) -> void
+    {
+        condition->accept(v);
+        body.accept(v);
+    }
+
     auto equals(const Branch& rhs) const -> bool
     {
         return condition->equals(*rhs.condition) &&
@@ -512,6 +587,16 @@ struct IfStmt final : public Leaf<Stmt, IfStmt>
     Option<Block> else_branch{};
 
     explicit IfStmt() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        for (auto& branch : branches) {
+            branch.visit_children(v);
+        }
+        if (else_branch) {
+            (*else_branch).accept(v);
+        }
+    }
 
     using Node::equals;
 
@@ -528,6 +613,12 @@ struct WhileStmt final : public Leaf<Stmt, WhileStmt>
     Block body{};
 
     explicit WhileStmt() = default;
+
+    auto visit_children(Visitor& v) -> void override
+    {
+        condition->accept(v);
+        body.accept(v);
+    }
 
     using Node::equals;
 
@@ -548,6 +639,11 @@ struct Function final : public Leaf<Node, Function>
 
     explicit Function() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        body.accept(v);
+    }
+
     using Node::equals;
 
     auto equals(const Function& rhs) const -> bool
@@ -564,6 +660,13 @@ struct Program final : public Leaf<Node, Program>
 
     explicit Program() = default;
 
+    auto visit_children(Visitor& v) -> void override
+    {
+        for (auto& function : functions) {
+            function.accept(v);
+        }
+    }
+
     using Node::equals;
 
     auto equals(const Program& rhs) const -> bool
@@ -572,11 +675,37 @@ struct Program final : public Leaf<Node, Program>
     }
 };
 
-} // namespace udav::ast
+// clang-format off
+export class RecursiveVisitor : public Visitor
+{
+public:
+    auto visit(Program& n)       -> void override { n.visit_children(*this); }
+    auto visit(Function& n)      -> void override { n.visit_children(*this); }
+    auto visit(Block& n)         -> void override { n.visit_children(*this); }
 
-namespace udav {
+    auto visit(VariableDecl& n)  -> void override { n.visit_children(*this); }
+    auto visit(LetStmt& n)       -> void override { n.visit_children(*this); }
+    auto visit(AssignStmt& n)    -> void override { n.visit_children(*this); }
+    auto visit(PassStmt& n)      -> void override { n.visit_children(*this); }
+    auto visit(ContinueStmt& n)  -> void override { n.visit_children(*this); }
+    auto visit(BreakStmt& n)     -> void override { n.visit_children(*this); }
+    auto visit(ReturnStmt& n)    -> void override { n.visit_children(*this); }
+    auto visit(CallStmt& n)      -> void override { n.visit_children(*this); }
+    auto visit(IfStmt& n)        -> void override { n.visit_children(*this); }
+    auto visit(WhileStmt& n)     -> void override { n.visit_children(*this); }
 
-// TODO: move class data members up to access modifier in ALL CLASSES
+    auto visit(UnaryExpr& n)     -> void override { n.visit_children(*this); }
+    auto visit(BinaryExpr& n)    -> void override { n.visit_children(*this); }
+    auto visit(IntegerExpr& n)   -> void override { n.visit_children(*this); }
+    auto visit(StringExpr& n)    -> void override { n.visit_children(*this); }
+    auto visit(BoolExpr& n)      -> void override { n.visit_children(*this); }
+    auto visit(CallExpr& n)      -> void override { n.visit_children(*this); }
+    auto visit(VariableExpr& n)  -> void override { n.visit_children(*this); }
+};
+// clang-format on
+
+// TODO: move into separate module partition
+// TODO: rename to AstFormatter
 class AstPrinter final : public ast::Visitor
 {
 public:
@@ -871,4 +1000,4 @@ export auto operator<<(std::ostream& os, ast::Node& node) -> std::ostream&
     return os;
 }
 
-} // namespace udav
+} // namespace udav::ast

@@ -4,7 +4,7 @@ module;
 
 #include "support/string.hpp"
 
-export module udav.eval.sema:common;
+export module udav.sema:exceptions;
 
 namespace udav {
 
