@@ -19,3 +19,25 @@ fun main():
     print("WorkingAsExpected")
 
     # CHECK:ThisIsPrintPrintingTextThatIsSayingThatPrintIsWorkingAsExpected
+
+    println()
+
+    print("mixed formatting", " ", 123)
+    print(4567890)
+    print("|")
+    print(0)
+    print("|")
+    print(0000)
+    print("|")
+    print(007)
+    print("|")
+    print(009) # This must be parsed as decimal
+    print("|")
+    print(4, 2, 0, 0, 6, 3, 3, 3)
+
+    # CHECK:mixed formatting 1234567890|0|0|7|9|42006333
+
+    println()
+
+    print(99999999999999999999999999999999999999999999999999999999999999)
+    # CHECK:99999999999999999999999999999999999999999999999999999999999999

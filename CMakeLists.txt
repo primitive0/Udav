@@ -51,6 +51,9 @@ target_sources(Udav
       src/lexer/lexer.cppm
       src/parsing/token_stream.cppm
       src/parsing/parser.cppm
+      src/runtime/string.cppm
+      src/runtime/integer.cppm
+      src/runtime/value.cppm
       src/runtime/runtime.cppm
       src/sema/exceptions.cppm
       src/sema/annotations.cppm

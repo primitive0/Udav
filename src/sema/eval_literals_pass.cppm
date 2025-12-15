@@ -3,6 +3,8 @@ module;
 #include <cassert>
 #include <utility>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 #include "support/numerics.hpp"
 #include "support/option.hpp"
 #include "support/string.hpp"
@@ -150,6 +152,38 @@ TEST_CASE("parse_string_literal throws on invalid escape sequence", "[sema]")
     CHECK_THROWS_AS(parse_string_literal(input), PassException);
 }
 
+auto parse_integer_literal(StrView literal) -> UdavInteger
+{
+    assert(!literal.empty() && "Integer literal must not be empty.");
+
+    auto input = literal;
+    while (input.size() != 1 && input[0] == '0') {
+        input = input.substr(1);
+    }
+
+    return UdavInteger{boost::multiprecision::cpp_int{input}};
+}
+
+TEST_CASE("parse_integer_literal parses correct literals", "[sema]")
+{
+    struct TC
+    {
+        StrView input;
+        boost::multiprecision::cpp_int expected;
+    };
+
+    // clang-format off
+    auto [input, expected] = GENERATE(
+        TC{"0",          0},
+        TC{"0000",       0},
+        TC{"0009",       9}, // This must be parsed as decimal
+        TC{"0123",       123},
+        TC{"1234567890", 1234567890});
+    // clang-format on
+
+    CHECK(parse_integer_literal(input).value() == expected);
+}
+
 export class EvalLiteralsPass final : private ast::RecursiveVisitor
 {
 public:
@@ -164,6 +198,11 @@ private:
     auto visit(ast::StringExpr& expr) -> void override
     {
         annotate_literal(expr, parse_string_literal(expr.literal));
+    }
+
+    auto visit(ast::IntegerExpr& expr) -> void override
+    {
+        annotate_literal(expr, parse_integer_literal(expr.literal));
     }
 
     template<typename V>
