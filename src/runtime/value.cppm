@@ -22,7 +22,7 @@ public:
     template<typename Self, typename... Cases>
     decltype(auto) visit(this Self&& self, Cases... cases) // NOLINT(modernize-use-trailing-return-type)
     {
-        return self.inner_.visit(support::Overloaded{cases...});
+        return std::visit(support::Overloaded{cases...}, self.inner_);
     }
 
     template<typename T, typename Self>
