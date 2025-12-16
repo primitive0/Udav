@@ -205,6 +205,11 @@ private:
         annotate_literal(expr, parse_integer_literal(expr.literal));
     }
 
+    auto visit(ast::BoolExpr& expr) -> void override
+    {
+        annotate_literal(expr, UdavBoolean{expr.value});
+    }
+
     template<typename V>
     auto annotate_literal(ast::LiteralExpr& expr, V value) -> void
     {

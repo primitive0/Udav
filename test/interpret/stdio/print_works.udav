@@ -22,7 +22,7 @@ fun main():
 
     println()
 
-    print("mixed formatting", " ", 123)
+    print(123)
     print(4567890)
     print("|")
     print(0)
@@ -35,9 +35,24 @@ fun main():
     print("|")
     print(4, 2, 0, 0, 6, 3, 3, 3)
 
-    # CHECK:mixed formatting 1234567890|0|0|7|9|42006333
+    # CHECK:1234567890|0|0|7|9|42006333
 
     println()
 
     print(99999999999999999999999999999999999999999999999999999999999999)
     # CHECK:99999999999999999999999999999999999999999999999999999999999999
+
+    println()
+
+    print(true)
+    print(" ")
+    print(false)
+    print("|")
+    print(true, false, true)
+
+    # CHECK:true false|truefalsetrue
+
+    println()
+
+    print("value=", 2325, ", ok=", true, ", fail=", false)
+    # CHECK:value=2325, ok=true, fail=false

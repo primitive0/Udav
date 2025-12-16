@@ -5,12 +5,12 @@ module;
 #include "support/string.hpp"
 #include "support/variant.hpp"
 
-export module udav.runtime:value;
+export module udav.runtime.value;
 
 import udav.support.functional;
-
-import :string;
-import :integer;
+import udav.runtime.string;
+import udav.runtime.integer;
+import udav.runtime.boolean;
 
 namespace udav {
 
@@ -41,17 +41,24 @@ public:
     {
     }
 
+    explicit UdavValue(UdavBoolean boolean)
+        : inner_{std::move(boolean)}
+    {
+    }
+
     auto format() const -> String
     {
         return visit(
             [](const UdavString& str) { return String{StrView{str}}; },
-            [](const UdavInteger& integer) { return integer.format(); });
+            [](const UdavInteger& integer) { return integer.format(); },
+            [](const UdavBoolean& boolean) { return boolean.format(); });
     }
 
 private:
     using Value = Variant<
         UdavString,
-        UdavInteger>;
+        UdavInteger,
+        UdavBoolean>;
 
     Value inner_;
 };

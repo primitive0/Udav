@@ -64,6 +64,7 @@ target_sources(Udav
       src/parsing/parser.cppm
       src/runtime/string.cppm
       src/runtime/integer.cppm
+      src/runtime/boolean.cppm
       src/runtime/value.cppm
       src/runtime/runtime.cppm
       src/sema/exceptions.cppm

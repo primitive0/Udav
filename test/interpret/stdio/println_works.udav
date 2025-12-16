@@ -16,10 +16,16 @@ fun main():
                                  # CHECK:Second
 
 
-    println("format mix integers ", 54)    # CHECK:format mix integers 54
+    println(54)                            # CHECK:54
     println(0000)                          # CHECK:0
     println(00123)                         # CHECK:123
     println(999999999999999999999999)      # CHECK:999999999999999999999999
     println(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)  # CHECK:0123456789
 
-    # TODO: add escape sequence tests
+
+    println(true)               # CHECK:true
+    println(false)              # CHECK:false
+    println(true, false, true)  # CHECK:truefalsetrue
+
+
+    println(1, " + ", 2, " = ", 3, ", valid=", true) # CHECK:1 + 2 = 3, valid=true

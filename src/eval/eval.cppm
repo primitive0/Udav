@@ -108,6 +108,11 @@ private:
         visit_literal(expr);
     }
 
+    auto visit(ast::BoolExpr& expr) -> void override
+    {
+        visit_literal(expr);
+    }
+
     auto visit_literal(ast::LiteralExpr& expr) -> void
     {
         assert(expr.annotation && "Must be non-null.");

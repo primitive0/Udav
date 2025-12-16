@@ -9,7 +9,7 @@ module;
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
-export module udav.runtime:integer;
+export module udav.runtime.integer;
 
 namespace udav {
 

@@ -1,5 +1,6 @@
 export module udav.runtime;
 
-export import :string;
-export import :integer;
-export import :value;
+export import udav.runtime.boolean;
+export import udav.runtime.string;
+export import udav.runtime.integer;
+export import udav.runtime.value;
