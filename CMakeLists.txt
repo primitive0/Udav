@@ -69,6 +69,7 @@ target_sources(Udav
       src/runtime/runtime.cppm
       src/sema/exceptions.cppm
       src/sema/annotations.cppm
+      src/sema/literal_parsing.cppm
       src/sema/eval_literals_pass.cppm
       src/sema/sema.cppm
       src/eval/eval.cppm)
