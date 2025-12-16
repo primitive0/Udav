@@ -3,11 +3,21 @@ cmake_minimum_required(VERSION 3.28)
 project(Udav LANGUAGES CXX)
 enable_testing()
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# By default Clang 20/21 uses full BMI. Due to some bugs in Clang, it
+# is not possible to build Udav with full BMI. Therefore, we fallback
+# to reduced BMI.
+#
+# TODO: probably this should be enabled per target.
+include(ClangEnableReducedBMI)
 
 
 find_package(Catch2 REQUIRED)
