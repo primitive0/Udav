@@ -14,6 +14,7 @@ find_package(Catch2 REQUIRED)
 find_package(utf8cpp REQUIRED)
 find_package(CLI11 REQUIRED)
 find_package(magic_enum REQUIRED)
+find_package(Boost REQUIRED)
 
 include(Catch)
 
@@ -64,7 +65,8 @@ target_link_libraries(Udav
   PUBLIC
     Catch2::Catch2
     utf8cpp
-    magic_enum::magic_enum)
+    magic_enum::magic_enum
+    Boost::headers)
 if(NOT UDAV_BUILD_UNITTESTS)
   target_compile_definitions(Udav PUBLIC CATCH_CONFIG_DISABLE)
 endif()
