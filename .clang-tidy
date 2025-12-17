@@ -144,6 +144,7 @@ Checks: [
   '-readability-use-anyofallof',
   '-readability-math-missing-parentheses',
   '-readability-use-concise-preprocessor-directives',
+  '-readability-qualified-auto',
 
   '-zircon-*'
 ]
