@@ -1,15 +1,19 @@
 module;
 
+#include <limits>
 #include <utility>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
+#include "support/numerics.hpp"
 #include "support/string.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators_all.hpp>
 
 export module udav.runtime.integer;
+
+import udav.runtime.exceptions;
 
 namespace udav {
 
@@ -40,6 +44,103 @@ public:
     auto value() const -> const boost::multiprecision::cpp_int&
     {
         return value_;
+    }
+
+    auto negate() -> void
+    {
+        value_ *= -1;
+    }
+
+    auto operator+=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ += rhs.value_;
+        return *this;
+    }
+
+    auto operator-=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ -= rhs.value_;
+        return *this;
+    }
+
+    auto operator*=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ *= rhs.value_;
+        return *this;
+    }
+
+    auto operator/=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        if (rhs.value_ == 0) {
+            throw UdavRuntimeException{"Can't divide by zero."};
+        }
+
+        value_ /= rhs.value_;
+        return *this;
+    }
+
+    auto operator%=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        if (rhs.value_ <= 0) {
+            throw UdavRuntimeException{"Modulo divisor must be positive."};
+        }
+
+        value_ %= rhs.value_;
+        return *this;
+    }
+
+    auto pow(const UdavInteger& rhs) -> void
+    {
+        if (rhs.value_ < 0) {
+            throw UdavRuntimeException{"Exponent must be non-negative."};
+        }
+        if (rhs.value_ > std::numeric_limits<i64>::max()) {
+            throw UdavRuntimeException{"Exponent is too big."};
+        }
+        auto exp = rhs.value_.convert_to<i64>();
+
+        value_ = boost::multiprecision::pow(value_, exp);
+    }
+
+    auto operator|=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ |= rhs.value_;
+        return *this;
+    }
+
+    auto operator^=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ ^= rhs.value_;
+        return *this;
+    }
+
+    auto operator&=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ &= rhs.value_;
+        return *this;
+    }
+
+    auto operator>>=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ >>= get_shift_count(rhs.value_);
+        return *this;
+    }
+
+    auto operator<<=(const UdavInteger& rhs) -> UdavInteger&
+    {
+        value_ <<= get_shift_count(rhs.value_);
+        return *this;
+    }
+
+    static auto get_shift_count(const boost::multiprecision::cpp_int& big_int) -> i64
+    {
+        if (big_int < 0) {
+            throw UdavRuntimeException{"Shift count must be non-negative."};
+        }
+        if (big_int > std::numeric_limits<i64>::max()) {
+            throw UdavRuntimeException{"Shift count is too big."};
+        }
+        return big_int.convert_to<i64>();
     }
 
 private:

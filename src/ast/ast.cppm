@@ -107,6 +107,7 @@ public:
 
     explicit Visitor() = default;
 
+    // TODO: add unreachable assertions
     virtual auto visit(Program&) -> void {}
     virtual auto visit(Function&) -> void {}
     virtual auto visit(Block&) -> void {}
@@ -148,6 +149,18 @@ public:
 
     Node(const Node&) = delete;
     auto operator=(const Node&) -> Node& = delete;
+
+    template<typename T>
+    auto annotation_as() -> T&
+    {
+        return static_cast<T&>(*annotation);
+    }
+
+    template<typename T>
+    auto annotation_as() const -> const T&
+    {
+        return static_cast<const T&>(*annotation);
+    }
 
     virtual auto accept(Visitor& v) -> void = 0;
     virtual auto visit_children(Visitor& v) -> void {}

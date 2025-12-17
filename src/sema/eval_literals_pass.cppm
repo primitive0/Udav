@@ -15,6 +15,7 @@ import :annotations;
 
 namespace udav {
 
+// TODO: move into module udav.sema.pass.eval_literals
 export class EvalLiteralsPass final : private ast::RecursiveVisitor
 {
 public:

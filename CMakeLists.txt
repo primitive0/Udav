@@ -44,6 +44,7 @@ else()
 endif()
 
 
+# TODO: rename targets
 add_library(Udav OBJECT)
 target_sources(Udav
   PUBLIC
@@ -62,6 +63,7 @@ target_sources(Udav
       src/lexer/lexer.cppm
       src/parsing/token_stream.cppm
       src/parsing/parser.cppm
+      src/runtime/exceptions.cppm
       src/runtime/string.cppm
       src/runtime/integer.cppm
       src/runtime/boolean.cppm

@@ -9,6 +9,7 @@ import udav.runtime;
 
 namespace udav {
 
+// TODO: rename?
 export struct LiteralAnnotation final : public ast::Annotation
 {
 public:

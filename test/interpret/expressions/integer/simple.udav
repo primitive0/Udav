@@ -1,0 +1,100 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println(-0)               # CHECK:0
+    println(-5)               # CHECK:-5
+    println(-(2 + 3))         # CHECK:-5
+    println(-(-7))            # CHECK:7
+    println(-5 + 19)          # CHECK:14
+    println(13 + -5)          # CHECK:8
+
+
+    println(2 + 2)            # CHECK:4
+    println(123 + 456)        # CHECK:579
+    println(0 + 999)          # CHECK:999
+    println(15 + 0)           # CHECK:15
+
+
+    println(50 - 17)          # CHECK:33
+    println(6 - 21)           # CHECK:-15
+    println(40 - 0)           # CHECK:40
+    println(0 - 23)           # CHECK:-23
+
+
+    println(6 * 7)            # CHECK:42
+    println(-5 * 2)           # CHECK:-10
+    println(-9 * -4)          # CHECK:36
+    println(0 * 12345)        # CHECK:0
+    println(987 * 0)          # CHECK:0
+
+
+    println(54 / 9)           # CHECK:6
+    println(100 / 6)          # CHECK:16
+    println(13 / 5)           # CHECK:2
+    println(-13 / 5)          # CHECK:-2
+    println(13 / -5)          # CHECK:-2
+    println(-13 / -5)         # CHECK:2
+
+
+    println(10 % 3)           # CHECK:1
+    println(14 % 7)           # CHECK:0
+    println(7 % 2)            # CHECK:1
+    println(-7 % 2)           # CHECK:-1
+    println(0 % 5)            # CHECK:0
+
+
+    println(2 ** 0)           # CHECK:1
+    println(2 ** 5)           # CHECK:32
+    println(3 ** 4)           # CHECK:81
+    println(10 ** 2)          # CHECK:100
+
+
+    # Operator &
+    # -----------------------------------
+    # 110 & 011 = 010
+    println(6 & 3)            # CHECK:2
+
+    # 1111 & 0101 = 0101
+    println(15 & 9)           # CHECK:9
+
+    println(0 & 123)          # CHECK:0
+    println(987 & 0)          # CHECK:0
+    println(255 & 1)          # CHECK:1
+
+
+    # Operator |
+    # -----------------------------------
+    # 110 | 011 = 111
+    println(6 | 3)            # CHECK:7
+
+    # 1000 | 0001 = 1001
+    println(8 | 1)            # CHECK:9
+
+    println(0 | 123)          # CHECK:123
+
+    # 1111 | 0101 = 1111
+    println(15 | 9)           # CHECK:15
+
+
+    # Operator ^
+    # -----------------------------------
+    # 110 ^ 011 = 101
+    println(6 ^ 3)            # CHECK:5
+
+    # 1100 ^ 1010 = 0110
+    println(12 ^ 10)          # CHECK:6
+
+    println(0 ^ 123)          # CHECK:123
+    println(7 ^ 7)            # CHECK:0
+
+
+    println(1 << 0)           # CHECK:1
+    println(1 << 3)           # CHECK:8
+    println(3 << 4)           # CHECK:48
+    println(10 << 1)          # CHECK:20
+
+
+    println(1 >> 0)           # CHECK:1
+    println(8 >> 3)           # CHECK:1
+    println(48 >> 4)          # CHECK:3
+    println(20 >> 1)          # CHECK:10

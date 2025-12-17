@@ -1,0 +1,13 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println(2 ** 3 ** 2)          # CHECK:512
+
+    println(1 << 2 << 1)          # CHECK:8
+    println(32 >> 2 >> 1)         # CHECK:4
+
+    println(20 - 7 - 5)           # CHECK:8
+
+    println(20 / 6 / 2)           # CHECK:1
+
+    println(29 % 8 % 3)           # CHECK:2
