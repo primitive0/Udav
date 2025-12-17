@@ -1,0 +1,9 @@
+fun is_leap(year):
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+
+fun main():
+    let y = int(readln())
+    if is_leap(y):
+        println("yes")
+    else:
+        println("no")
