@@ -5,6 +5,8 @@ fun main():
     println(a)  # CHECK: 1
     a = 42
     println(a)  # CHECK: 42
+    a = a
+    println(a)  # CHECK: 42
 
     let b = 2
     let c = 3
@@ -12,3 +14,15 @@ fun main():
     println(c)  # CHECK: 3
     b = b * c + 5
     println(b)  # CHECK: 11
+
+    let d = "foo"
+    println(d)  # CHECK: foo
+    d = d
+    println(d)  # CHECK: foo
+    d = "bar"
+    println(d)  # CHECK: bar
+
+    let e = true
+    println(e)  # CHECK: true
+    e = false
+    println(e)  # CHECK: false

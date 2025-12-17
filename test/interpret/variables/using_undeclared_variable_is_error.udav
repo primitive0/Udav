@@ -16,3 +16,10 @@ fun main():
 
 fun main():
     x = 1
+
+#=== CASE: vars_are_case_sensitive ===
+# RUN: %select -c vars_are_case_sensitive %s > %t.vars_are_case_sensitive.udav && not %udav %t.vars_are_case_sensitive.udav
+
+fun main():
+    let foo = 42
+    println(Foo)

@@ -9,3 +9,9 @@ fun main():
     let c = 2 + 3, d = 4 + 5
     println(c)                # CHECK: 5
     println(d)                # CHECK: 9
+
+    let __Variable__ = "foo"
+    println(__Variable__)     # CHECK: foo
+
+    let BoolVar = true
+    println(BoolVar)          # CHECK: true
