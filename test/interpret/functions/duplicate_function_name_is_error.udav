@@ -1,0 +1,23 @@
+#=== CASE: dup1 ===
+# RUN: %select -c dup1 %s > %t.dup1.udav && not %udav %t.dup1.udav
+
+fun foo():
+    pass
+
+fun foo():
+    pass
+
+fun foo():
+    pass
+
+fun main():
+    pass
+
+#=== CASE: dup2 ===
+# RUN: %select -c dup2 %s > %t.dup2.udav && not %udav %t.dup2.udav
+
+fun main():
+    pass
+
+fun main():
+    pass
