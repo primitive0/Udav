@@ -15,6 +15,7 @@ export module udav.eval;
 import udav.ast;
 import udav.sema;
 import udav.runtime;
+import udav.eval.variable_table;
 
 namespace udav {
 
@@ -43,7 +44,10 @@ private:
 class ExpressionEvaluator final : private ast::Visitor
 {
 public:
-    explicit ExpressionEvaluator() = default;
+    explicit ExpressionEvaluator(const VariableTable& var_table)
+        : var_table_{var_table}
+    {
+    }
 
     auto eval(ast::Expr& expr) -> UdavValue
     {
@@ -137,6 +141,14 @@ private:
         }
     }
 
+    auto visit(ast::VariableExpr& expr) -> void override
+    {
+        auto value = var_table_.get(expr.name);
+        if (!value) {
+            throw EvalException{};
+        }
+        result_ = UdavValue{*value};
+    }
     auto visit(ast::IntegerExpr& expr) -> void override
     {
         visit_literal(expr);
@@ -159,11 +171,6 @@ private:
     }
 
     auto visit(ast::CallExpr&) -> void override
-    {
-        assert(false && "WIP.");
-    }
-
-    auto visit(ast::VariableExpr&) -> void override
     {
         assert(false && "WIP.");
     }
@@ -276,6 +283,7 @@ private:
         return lhs;
     }
 
+    const VariableTable& var_table_;
     Option<UdavValue> result_;
 };
 
@@ -301,6 +309,32 @@ private:
         for (auto& stmt : func.body.stmts) {
             stmt->accept(*this);
         }
+    }
+
+    auto visit(ast::LetStmt& stmt) -> void override
+    {
+        for (auto& decl : stmt.decls) {
+            decl.accept(*this);
+        }
+    }
+
+    auto visit(ast::VariableDecl& decl) -> void override
+    {
+        auto value = ExpressionEvaluator{var_table_}.eval(*decl.value);
+        var_table_.declare(decl.name, std::move(value));
+    }
+
+    auto visit(ast::AssignStmt& stmt) -> void override
+    {
+        if (stmt.kind != ast::AssignKind::Assign) {
+            assert(false && "WIP.");
+        }
+
+        auto target = var_table_.get(stmt.target);
+        if (!target) {
+            throw EvalException{};
+        }
+        *target = ExpressionEvaluator{var_table_}.eval(*stmt.value);
     }
 
     auto visit(ast::CallStmt& stmt) -> void override
@@ -335,7 +369,7 @@ private:
     {
         buffer_.clear();
         for (auto& arg : args) {
-            auto value = ExpressionEvaluator{}.eval(*arg);
+            auto value = ExpressionEvaluator{var_table_}.eval(*arg);
             buffer_.append(value.format());
         }
     }
@@ -381,6 +415,7 @@ private:
 
     ast::Program& program_;
 
+    VariableTable var_table_{};
     String buffer_{};
 };
 

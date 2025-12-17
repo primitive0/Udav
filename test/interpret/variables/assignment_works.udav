@@ -1,0 +1,14 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    let a = 1
+    println(a)  # CHECK: 1
+    a = 42
+    println(a)  # CHECK: 42
+
+    let b = 2
+    let c = 3
+    println(b)  # CHECK: 2
+    println(c)  # CHECK: 3
+    b = b * c + 5
+    println(b)  # CHECK: 11

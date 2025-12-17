@@ -1,0 +1,18 @@
+#=== CASE: read_undeclared_var_1 ===
+# RUN: %select -c read_undeclared_var_1 %s > %t.read_undeclared_var_1.udav && not %udav %t.read_undeclared_var_1.udav
+
+fun main():
+    println(x)
+
+#=== CASE: read_undeclared_var_2 ===
+# RUN: %select -c read_undeclared_var_2 %s > %t.read_undeclared_var_2.udav && not %udav %t.read_undeclared_var_2.udav
+
+fun main():
+    let a = 10
+    println(a + x * (3 + 4))
+
+#=== CASE: assign_undeclared_var ===
+# RUN: %select -c assign_undeclared_var %s > %t.assign_undeclared_var.udav && not %udav %t.assign_undeclared_var.udav
+
+fun main():
+    x = 1
