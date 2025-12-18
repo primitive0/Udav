@@ -18,6 +18,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #
 # TODO: probably this should be enabled per target.
 include(ClangEnableReducedBMI)
+include(IPOSupport)
 
 
 find_package(Catch2 REQUIRED)
