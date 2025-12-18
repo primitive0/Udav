@@ -7,7 +7,7 @@ if(UDAV_BUILD_UNITTESTS)
         src/lexical_stats.cppm)
   target_link_libraries(ExtraLexicalStatsTestRunner
     PRIVATE
-      Udav
+      UdavLib
       Catch2::Catch2WithMain)
 
   catch_discover_tests(ExtraLexicalStatsTestRunner

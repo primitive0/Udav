@@ -32,5 +32,5 @@ ctest --progress --preset <preset>
 
 Udav uses [LLVM Lit](https://llvm.org/docs/CommandGuide/lit.html) and [FileCheck](https://llvm.org/docs/CommandGuide/FileCheck.html) to run E2E tests. Ensure they are installed on your system before running the commands below.
 ```sh
-cmake --build --preset <preset> --target Check
+cmake --build --preset <preset> --target check
 ```

@@ -44,9 +44,8 @@ else()
 endif()
 
 
-# TODO: rename targets
-add_library(Udav OBJECT)
-target_sources(Udav
+add_library(UdavLib OBJECT)
+target_sources(UdavLib
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS
@@ -76,14 +75,14 @@ target_sources(Udav
       src/sema/sema.cppm
       src/eval/variable_table.cppm
       src/eval/eval.cppm)
-target_link_libraries(Udav
+target_link_libraries(UdavLib
   PUBLIC
     Catch2::Catch2
     utf8cpp
     magic_enum::magic_enum
     Boost::headers)
 if(NOT UDAV_BUILD_UNITTESTS)
-  target_compile_definitions(Udav PUBLIC CATCH_CONFIG_DISABLE)
+  target_compile_definitions(UdavLib PUBLIC CATCH_CONFIG_DISABLE)
 endif()
 
 
@@ -96,7 +95,7 @@ if(UDAV_BUILD_UNITTESTS)
   add_executable(UdavTestRunner)
   target_link_libraries(UdavTestRunner
     PRIVATE
-      Udav
+      UdavLib
       Catch2::Catch2WithMain)
 
   catch_discover_tests(UdavTestRunner
@@ -104,8 +103,8 @@ if(UDAV_BUILD_UNITTESTS)
 endif()
 
 
-add_executable(UdavMain src/main.cpp)
-target_link_libraries(UdavMain PRIVATE Udav CLI11::CLI11)
+add_executable(Udav src/main.cpp)
+target_link_libraries(Udav PRIVATE UdavLib CLI11::CLI11)
 
 
 add_subdirectory(test/)

@@ -9,5 +9,5 @@ config.test_exec_root = os.path.join(config.my_build_root, "test")
 config.suffixes = [".udav"]
 
 config.substitutions.extend([
-    ("%udav", os.path.join(config.my_build_root, "UdavMain")),
+    ("%udav", os.path.join(config.my_build_root, "Udav")),
     ("%select", os.path.join(config.test_source_root, "select.py"))])
