@@ -75,13 +75,15 @@ target_sources(UdavLib
       src/sema/eval_literals_pass.cppm
       src/sema/sema.cppm
       src/eval/variable_table.cppm
-      src/eval/eval.cppm)
+      src/eval/eval.cppm
+      src/cli/cli.cppm)
 target_link_libraries(UdavLib
   PUBLIC
     Catch2::Catch2
     utf8cpp
     magic_enum::magic_enum
-    Boost::headers)
+    Boost::headers
+    CLI11::CLI11)
 if(NOT UDAV_BUILD_UNITTESTS)
   target_compile_definitions(UdavLib PUBLIC CATCH_CONFIG_DISABLE)
 endif()
@@ -105,7 +107,7 @@ endif()
 
 
 add_executable(Udav src/main.cpp)
-target_link_libraries(Udav PRIVATE UdavLib CLI11::CLI11)
+target_link_libraries(Udav PRIVATE UdavLib)
 
 
 add_subdirectory(test/)
