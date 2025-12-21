@@ -23,7 +23,7 @@ include(IPOSupport)
 
 find_package(Catch2 REQUIRED)
 find_package(utf8cpp REQUIRED)
-find_package(CLI11 REQUIRED)
+find_package(lyra REQUIRED)
 find_package(magic_enum REQUIRED)
 find_package(Boost REQUIRED)
 
@@ -83,7 +83,7 @@ target_link_libraries(UdavLib
     utf8cpp
     magic_enum::magic_enum
     Boost::headers
-    CLI11::CLI11)
+    bfg::lyra)
 if(NOT UDAV_BUILD_UNITTESTS)
   target_compile_definitions(UdavLib PUBLIC CATCH_CONFIG_DISABLE)
 endif()

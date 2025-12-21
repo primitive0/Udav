@@ -1,4 +1,4 @@
-# RUN: %udav -U dump_ast %s | diff -u %s.ast -
+# RUN: %udav --dump-ast %s | diff -u %s.ast -
 
 fun fizzbuzz(n):
     let i = 1

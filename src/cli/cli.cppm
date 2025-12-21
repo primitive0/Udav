@@ -1,19 +1,16 @@
 module;
 
 #include <cassert>
-#include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <ostream>
 #include <print>
+#include <sstream>
 
-#include "thirdparty/cli11.hpp"
+#include <lyra/lyra.hpp>
 
-#include "support/numerics.hpp"
-#include "support/option.hpp"
 #include "support/string.hpp"
-#include "support/tree_map.hpp"
 #include "support/unique.hpp"
 
 export module udav.cli;
@@ -26,148 +23,170 @@ import udav.eval;
 
 namespace udav {
 
-enum class UtilityRoutine {
-    DumpAst,
-};
-
-static const TreeMap<String, UtilityRoutine> kToUtilityRoutine{
-    {"dump_ast", UtilityRoutine::DumpAst},
-};
-
-auto operator<<(std::ostream& os, const UtilityRoutine& value) -> std::ostream&
+class ExitCliException final : public std::exception
 {
-    using enum UtilityRoutine;
-
-    switch (value) {
-    case DumpAst:
-        return os << "dump_ast";
-    default:
-        assert(false && "Switch is not exhaustive.");
+public:
+    explicit ExitCliException(int exit_code)
+        : exit_code_{exit_code}
+    {
     }
-}
+
+    auto exit_code() const -> int
+    {
+        return exit_code_;
+    }
+
+private:
+    int exit_code_;
+};
 
 struct Options final
 {
-    String filename{};
-    Option<UtilityRoutine> utility_routine{};
+    String filename;
+    bool dump_ast;
+    bool check_syntax;
 };
-
-auto must_parse_command_line(int argc, char** argv) -> Options
-{
-    auto opts = Options{};
-
-    auto app = CLI::App{"Udav interpreter"};
-
-    app.add_option("file", opts.filename, "Udav source file")
-        ->required();
-
-    app.add_option("-U,--utility", opts.utility_routine,
-           "Run utility routine instead of executing program "
-           "(routines: dump_ast)")
-        ->transform(CLI::CheckedTransformer(kToUtilityRoutine));
-
-    try {
-        app.parse(argc, argv);
-    } catch (const CLI::ParseError& e) {
-        std::exit(app.exit(e)); // NOLINT(concurrency-mt-unsafe)
-    }
-
-    return opts;
-}
-
-// TODO: better run functions (add exceptions).
-// TODO: move all this functions in one class
-
-auto dump_ast(const Options& opts) -> i32
-{
-    auto input = std::ifstream{opts.filename, std::ios::binary};
-    if (!input) {
-        std::println("Failed to open file {}.", opts.filename);
-        return 1;
-    }
-    auto source_text = String{std::istreambuf_iterator{input.rdbuf()}, {}};
-    if (!input) {
-        std::println("Error happened while reading file {}.", opts.filename);
-        return 1;
-    }
-
-    auto stream = SemanticTokenStream{Lexer{source_text}};
-    auto parser = Parser{stream};
-
-    auto program_node = Unique<ast::Program>{};
-    try {
-        program_node = parser.parse_program();
-    } catch (const LexerException&) {
-        std::cout << "Failed to lex code.\n";
-        return 1;
-    } catch (const ParserException&) {
-        std::cout << "Failed to parse code.\n";
-        return 1;
-    }
-
-    std::cout << *program_node;
-
-    return 0;
-}
-
-auto run_utility_routine(const Options& opts, UtilityRoutine routine) -> i32
-{
-    switch (routine) {
-    case UtilityRoutine::DumpAst:
-        return dump_ast(opts);
-    default:
-        assert(false && "Switch is not exhaustive.");
-    }
-}
-
-auto run(const Options& opts) -> i32
-{
-    if (opts.utility_routine) {
-        return run_utility_routine(opts, *opts.utility_routine);
-    }
-
-    auto input = std::ifstream{opts.filename, std::ios::binary};
-    if (!input) {
-        std::println("Failed to open file {}.", opts.filename);
-        return 1;
-    }
-    auto source_text = String{std::istreambuf_iterator{input.rdbuf()}, {}};
-    if (!input) {
-        std::println("Error happened while reading file {}.", opts.filename);
-        return 1;
-    }
-
-    auto stream = SemanticTokenStream{Lexer{source_text}};
-    auto parser = Parser{stream};
-
-    auto program_node = Unique<ast::Program>{};
-    try {
-        program_node = parser.parse_program();
-    } catch (const LexerException&) {
-        std::cout << "Failed to lex code.\n";
-        return 1;
-    } catch (const ParserException&) {
-        std::cout << "Failed to parse code.\n";
-        return 1;
-    }
-
-    perform_semantic_analysis(*program_node);
-
-    Evaluator{*program_node}.eval();
-
-    return 0;
-}
 
 export class UdavCli final
 {
 public:
-    static auto run(int argc, char** argv) -> int
+    explicit UdavCli() = default;
+
+    auto run(int argc, char** argv) -> int
     {
-        auto opts = udav::must_parse_command_line(argc, argv);
-        return static_cast<int>(udav::run(opts));
+        try {
+            do_run(argc, argv);
+        } catch (const ExitCliException& e) {
+            return e.exit_code();
+        }
+
+        return 0;
     }
 
 private:
+    auto do_run(int argc, char** argv) -> void
+    {
+        parse_arguments(argc, argv);
+
+        if (opts_.check_syntax) {
+            check_syntax();
+        } else if (opts_.dump_ast) {
+            dump_ast();
+        } else {
+            execute_program();
+        }
+    }
+
+    auto execute_program() -> void
+    {
+        auto source_code = read_program_source();
+
+        auto stream = SemanticTokenStream{Lexer{source_code}};
+        auto parser = Parser{stream};
+
+        auto program_node = Unique<ast::Program>{};
+        try {
+            program_node = parser.parse_program();
+        } catch (const LexerException&) {
+            std::cout << "Failed to lex code.\n";
+            throw ExitCliException{1};
+        } catch (const ParserException&) {
+            std::cout << "Failed to parse code.\n";
+            throw ExitCliException{1};
+        }
+
+        perform_semantic_analysis(*program_node);
+
+        Evaluator{*program_node}.eval();
+    }
+
+    auto check_syntax() -> void
+    {
+        assert(false && "WIP.");
+    }
+
+    auto dump_ast() -> void
+    {
+        auto source_code = read_program_source();
+
+        auto stream = SemanticTokenStream{Lexer{source_code}};
+        auto parser = Parser{stream};
+
+        auto program_node = Unique<ast::Program>{};
+        try {
+            program_node = parser.parse_program();
+        } catch (const LexerException&) {
+            std::cout << "Failed to lex code.\n";
+            throw ExitCliException{1};
+        } catch (const ParserException&) {
+            std::cout << "Failed to parse code.\n";
+            throw ExitCliException{1};
+        }
+
+        std::cout << *program_node;
+    }
+
+    auto read_program_source() -> String
+    {
+        if (opts_.filename.empty()) {
+            return read_all_stdin();
+        }
+
+        auto file = std::ifstream{opts_.filename, std::ios::binary};
+        if (!file) {
+            std::println("Failed to open file {}.", opts_.filename);
+            throw ExitCliException{1};
+        }
+        return String{std::istreambuf_iterator{file.rdbuf()}, {}};
+    }
+
+    auto parse_arguments(int argc, char** argv) -> void
+    {
+        bool show_help = false;
+
+        auto cli = lyra::cli{}
+                       .add_argument(
+                           lyra::help{show_help}
+                               .description("Interpreter for the Udav programming language."))
+                       .add_argument(
+                           lyra::opt{opts_.check_syntax}
+                               .name("--check-syntax")
+                               .help("Only check syntax and exit."))
+                       .add_argument(
+                           lyra::opt{opts_.dump_ast}
+                               .name("--dump-ast")
+                               .help("Dump AST and exit."))
+                       .add_argument(
+                           lyra::arg{opts_.filename, "input-file"}
+                               .help("Input source file. If not specified, interpreter"
+                                     "will read program from stdin."));
+
+        auto result = cli.parse({argc, argv});
+        if (!result) {
+            std::println("Error: {}", result.message());
+            std::cout << cli;
+            throw ExitCliException{1};
+        }
+
+        if (show_help) {
+            std::cout << cli;
+            throw ExitCliException{0};
+        }
+
+        if (opts_.check_syntax && opts_.dump_ast) {
+            std::println("Error: --check-syntax and --dump-ast cannot be used together.");
+            throw ExitCliException{1};
+        }
+    }
+
+    static auto read_all_stdin() -> String
+    {
+        auto ss = std::ostringstream{};
+        ss << std::cin.rdbuf();
+        return ss.str();
+    }
+
+    Options opts_{};
 };
 
 } // namespace udav
