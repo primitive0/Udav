@@ -57,7 +57,6 @@ target_sources(UdavLib
       src/support/convert.cppm
       src/support/functional.cppm
       src/ast/ast.cppm
-      src/ast/builder.cppm
       src/text/utf8/utf8.cppm
       src/lexer/token.cppm
       src/lexer/lexer.cppm
