@@ -200,9 +200,8 @@ protected:
     explicit Node() = default;
 };
 
-// TODO: rename to NodeImpl
 template<typename Base, typename Derived>
-struct Leaf : public Base
+struct ConcreteNode : public Base
 {
 public:
     auto accept(Visitor& v) -> void override
@@ -224,10 +223,10 @@ public:
     }
 
 protected:
-    Leaf(Leaf&&) = default;
-    auto operator=(Leaf&&) -> Leaf& = default;
+    ConcreteNode(ConcreteNode&&) = default;
+    auto operator=(ConcreteNode&&) -> ConcreteNode& = default;
 
-    explicit Leaf() = default;
+    explicit ConcreteNode() = default;
 
 private:
     auto self() const -> const Derived&
@@ -273,7 +272,7 @@ export struct CallInfo final
     }
 };
 
-struct UnaryExpr final : public Leaf<Expr, UnaryExpr>
+struct UnaryExpr final : public ConcreteNode<Expr, UnaryExpr>
 {
     UnaryOperation op{};
     Unique<Expr> expr{};
@@ -293,7 +292,7 @@ struct UnaryExpr final : public Leaf<Expr, UnaryExpr>
     }
 };
 
-struct BinaryExpr final : public Leaf<Expr, BinaryExpr>
+struct BinaryExpr final : public ConcreteNode<Expr, BinaryExpr>
 {
     BinaryOperation op{};
     Unique<Expr> left{};
@@ -326,7 +325,7 @@ protected:
     explicit LiteralExpr() = default;
 };
 
-struct IntegerExpr final : public Leaf<LiteralExpr, IntegerExpr>
+struct IntegerExpr final : public ConcreteNode<LiteralExpr, IntegerExpr>
 {
     StrView literal{};
 
@@ -340,7 +339,7 @@ struct IntegerExpr final : public Leaf<LiteralExpr, IntegerExpr>
     }
 };
 
-struct StringExpr final : public Leaf<LiteralExpr, StringExpr>
+struct StringExpr final : public ConcreteNode<LiteralExpr, StringExpr>
 {
     StrView literal{};
 
@@ -354,7 +353,7 @@ struct StringExpr final : public Leaf<LiteralExpr, StringExpr>
     }
 };
 
-struct BoolExpr final : public Leaf<LiteralExpr, BoolExpr>
+struct BoolExpr final : public ConcreteNode<LiteralExpr, BoolExpr>
 {
     bool value{};
 
@@ -368,7 +367,7 @@ struct BoolExpr final : public Leaf<LiteralExpr, BoolExpr>
     }
 };
 
-struct CallExpr final : public Leaf<Expr, CallExpr>
+struct CallExpr final : public ConcreteNode<Expr, CallExpr>
 {
     CallInfo call{};
 
@@ -387,7 +386,7 @@ struct CallExpr final : public Leaf<Expr, CallExpr>
     }
 };
 
-struct VariableExpr final : public Leaf<Expr, VariableExpr>
+struct VariableExpr final : public ConcreteNode<Expr, VariableExpr>
 {
     StrView name{};
 
@@ -412,7 +411,7 @@ protected:
     explicit Stmt() = default;
 };
 
-struct Block final : public Leaf<Node, Block>
+struct Block final : public ConcreteNode<Node, Block>
 {
     Vec<Unique<Stmt>> stmts{};
 
@@ -433,7 +432,7 @@ struct Block final : public Leaf<Node, Block>
     }
 };
 
-struct VariableDecl final : public Leaf<Node, VariableDecl>
+struct VariableDecl final : public ConcreteNode<Node, VariableDecl>
 {
     StrView name{};
     Unique<Expr> value{};
@@ -453,7 +452,7 @@ struct VariableDecl final : public Leaf<Node, VariableDecl>
     }
 };
 
-struct LetStmt final : public Leaf<Stmt, LetStmt>
+struct LetStmt final : public ConcreteNode<Stmt, LetStmt>
 {
     Vec<VariableDecl> decls{};
 
@@ -474,7 +473,7 @@ struct LetStmt final : public Leaf<Stmt, LetStmt>
     }
 };
 
-struct AssignStmt final : public Leaf<Stmt, AssignStmt>
+struct AssignStmt final : public ConcreteNode<Stmt, AssignStmt>
 {
     AssignKind kind{};
     StrView target{};
@@ -497,7 +496,7 @@ struct AssignStmt final : public Leaf<Stmt, AssignStmt>
     }
 };
 
-struct PassStmt final : public Leaf<Stmt, PassStmt>
+struct PassStmt final : public ConcreteNode<Stmt, PassStmt>
 {
     explicit PassStmt() = default;
 
@@ -509,7 +508,7 @@ struct PassStmt final : public Leaf<Stmt, PassStmt>
     }
 };
 
-struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
+struct ContinueStmt final : public ConcreteNode<Stmt, ContinueStmt>
 {
     explicit ContinueStmt() = default;
 
@@ -521,7 +520,7 @@ struct ContinueStmt final : public Leaf<Stmt, ContinueStmt>
     }
 };
 
-struct BreakStmt final : public Leaf<Stmt, BreakStmt>
+struct BreakStmt final : public ConcreteNode<Stmt, BreakStmt>
 {
     explicit BreakStmt() = default;
 
@@ -533,7 +532,7 @@ struct BreakStmt final : public Leaf<Stmt, BreakStmt>
     }
 };
 
-struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
+struct ReturnStmt final : public ConcreteNode<Stmt, ReturnStmt>
 {
     Option<Unique<Expr>> value{};
 
@@ -554,7 +553,7 @@ struct ReturnStmt final : public Leaf<Stmt, ReturnStmt>
     }
 };
 
-struct CallStmt final : public Leaf<Stmt, CallStmt>
+struct CallStmt final : public ConcreteNode<Stmt, CallStmt>
 {
     CallInfo call{};
 
@@ -594,7 +593,7 @@ export struct Branch final
     }
 };
 
-struct IfStmt final : public Leaf<Stmt, IfStmt>
+struct IfStmt final : public ConcreteNode<Stmt, IfStmt>
 {
     Vec<Branch> branches{};
     Option<Block> else_branch{};
@@ -620,7 +619,7 @@ struct IfStmt final : public Leaf<Stmt, IfStmt>
     }
 };
 
-struct WhileStmt final : public Leaf<Stmt, WhileStmt>
+struct WhileStmt final : public ConcreteNode<Stmt, WhileStmt>
 {
     Unique<Expr> condition{};
     Block body{};
@@ -644,7 +643,7 @@ struct WhileStmt final : public Leaf<Stmt, WhileStmt>
 
 // Top level nodes
 
-struct Function final : public Leaf<Node, Function>
+struct Function final : public ConcreteNode<Node, Function>
 {
     StrView name{};
     Vec<StrView> args{}; // TODO: add FunctionArg node
@@ -667,7 +666,7 @@ struct Function final : public Leaf<Node, Function>
     }
 };
 
-struct Program final : public Leaf<Node, Program>
+struct Program final : public ConcreteNode<Node, Program>
 {
     Vec<Function> functions{};
 
