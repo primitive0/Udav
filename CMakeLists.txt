@@ -56,6 +56,10 @@ target_sources(UdavLib
     FILES
       src/support/convert.cppm
       src/support/functional.cppm
+      src/ast/visitor.cppm
+      src/ast/nodes.cppm
+      src/ast/recursive_visitor.cppm
+      src/ast/format.cppm
       src/ast/ast.cppm
       src/text/utf8/utf8.cppm
       src/lexer/token.cppm
