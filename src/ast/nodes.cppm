@@ -1,11 +1,18 @@
 module;
 
 #include <functional>
+#include <ostream>
+
+#include <magic_enum/magic_enum.hpp>
 
 #include "support/option.hpp"
 #include "support/string.hpp"
 #include "support/unique.hpp"
 #include "support/vector.hpp"
+
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 
 export module udav.ast:nodes;
 
@@ -42,6 +49,11 @@ export enum class NodeKind {
     CallExpr,
     VariableExpr
 };
+
+export auto operator<<(std::ostream& os, NodeKind kind) -> std::ostream&
+{
+    return os << magic_enum::enum_name(kind);
+}
 
 export enum class UnaryOperation {
     Minus,
@@ -739,5 +751,259 @@ export struct Program final : public ConcreteNode<Node, Program>
         return check_equal(functions, rhs.functions);
     }
 };
+
+namespace {
+
+class TraceVisitor final : public Visitor
+{
+public:
+    using Trace = Vec<NodeKind>;
+
+    explicit TraceVisitor(Trace& trace)
+        : trace_{trace}
+    {
+    }
+
+    // clang-format off
+    auto visit(Program&)      -> void override { trace_.push_back(NodeKind::Program); }
+    auto visit(Function&)     -> void override { trace_.push_back(NodeKind::Function); }
+
+    auto visit(Block&)        -> void override { trace_.push_back(NodeKind::Block); }
+    auto visit(VariableDecl&) -> void override { trace_.push_back(NodeKind::VariableDecl); }
+    auto visit(LetStmt&)      -> void override { trace_.push_back(NodeKind::LetStmt); }
+    auto visit(AssignStmt&)   -> void override { trace_.push_back(NodeKind::AssignStmt); }
+    auto visit(PassStmt&)     -> void override { trace_.push_back(NodeKind::PassStmt); }
+    auto visit(ContinueStmt&) -> void override { trace_.push_back(NodeKind::ContinueStmt); }
+    auto visit(BreakStmt&)    -> void override { trace_.push_back(NodeKind::BreakStmt); }
+    auto visit(ReturnStmt&)   -> void override { trace_.push_back(NodeKind::ReturnStmt); }
+    auto visit(CallStmt&)     -> void override { trace_.push_back(NodeKind::CallStmt); }
+    auto visit(IfStmt&)       -> void override { trace_.push_back(NodeKind::IfStmt); }
+    auto visit(WhileStmt&)    -> void override { trace_.push_back(NodeKind::WhileStmt); }
+
+    auto visit(UnaryExpr&)    -> void override { trace_.push_back(NodeKind::UnaryExpr); }
+    auto visit(BinaryExpr&)   -> void override { trace_.push_back(NodeKind::BinaryExpr); }
+    auto visit(IntegerExpr&)  -> void override { trace_.push_back(NodeKind::IntegerExpr); }
+    auto visit(StringExpr&)   -> void override { trace_.push_back(NodeKind::StringExpr); }
+    auto visit(BoolExpr&)     -> void override { trace_.push_back(NodeKind::BoolExpr); }
+    auto visit(CallExpr&)     -> void override { trace_.push_back(NodeKind::CallExpr); }
+    auto visit(VariableExpr&) -> void override { trace_.push_back(NodeKind::VariableExpr); }
+    // clang-format on
+
+    Trace& trace_;
+};
+
+auto get_node_trace(Node& node) -> Vec<NodeKind>
+{
+    auto trace = Vec<NodeKind>{};
+    auto visitor = TraceVisitor{trace};
+    node.accept(visitor);
+    return trace;
+}
+
+auto get_node_children_trace(Node& node) -> Vec<NodeKind>
+{
+    auto trace = Vec<NodeKind>{};
+    auto visitor = TraceVisitor{trace};
+    node.accept_children(visitor);
+    return trace;
+}
+
+TEMPLATE_TEST_CASE("AST nodes are visited", "[ast]",
+    // Top level
+    Program, Function,
+
+    // Statements
+    Block, LetStmt, VariableDecl, AssignStmt, PassStmt, ContinueStmt, BreakStmt,
+    ReturnStmt, CallStmt, IfStmt, WhileStmt,
+
+    // Expressions
+    UnaryExpr, BinaryExpr, IntegerExpr, StringExpr, BoolExpr, CallExpr, VariableExpr)
+{
+    using namespace Catch::Matchers;
+
+    auto node = TestType{};
+    CHECK_THAT(get_node_trace(node), RangeEquals({node.node_kind()}));
+}
+
+TEST_CASE("Program node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto program = Program{};
+    program.functions.emplace_back();
+    program.functions.emplace_back();
+    program.functions.emplace_back();
+
+    CHECK_THAT(
+        get_node_children_trace(program),
+        RangeEquals({
+            NodeKind::Function,
+            NodeKind::Function,
+            NodeKind::Function,
+        }));
+}
+
+TEST_CASE("Function node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto function = Function{};
+
+    CHECK_THAT(get_node_children_trace(function), RangeEquals({NodeKind::Block}));
+}
+
+TEST_CASE("Block node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto block = Block{};
+    block.stmts.push_back(std::make_unique<LetStmt>());
+    block.stmts.push_back(std::make_unique<CallStmt>());
+    block.stmts.push_back(std::make_unique<IfStmt>());
+    block.stmts.push_back(std::make_unique<WhileStmt>());
+
+    CHECK_THAT(
+        get_node_children_trace(block),
+        RangeEquals({
+            NodeKind::LetStmt,
+            NodeKind::CallStmt,
+            NodeKind::IfStmt,
+            NodeKind::WhileStmt,
+        }));
+}
+
+TEST_CASE("LetStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto let_stmt = LetStmt{};
+    let_stmt.decls.emplace_back();
+    let_stmt.decls.emplace_back();
+
+    CHECK_THAT(
+        get_node_children_trace(let_stmt),
+        RangeEquals({
+            NodeKind::VariableDecl,
+            NodeKind::VariableDecl,
+        }));
+}
+
+TEST_CASE("VariableDecl node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto var_decl = VariableDecl{};
+    var_decl.value = std::make_unique<IntegerExpr>();
+
+    CHECK_THAT(get_node_children_trace(var_decl), RangeEquals({NodeKind::IntegerExpr}));
+}
+
+TEST_CASE("AssignStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto assign_stmt = AssignStmt{};
+    assign_stmt.value = std::make_unique<BoolExpr>();
+
+    CHECK_THAT(get_node_children_trace(assign_stmt), RangeEquals({NodeKind::BoolExpr}));
+}
+
+TEST_CASE("ReturnStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto return_nothing_stmt = ReturnStmt{};
+    CHECK(get_node_children_trace(return_nothing_stmt).empty());
+
+    auto return_something_stmt = ReturnStmt{};
+    return_something_stmt.value = std::make_unique<BinaryExpr>();
+    CHECK_THAT(
+        get_node_children_trace(return_something_stmt),
+        RangeEquals({NodeKind::BinaryExpr}));
+}
+
+TEST_CASE("CallStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto call_stmt = CallStmt{};
+    call_stmt.call.args.push_back(std::make_unique<UnaryExpr>());
+    call_stmt.call.args.push_back(std::make_unique<VariableExpr>());
+    call_stmt.call.args.push_back(std::make_unique<BinaryExpr>());
+
+    CHECK_THAT(
+        get_node_children_trace(call_stmt),
+        RangeEquals({
+            NodeKind::UnaryExpr,
+            NodeKind::VariableExpr,
+            NodeKind::BinaryExpr,
+        }));
+}
+
+TEST_CASE("IfStmt node children are visited", "[ast][!mayfail]")
+{
+    FAIL("TODO: implement this test case, when Branch inherits Node");
+}
+
+TEST_CASE("WhileStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto while_stmt = WhileStmt{};
+    while_stmt.condition = std::make_unique<CallExpr>();
+
+    CHECK_THAT(
+        get_node_children_trace(while_stmt),
+        RangeEquals({
+            NodeKind::CallExpr,
+            NodeKind::Block,
+        }));
+}
+
+TEST_CASE("UnaryExpr node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto unary_expr = UnaryExpr{};
+    unary_expr.expr = std::make_unique<StringExpr>();
+
+    CHECK_THAT(get_node_children_trace(unary_expr), RangeEquals({NodeKind::StringExpr}));
+}
+
+TEST_CASE("BinaryExpr node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto binary_expr = BinaryExpr{};
+    binary_expr.left = std::make_unique<VariableExpr>();
+    binary_expr.right = std::make_unique<UnaryExpr>();
+
+    CHECK_THAT(
+        get_node_children_trace(binary_expr),
+        RangeEquals({
+            NodeKind::VariableExpr,
+            NodeKind::UnaryExpr,
+        }));
+}
+
+TEST_CASE("CallExpr node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    auto call_expr = CallExpr{};
+    call_expr.call.args.push_back(std::make_unique<BoolExpr>());
+    call_expr.call.args.push_back(std::make_unique<CallExpr>());
+    call_expr.call.args.push_back(std::make_unique<StringExpr>());
+
+    CHECK_THAT(
+        get_node_children_trace(call_expr),
+        RangeEquals({
+            NodeKind::BoolExpr,
+            NodeKind::CallExpr,
+            NodeKind::StringExpr,
+        }));
+}
+
+} // namespace
 
 } // namespace udav::ast
