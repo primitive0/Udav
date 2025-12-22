@@ -15,6 +15,34 @@ import :visitor;
 
 namespace udav::ast {
 
+export enum class NodeKind {
+    // Top level
+    Program,
+    Function,
+
+    // Statements
+    Block,
+    LetStmt,
+    VariableDecl,
+    AssignStmt,
+    PassStmt,
+    ContinueStmt,
+    BreakStmt,
+    ReturnStmt,
+    CallStmt,
+    IfStmt,
+    WhileStmt,
+
+    // Expressions
+    UnaryExpr,
+    BinaryExpr,
+    IntegerExpr,
+    StringExpr,
+    BoolExpr,
+    CallExpr,
+    VariableExpr
+};
+
 export enum class UnaryOperation {
     Minus,
     Not,
@@ -84,6 +112,8 @@ public:
     {
         return static_cast<const T&>(*annotation);
     }
+
+    virtual auto node_kind() const -> NodeKind = 0;
 
     virtual auto accept(Visitor& v) -> void = 0;
     virtual auto accept_children(Visitor& v) -> void {}
@@ -202,6 +232,11 @@ export struct UnaryExpr final : public ConcreteNode<Expr, UnaryExpr>
 
     explicit UnaryExpr() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::UnaryExpr;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         expr->accept(v);
@@ -222,6 +257,11 @@ export struct BinaryExpr final : public ConcreteNode<Expr, BinaryExpr>
     Unique<Expr> right{};
 
     explicit BinaryExpr() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::BinaryExpr;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -254,6 +294,11 @@ export struct IntegerExpr final : public ConcreteNode<LiteralExpr, IntegerExpr>
 
     explicit IntegerExpr() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::IntegerExpr;
+    }
+
     using Node::equals;
 
     auto equals(const IntegerExpr& rhs) const -> bool
@@ -267,6 +312,11 @@ export struct StringExpr final : public ConcreteNode<LiteralExpr, StringExpr>
     StrView literal{};
 
     explicit StringExpr() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::StringExpr;
+    }
 
     using Node::equals;
 
@@ -282,6 +332,11 @@ export struct BoolExpr final : public ConcreteNode<LiteralExpr, BoolExpr>
 
     explicit BoolExpr() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::BoolExpr;
+    }
+
     using Node::equals;
 
     auto equals(const BoolExpr& rhs) const -> bool
@@ -295,6 +350,11 @@ export struct CallExpr final : public ConcreteNode<Expr, CallExpr>
     CallInfo call{};
 
     explicit CallExpr() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::CallExpr;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -314,6 +374,11 @@ export struct VariableExpr final : public ConcreteNode<Expr, VariableExpr>
     StrView name{};
 
     explicit VariableExpr() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::VariableExpr;
+    }
 
     using Node::equals;
 
@@ -340,6 +405,11 @@ export struct Block final : public ConcreteNode<Node, Block>
 
     explicit Block() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::Block;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         for (auto& stmt : stmts) {
@@ -362,6 +432,11 @@ export struct VariableDecl final : public ConcreteNode<Node, VariableDecl>
 
     explicit VariableDecl() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::VariableDecl;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         value->accept(v);
@@ -380,6 +455,11 @@ export struct LetStmt final : public ConcreteNode<Stmt, LetStmt>
     Vec<VariableDecl> decls{};
 
     explicit LetStmt() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::LetStmt;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -404,6 +484,11 @@ export struct AssignStmt final : public ConcreteNode<Stmt, AssignStmt>
 
     explicit AssignStmt() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::AssignStmt;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         value->accept(v);
@@ -423,6 +508,11 @@ export struct PassStmt final : public ConcreteNode<Stmt, PassStmt>
 {
     explicit PassStmt() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::PassStmt;
+    }
+
     using Node::equals;
 
     auto equals([[maybe_unused]] const PassStmt& rhs) const -> bool
@@ -435,6 +525,11 @@ export struct ContinueStmt final : public ConcreteNode<Stmt, ContinueStmt>
 {
     explicit ContinueStmt() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::ContinueStmt;
+    }
+
     using Node::equals;
 
     auto equals([[maybe_unused]] const ContinueStmt& rhs) const -> bool
@@ -446,6 +541,11 @@ export struct ContinueStmt final : public ConcreteNode<Stmt, ContinueStmt>
 export struct BreakStmt final : public ConcreteNode<Stmt, BreakStmt>
 {
     explicit BreakStmt() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::BreakStmt;
+    }
 
     using Node::equals;
 
@@ -460,6 +560,11 @@ export struct ReturnStmt final : public ConcreteNode<Stmt, ReturnStmt>
     Option<Unique<Expr>> value{};
 
     explicit ReturnStmt() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::ReturnStmt;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -481,6 +586,11 @@ export struct CallStmt final : public ConcreteNode<Stmt, CallStmt>
     CallInfo call{};
 
     explicit CallStmt() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::CallStmt;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -519,9 +629,14 @@ export struct Branch final
 export struct IfStmt final : public ConcreteNode<Stmt, IfStmt>
 {
     Vec<Branch> branches{};
-    Option<Block> else_branch{};
+    Option<Block> else_branch{}; // TODO: rename to else_block
 
     explicit IfStmt() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::IfStmt;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
@@ -549,6 +664,11 @@ export struct WhileStmt final : public ConcreteNode<Stmt, WhileStmt>
 
     explicit WhileStmt() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::WhileStmt;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         condition->accept(v);
@@ -574,6 +694,11 @@ export struct Function final : public ConcreteNode<Node, Function>
 
     explicit Function() = default;
 
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::Function;
+    }
+
     auto accept_children(Visitor& v) -> void override
     {
         body.accept(v);
@@ -594,6 +719,11 @@ export struct Program final : public ConcreteNode<Node, Program>
     Vec<Function> functions{};
 
     explicit Program() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::Program;
+    }
 
     auto accept_children(Visitor& v) -> void override
     {
