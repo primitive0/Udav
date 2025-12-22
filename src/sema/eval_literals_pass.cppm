@@ -11,7 +11,6 @@ import udav.ast;
 import udav.sema.literal_parsing;
 
 import :exceptions;
-import :annotations;
 
 namespace udav {
 
@@ -33,8 +32,7 @@ private:
         if (!value) {
             throw PassException{};
         }
-
-        annotate_literal(expr, UdavValue{std::move(*value)});
+        expr.runtime_value = UdavValue{std::move(*value)};
     }
 
     auto visit(ast::IntegerExpr& expr) -> void override
@@ -43,18 +41,12 @@ private:
         if (!value) {
             throw PassException{};
         }
-
-        annotate_literal(expr, UdavValue{std::move(*value)});
+        expr.runtime_value = UdavValue{std::move(*value)};
     }
 
     auto visit(ast::BoolExpr& expr) -> void override
     {
-        annotate_literal(expr, UdavValue{UdavBoolean{expr.value}});
-    }
-
-    auto annotate_literal(ast::LiteralExpr& expr, UdavValue value) -> void
-    {
-        expr.annotation = std::make_unique<LiteralAnnotation>(std::move(value));
+        expr.runtime_value = UdavValue{UdavBoolean{expr.value}};
     }
 
     StringLiteralParser string_parser_{};

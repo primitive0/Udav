@@ -166,8 +166,8 @@ private:
 
     auto visit_literal(ast::LiteralExpr& expr) -> void
     {
-        const auto& literal_info = expr.annotation_as<LiteralAnnotation>();
-        result_ = UdavValue{literal_info.value};
+        assert(expr.runtime_value && "Must contain runtime value.");
+        result_ = UdavValue{*expr.runtime_value};
     }
 
     auto visit(ast::CallExpr&) -> void override
@@ -391,10 +391,8 @@ private:
 
     auto visit_literal(ast::LiteralExpr& expr) -> void
     {
-        assert(expr.annotation && "Must be non-null.");
-
-        const auto& annotation = static_cast<LiteralAnnotation&>(*expr.annotation);
-        buffer_.append(annotation.value.format());
+        assert(expr.runtime_value && "Must contain runtime value.");
+        buffer_.append(expr.runtime_value->format());
     }
 
     static auto resolve_functions(

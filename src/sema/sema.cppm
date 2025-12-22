@@ -3,7 +3,6 @@ export module udav.sema;
 import udav.ast;
 
 export import :exceptions;
-export import :annotations;
 export import :eval_literals_pass;
 
 namespace udav {

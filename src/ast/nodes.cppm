@@ -16,6 +16,7 @@ module;
 export module udav.ast:nodes;
 
 import udav.support.convert;
+import udav.runtime;
 
 import :visitor;
 
@@ -97,33 +98,13 @@ export enum class AssignKind {
     LeftShiftAssign,
 };
 
-export struct Annotation
-{
-public:
-    virtual ~Annotation() = default;
-};
-
 export struct Node
 {
 public:
-    Unique<Annotation> annotation;
-
     virtual ~Node() = default;
 
     Node(const Node&) = delete;
     auto operator=(const Node&) -> Node& = delete;
-
-    template<typename T>
-    auto annotation_as() -> T&
-    {
-        return static_cast<T&>(*annotation);
-    }
-
-    template<typename T>
-    auto annotation_as() const -> const T&
-    {
-        return static_cast<const T&>(*annotation);
-    }
 
     virtual auto node_kind() const -> NodeKind = 0;
 
@@ -219,6 +200,9 @@ export struct BinaryExpr final : public ConcreteNode<Expr, BinaryExpr>
 
 export struct LiteralExpr : public Expr
 {
+public:
+    Option<UdavValue> runtime_value{};
+
 protected:
     LiteralExpr(LiteralExpr&&) = default;
     auto operator=(LiteralExpr&&) -> LiteralExpr& = default;
