@@ -16,6 +16,7 @@ import udav.support.convert;
 import :visitor;
 import :nodes;
 
+// TODO: move to udav::ast namespace
 namespace udav {
 
 class AstFormatter final : public ast::Visitor
@@ -103,12 +104,20 @@ public:
         print_children("args", node.call.args);
     }
 
+    auto visit(ast::Branch& branch) -> void override
+    {
+        begin_node("Branch");
+        auto g = IndentGuard{*this};
+        print_children("condition", branch.condition);
+        print_children("body", branch.body);
+    }
+
     auto visit(ast::IfStmt& node) -> void override
     {
         begin_node("IfStmt");
         auto g = IndentGuard{*this};
         print_children("branches", node.branches);
-        print_children("else_branch", node.else_branch);
+        print_children("else_block", node.else_block);
     }
 
     auto visit(ast::WhileStmt& node) -> void override
@@ -194,15 +203,6 @@ private:
     auto print_node(ast::Node& node) -> void
     {
         node.accept(*this);
-    }
-
-    // TODO: remove, when ast::Branch will become ast::Node
-    auto print_node(ast::Branch& branch) -> void
-    {
-        begin_node("Branch");
-        auto g = IndentGuard{*this};
-        print_children("condition", branch.condition);
-        print_children("body", branch.body);
     }
 
     auto print_field(StrView name, StrView value) -> void

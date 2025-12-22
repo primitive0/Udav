@@ -25,7 +25,7 @@ Program
                                 Block
                                   stmts:
                                     PassStmt
-                          else_branch:
+                          else_block:
                             some:
                               Block
                                 stmts:
@@ -38,7 +38,7 @@ Program
                     Block
                       stmts:
                         PassStmt
-              else_branch:
+              else_block:
                 some:
                   Block
                     stmts:
@@ -60,7 +60,7 @@ Program
                             Block
                               stmts:
                                 PassStmt
-                      else_branch:
+                      else_block:
                         some:
                           Block
                             stmts:
@@ -75,5 +75,5 @@ Program
                     Block
                       stmts:
                         PassStmt
-              else_branch:
+              else_block:
                 none

@@ -21,6 +21,7 @@ public:
     auto visit(BreakStmt& n)    -> void override { n.accept_children(*this); }
     auto visit(ReturnStmt& n)   -> void override { n.accept_children(*this); }
     auto visit(CallStmt& n)     -> void override { n.accept_children(*this); }
+    auto visit(Branch& n)       -> void override { n.accept_children(*this); }
     auto visit(IfStmt& n)       -> void override { n.accept_children(*this); }
     auto visit(WhileStmt& n)    -> void override { n.accept_children(*this); }
 

@@ -616,7 +616,7 @@ public:
             stream_.advance();
             expect(TokenKind::Colon);
 
-            if_stmt->else_branch = parse_block();
+            if_stmt->else_block = parse_block();
         }
 
         return if_stmt;

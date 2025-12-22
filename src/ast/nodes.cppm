@@ -36,6 +36,7 @@ export enum class NodeKind {
     BreakStmt,
     ReturnStmt,
     CallStmt,
+    Branch,
     IfStmt,
     WhileStmt,
 
@@ -442,15 +443,19 @@ export struct CallStmt final : public ConcreteNode<Stmt, CallStmt>
     }
 };
 
-// TODO: inherit from Node
-export struct Branch final
+export struct Branch final : public ConcreteNode<Node, Branch>
 {
     Unique<Expr> condition{};
     Block body{};
 
     explicit Branch() = default;
 
-    auto accept_children(Visitor& v) -> void
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::Branch;
+    }
+
+    auto accept_children(Visitor& v) -> void override
     {
         condition->accept(v);
         body.accept(v);
@@ -460,7 +465,7 @@ export struct Branch final
 export struct IfStmt final : public ConcreteNode<Stmt, IfStmt>
 {
     Vec<Branch> branches{};
-    Option<Block> else_branch{}; // TODO: rename to else_block
+    Option<Block> else_block{};
 
     explicit IfStmt() = default;
 
@@ -472,10 +477,10 @@ export struct IfStmt final : public ConcreteNode<Stmt, IfStmt>
     auto accept_children(Visitor& v) -> void override
     {
         for (auto& branch : branches) {
-            branch.accept_children(v);
+            branch.accept(v);
         }
-        if (else_branch) {
-            (*else_branch).accept(v);
+        if (else_block) {
+            (*else_block).accept(v);
         }
     }
 };
@@ -564,6 +569,7 @@ public:
     auto visit(BreakStmt&)    -> void override { trace_.push_back(NodeKind::BreakStmt); }
     auto visit(ReturnStmt&)   -> void override { trace_.push_back(NodeKind::ReturnStmt); }
     auto visit(CallStmt&)     -> void override { trace_.push_back(NodeKind::CallStmt); }
+    auto visit(Branch&)       -> void override { trace_.push_back(NodeKind::Branch); }
     auto visit(IfStmt&)       -> void override { trace_.push_back(NodeKind::IfStmt); }
     auto visit(WhileStmt&)    -> void override { trace_.push_back(NodeKind::WhileStmt); }
 
@@ -601,7 +607,7 @@ TEMPLATE_TEST_CASE("AST nodes are visited", "[ast]",
 
     // Statements
     Block, LetStmt, VariableDecl, AssignStmt, PassStmt, ContinueStmt, BreakStmt,
-    ReturnStmt, CallStmt, IfStmt, WhileStmt,
+    ReturnStmt, CallStmt, Branch, IfStmt, WhileStmt,
 
     // Expressions
     UnaryExpr, BinaryExpr, IntegerExpr, StringExpr, BoolExpr, CallExpr, VariableExpr)
@@ -711,6 +717,7 @@ TEST_CASE("ReturnStmt node children are visited", "[ast]")
 
 TEST_CASE("CallStmt node children are visited", "[ast]")
 {
+    // TODO: remove common "using namespace"
     using namespace Catch::Matchers;
 
     auto call_stmt = CallStmt{};
@@ -727,9 +734,50 @@ TEST_CASE("CallStmt node children are visited", "[ast]")
         }));
 }
 
-TEST_CASE("IfStmt node children are visited", "[ast][!mayfail]")
+TEST_CASE("Branch node children are visited", "[ast]")
 {
-    FAIL("TODO: implement this test case, when Branch inherits Node");
+    using namespace Catch::Matchers;
+
+    auto branch = Branch{};
+    branch.condition = std::make_unique<BoolExpr>();
+
+    CHECK_THAT(
+        get_node_children_trace(branch),
+        RangeEquals({
+            NodeKind::BoolExpr,
+            NodeKind::Block,
+        }));
+}
+
+TEST_CASE("IfStmt node children are visited", "[ast]")
+{
+    using namespace Catch::Matchers;
+
+    {
+        auto if_stmt = IfStmt{};
+        if_stmt.branches.emplace_back();
+        if_stmt.branches.emplace_back();
+
+        CHECK_THAT(
+            get_node_children_trace(if_stmt),
+            RangeEquals({
+                NodeKind::Branch,
+                NodeKind::Branch,
+            }));
+    }
+
+    {
+        auto if_stmt = IfStmt{};
+        if_stmt.branches.emplace_back();
+        if_stmt.else_block = Block{};
+
+        CHECK_THAT(
+            get_node_children_trace(if_stmt),
+            RangeEquals({
+                NodeKind::Branch,
+                NodeKind::Block,
+            }));
+    }
 }
 
 TEST_CASE("WhileStmt node children are visited", "[ast]")

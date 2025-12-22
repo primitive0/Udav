@@ -24,6 +24,7 @@ public:
     virtual auto visit(struct BreakStmt&)    -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct ReturnStmt&)   -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct CallStmt&)     -> void { assert(false && "Not implemented."); }
+    virtual auto visit(struct Branch&)       -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct IfStmt&)       -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct WhileStmt&)    -> void { assert(false && "Not implemented."); }
 

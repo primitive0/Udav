@@ -101,7 +101,7 @@ Program
                                   args:
                                     StringExpr
                                       literal = "Buzz"
-                      else_branch:
+                      else_block:
                         some:
                           Block
                             stmts:
