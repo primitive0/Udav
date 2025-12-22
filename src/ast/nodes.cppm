@@ -544,6 +544,10 @@ export struct Program final : public ConcreteNode<Node, Program>
     }
 };
 
+namespace test {
+
+using namespace Catch::Matchers;
+
 namespace {
 
 class TraceVisitor final : public Visitor
@@ -612,16 +616,12 @@ TEMPLATE_TEST_CASE("AST nodes are visited", "[ast]",
     // Expressions
     UnaryExpr, BinaryExpr, IntegerExpr, StringExpr, BoolExpr, CallExpr, VariableExpr)
 {
-    using namespace Catch::Matchers;
-
     auto node = TestType{};
     CHECK_THAT(get_node_trace(node), RangeEquals({node.node_kind()}));
 }
 
 TEST_CASE("Program node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto program = Program{};
     program.functions.emplace_back();
     program.functions.emplace_back();
@@ -638,8 +638,6 @@ TEST_CASE("Program node children are visited", "[ast]")
 
 TEST_CASE("Function node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto function = Function{};
 
     CHECK_THAT(get_node_children_trace(function), RangeEquals({NodeKind::Block}));
@@ -647,8 +645,6 @@ TEST_CASE("Function node children are visited", "[ast]")
 
 TEST_CASE("Block node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto block = Block{};
     block.stmts.push_back(std::make_unique<LetStmt>());
     block.stmts.push_back(std::make_unique<CallStmt>());
@@ -667,8 +663,6 @@ TEST_CASE("Block node children are visited", "[ast]")
 
 TEST_CASE("LetStmt node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto let_stmt = LetStmt{};
     let_stmt.decls.emplace_back();
     let_stmt.decls.emplace_back();
@@ -683,8 +677,6 @@ TEST_CASE("LetStmt node children are visited", "[ast]")
 
 TEST_CASE("VariableDecl node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto var_decl = VariableDecl{};
     var_decl.value = std::make_unique<IntegerExpr>();
 
@@ -693,8 +685,6 @@ TEST_CASE("VariableDecl node children are visited", "[ast]")
 
 TEST_CASE("AssignStmt node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto assign_stmt = AssignStmt{};
     assign_stmt.value = std::make_unique<BoolExpr>();
 
@@ -703,8 +693,6 @@ TEST_CASE("AssignStmt node children are visited", "[ast]")
 
 TEST_CASE("ReturnStmt node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto return_nothing_stmt = ReturnStmt{};
     CHECK(get_node_children_trace(return_nothing_stmt).empty());
 
@@ -717,9 +705,6 @@ TEST_CASE("ReturnStmt node children are visited", "[ast]")
 
 TEST_CASE("CallStmt node children are visited", "[ast]")
 {
-    // TODO: remove common "using namespace"
-    using namespace Catch::Matchers;
-
     auto call_stmt = CallStmt{};
     call_stmt.call.args.push_back(std::make_unique<UnaryExpr>());
     call_stmt.call.args.push_back(std::make_unique<VariableExpr>());
@@ -736,8 +721,6 @@ TEST_CASE("CallStmt node children are visited", "[ast]")
 
 TEST_CASE("Branch node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto branch = Branch{};
     branch.condition = std::make_unique<BoolExpr>();
 
@@ -751,8 +734,6 @@ TEST_CASE("Branch node children are visited", "[ast]")
 
 TEST_CASE("IfStmt node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     {
         auto if_stmt = IfStmt{};
         if_stmt.branches.emplace_back();
@@ -782,8 +763,6 @@ TEST_CASE("IfStmt node children are visited", "[ast]")
 
 TEST_CASE("WhileStmt node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto while_stmt = WhileStmt{};
     while_stmt.condition = std::make_unique<CallExpr>();
 
@@ -797,8 +776,6 @@ TEST_CASE("WhileStmt node children are visited", "[ast]")
 
 TEST_CASE("UnaryExpr node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto unary_expr = UnaryExpr{};
     unary_expr.expr = std::make_unique<StringExpr>();
 
@@ -807,8 +784,6 @@ TEST_CASE("UnaryExpr node children are visited", "[ast]")
 
 TEST_CASE("BinaryExpr node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto binary_expr = BinaryExpr{};
     binary_expr.left = std::make_unique<VariableExpr>();
     binary_expr.right = std::make_unique<UnaryExpr>();
@@ -823,8 +798,6 @@ TEST_CASE("BinaryExpr node children are visited", "[ast]")
 
 TEST_CASE("CallExpr node children are visited", "[ast]")
 {
-    using namespace Catch::Matchers;
-
     auto call_expr = CallExpr{};
     call_expr.call.args.push_back(std::make_unique<BoolExpr>());
     call_expr.call.args.push_back(std::make_unique<CallExpr>());
@@ -840,5 +813,7 @@ TEST_CASE("CallExpr node children are visited", "[ast]")
 }
 
 } // namespace
+
+} // namespace test
 
 } // namespace udav::ast
