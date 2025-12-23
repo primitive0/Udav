@@ -1,9 +1,11 @@
 module;
 
+#include <functional>
 #include <ostream>
 
 #include <magic_enum/magic_enum.hpp>
 
+#include "support/hash_map.hpp"
 #include "support/option.hpp"
 #include "support/string.hpp"
 #include "support/unique.hpp"
@@ -492,9 +494,13 @@ export struct WhileStmt final : public ConcreteNode<Stmt, WhileStmt>
 
 export struct Function final : public ConcreteNode<Node, Function>
 {
+    using NativeCallable = std::function<auto(const Vec<UdavValue>&)->UdavValue>;
+
     StrView name{};
     Vec<StrView> args{}; // TODO: add FunctionArg node
     Block body{};
+
+    NativeCallable native_callable{};
 
     explicit Function() = default;
 
@@ -512,6 +518,7 @@ export struct Function final : public ConcreteNode<Node, Function>
 export struct Program final : public ConcreteNode<Node, Program>
 {
     Vec<Function> functions{};
+    HashMap<StrView, Function*> function_map{};
 
     explicit Program() = default;
 

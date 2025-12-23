@@ -75,6 +75,7 @@ target_sources(UdavLib
       src/sema/common/common.cppm
       src/sema/literal_parsing/literal_parsing.cppm
       src/sema/pass/eval_literals.cppm
+      src/sema/pass/collect_functions.cppm
       src/sema/sema.cppm
       src/eval/variable_table.cppm
       src/eval/eval.cppm

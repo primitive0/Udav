@@ -1,0 +1,19 @@
+# RUN: %udav %s | FileCheck %s
+
+fun before_main_func():
+    println("before main")
+
+fun main():
+    before_main_func()    # CHECK: before main
+    println("in between") # CHECK: in between
+    after_main_func()     # CHECK: after main
+
+    another_func() # CHECK: before main
+                   # CHECK: after main
+
+fun after_main_func():
+    println("after main")
+
+fun another_func():
+    before_main_func()
+    after_main_func()

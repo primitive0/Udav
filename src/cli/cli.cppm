@@ -12,10 +12,12 @@ module;
 
 #include "support/string.hpp"
 #include "support/unique.hpp"
+#include "support/vector.hpp"
 
 export module udav.cli;
 
 import udav.lexer;
+import udav.runtime;
 import udav.ast;
 import udav.parsing;
 import udav.sema;
@@ -77,6 +79,17 @@ private:
         }
     }
 
+    auto make_function(
+        StrView name,
+        ast::Function::NativeCallable callable)
+        -> ast::Function
+    {
+        auto function_node = ast::Function{};
+        function_node.name = name;
+        function_node.native_callable = std::move(callable);
+        return function_node;
+    }
+
     auto execute_program() -> void
     {
         auto source_code = read_program_source();
@@ -95,9 +108,40 @@ private:
             throw ExitCliException{1};
         }
 
+        auto print_buffer = String{};
+        auto format_args_to_buffer = [&](const Vec<UdavValue>& args) {
+            print_buffer.clear();
+            for (const auto& arg : args) {
+                print_buffer.append(arg.format());
+            }
+        };
+
+        program_node->functions.push_back(
+            make_function(
+                "print",
+                [&](const Vec<UdavValue>& args) {
+                    format_args_to_buffer(args);
+                    std::cout << print_buffer << std::flush;
+                    return UdavValue{UdavBoolean{false}};
+                }));
+
+        program_node->functions.push_back(
+            make_function(
+                "println",
+                [&](const Vec<UdavValue>& args) {
+                    format_args_to_buffer(args);
+                    std::cout << print_buffer << '\n';
+                    return UdavValue{UdavBoolean{false}};
+                }));
+
         perform_semantic_analysis(*program_node);
 
-        Evaluator{*program_node}.eval();
+        auto main_entry = program_node->function_map.find("main");
+        if (main_entry == program_node->function_map.end()) {
+            throw EvalException{};
+        }
+
+        FunctionEvaluator{*program_node}.eval(*main_entry->second, {});
     }
 
     auto check_syntax() -> void

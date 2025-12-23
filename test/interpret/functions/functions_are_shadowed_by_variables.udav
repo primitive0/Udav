@@ -1,0 +1,19 @@
+#=== CASE: functions_are_shadowed ===
+# RUN: %select -c functions_are_shadowed %s | not %udav
+
+fun foo():
+    println("foo!")
+
+fun main():
+    let foo = 42
+    foo()
+
+#=== CASE: function_is_available_before_shadowing ===
+# RUN: %select -c function_is_available_before_shadowing %s | %udav | FileCheck --check-prefix=CHECK-TC2 %s
+
+fun foo():
+    println("foo!")
+
+fun main():
+    foo() # CHECK-TC2: foo
+    let foo = 42

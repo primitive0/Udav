@@ -19,7 +19,7 @@ import udav.eval.variable_table;
 
 namespace udav {
 
-class EvalException : public std::exception
+export class EvalException : public std::exception
 {
 public:
     explicit EvalException()
@@ -287,139 +287,113 @@ private:
     Option<UdavValue> result_;
 };
 
-export class Evaluator final : private ast::Visitor
+export class FunctionEvaluator final : private ast::Visitor
 {
 public:
-    explicit Evaluator(ast::Program& program)
+    explicit FunctionEvaluator(ast::Program& program)
         : program_{program}
     {
     }
 
-    auto eval() -> void
+    auto eval(ast::Function& function, const Vec<UdavValue>& args) -> UdavValue
     {
-        auto funcs = resolve_functions(program_);
-        if (auto main = funcs.find("main"); main != funcs.cend()) {
-            visit(*main->second);
+        if (function.native_callable) {
+            return function.native_callable(args);
         }
+
+        // TODO: populate var table
+
+        function.accept(*this);
+
+        // assert(evaluator.result_ && "result_ must not be empty.");
+        // return std::move(*evaluator.result_);
+        return UdavValue{UdavBoolean{false}};
     }
 
 private:
-    auto visit(ast::Function& func) -> void override
+    auto visit(ast::Function& function) -> void override
     {
-        for (auto& stmt : func.body.stmts) {
+        for (auto& stmt : function.body.stmts) {
             stmt->accept(*this);
+            if (should_exit_function()) {
+                break;
+            }
         }
     }
 
-    auto visit(ast::PassStmt& stmt) -> void override
+    auto visit(ast::LetStmt& let_stmt) -> void override
     {
-        // Do nothing on pass statement
-    }
-
-    auto visit(ast::LetStmt& stmt) -> void override
-    {
-        for (auto& decl : stmt.decls) {
+        for (auto& decl : let_stmt.decls) {
             decl.accept(*this);
         }
     }
 
-    auto visit(ast::VariableDecl& decl) -> void override
+    auto visit(ast::VariableDecl& var_decl) -> void override
     {
-        auto value = ExpressionEvaluator{var_table_}.eval(*decl.value);
-        var_table_.declare(decl.name, std::move(value));
+        auto value = ExpressionEvaluator{var_table_}.eval(*var_decl.value);
+        var_table_.declare(var_decl.name, std::move(value));
     }
 
-    auto visit(ast::AssignStmt& stmt) -> void override
+    auto visit(ast::AssignStmt& assign_stmt) -> void override
     {
-        if (stmt.kind != ast::AssignKind::Assign) {
+        if (assign_stmt.kind != ast::AssignKind::Assign) {
             assert(false && "WIP.");
         }
 
-        auto target = var_table_.get(stmt.target);
+        auto target = var_table_.get(assign_stmt.target);
         if (!target) {
             throw EvalException{};
         }
-        *target = ExpressionEvaluator{var_table_}.eval(*stmt.value);
+        *target = ExpressionEvaluator{var_table_}.eval(*assign_stmt.value);
     }
 
-    auto visit(ast::CallStmt& stmt) -> void override
+    auto visit(ast::PassStmt& pass_stmt) -> void override
     {
-        call_function(stmt.call);
+        // Do nothing on pass statement
     }
 
-    auto call_function(ast::CallInfo& info) -> void
+    // auto visit(ast::ReturnStmt& return_stmt) -> void override
+    // {
+    //     if (return_stmt.value) {
+    //         result_ = ExpressionEvaluator{var_table_}.eval(**return_stmt.value);
+    //     } else {
+    //         result_ = UdavValue{UdavBoolean{false}};
+    //     }
+    // }
+
+    auto visit(ast::CallStmt& call_stmt) -> void override
     {
-        if (info.function == "println") {
-            call_println(info.args);
-        } else if (info.function == "print") {
-            call_print(info.args);
-        } else {
+        auto _ = call_function(call_stmt.call);
+    }
+
+    auto call_function(ast::CallInfo& call_info) -> UdavValue
+    {
+        if (var_table_.get(call_info.function)) {
             throw EvalException{};
         }
-    }
 
-    auto call_println(Vec<Unique<ast::Expr>>& args) -> void
-    {
-        format_args_to_buffer(args);
-        std::cout << buffer_ << "\n";
-    }
-
-    auto call_print(Vec<Unique<ast::Expr>>& args) -> void
-    {
-        format_args_to_buffer(args);
-        std::cout << buffer_ << std::flush;
-    }
-
-    auto format_args_to_buffer(Vec<Unique<ast::Expr>>& args) -> void
-    {
-        buffer_.clear();
-        for (auto& arg : args) {
-            auto value = ExpressionEvaluator{var_table_}.eval(*arg);
-            buffer_.append(value.format());
+        auto entry = program_.function_map.find(call_info.function);
+        if (entry == program_.function_map.end()) {
+            throw EvalException{};
         }
-    }
+        auto& function = *entry->second;
 
-    auto visit(ast::StringExpr& expr) -> void override
-    {
-        visit_literal(expr);
-    }
-
-    auto visit(ast::IntegerExpr& expr) -> void override
-    {
-        visit_literal(expr);
-    }
-
-    auto visit(ast::BoolExpr& expr) -> void override
-    {
-        visit_literal(expr);
-    }
-
-    auto visit_literal(ast::LiteralExpr& expr) -> void
-    {
-        assert(expr.runtime_value && "Must contain runtime value.");
-        buffer_.append(expr.runtime_value->format());
-    }
-
-    static auto resolve_functions(
-        ast::Program& program)
-        -> HashMap<StrView, ast::Function*>
-    {
-        auto funcs = HashMap<StrView, ast::Function*>{};
-
-        for (auto& func : program.functions) {
-            auto [_, success] = funcs.insert({func.name, &func});
-            if (!success) {
-                throw EvalException{};
-            }
+        auto evaluated_args = Vec<UdavValue>{};
+        for (auto& arg : call_info.args) {
+            evaluated_args.push_back(ExpressionEvaluator{var_table_}.eval(*arg));
         }
 
-        return funcs;
+        return FunctionEvaluator{program_}.eval(function, evaluated_args);
+    }
+
+    auto should_exit_function() -> bool
+    {
+        return result_.has_value();
     }
 
     ast::Program& program_;
-
     VariableTable var_table_{};
-    String buffer_{};
+    Option<UdavValue> result_{};
 };
 
 } // namespace udav
