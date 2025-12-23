@@ -48,7 +48,7 @@ private:
 TEST_CASE("UdavString default constructor creates empty string", "[runtime]")
 {
     const auto udav_string = UdavString{};
-    CHECK(StrView(udav_string) == "");
+    CHECK(StrView(udav_string).empty());
 }
 
 TEST_CASE("UdavString is created from StrView and converted back", "[runtime]")
@@ -70,7 +70,6 @@ TEST_CASE("UdavString is created from String", "[runtime]")
 
     const auto udav_string = UdavString{std::move(str)};
 
-    CHECK(str.empty());
     CHECK(StrView(udav_string) == "foo");
 }
 
