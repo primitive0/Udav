@@ -1,9 +1,9 @@
 export module udav.sema;
 
-import udav.ast;
+export import udav.sema.common;
 
-export import :exceptions;
-export import :eval_literals_pass;
+import udav.ast;
+import udav.sema.pass.eval_literals;
 
 namespace udav {
 

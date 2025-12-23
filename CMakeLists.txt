@@ -72,9 +72,9 @@ target_sources(UdavLib
       src/runtime/boolean.cppm
       src/runtime/value.cppm
       src/runtime/runtime.cppm
-      src/sema/exceptions.cppm
-      src/sema/literal_parsing.cppm
-      src/sema/eval_literals_pass.cppm
+      src/sema/common/common.cppm
+      src/sema/literal_parsing/literal_parsing.cppm
+      src/sema/pass/eval_literals.cppm
       src/sema/sema.cppm
       src/eval/variable_table.cppm
       src/eval/eval.cppm

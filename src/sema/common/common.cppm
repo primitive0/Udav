@@ -4,11 +4,11 @@ module;
 
 #include "support/string.hpp"
 
-export module udav.sema:exceptions;
+export module udav.sema.common;
 
 namespace udav {
 
-class PassException : public std::exception
+export class PassException : public std::exception
 {
 public:
     explicit PassException()

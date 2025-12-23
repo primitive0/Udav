@@ -4,17 +4,15 @@ module;
 
 #include "support/unique.hpp"
 
-export module udav.sema:eval_literals_pass;
+export module udav.sema.pass.eval_literals;
 
 import udav.runtime;
 import udav.ast;
+import udav.sema.common;
 import udav.sema.literal_parsing;
-
-import :exceptions;
 
 namespace udav {
 
-// TODO: move into module udav.sema.pass.eval_literals
 export class EvalLiteralsPass final : private ast::RecursiveVisitor
 {
 public:
