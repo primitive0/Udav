@@ -21,3 +21,18 @@ fun main():
 
 fun main():
     pass
+
+#=== CASE: func_names_are_case_sensitive ===
+# RUN: %select -c func_names_are_case_sensitive %s | %udav
+
+fun foo():
+    pass
+
+fun Foo():
+    pass
+
+fun foO():
+    pass
+
+fun main():
+    pass

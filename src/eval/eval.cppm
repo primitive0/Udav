@@ -311,6 +311,11 @@ private:
         }
     }
 
+    auto visit(ast::PassStmt& stmt) -> void override
+    {
+        // Do nothing on pass statement
+    }
+
     auto visit(ast::LetStmt& stmt) -> void override
     {
         for (auto& decl : stmt.decls) {
