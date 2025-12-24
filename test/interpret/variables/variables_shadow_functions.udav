@@ -9,11 +9,12 @@ fun main():
     foo()
 
 #=== CASE: function_is_available_before_shadowing ===
-# RUN: %select -c function_is_available_before_shadowing %s | %udav | FileCheck --check-prefix=CHECK-TC2 %s
+# RUN: %select -c function_is_available_before_shadowing %s | %udav | FileCheck --check-prefix=CHECK-2 %s
 
 fun foo():
     println("foo!")
 
 fun main():
-    foo() # CHECK-TC2: foo
-    let foo = 42
+    foo()        # CHECK-2: foo
+    let foo = 8
+    println(foo) # CHECK-2: 8
