@@ -70,36 +70,6 @@ bool()
 
 ## Семантика преобразований
 
-### int()
-
-Пытается преобразовать входное значение к типу int
-
-```myebnf
-int(expression) =
-    expression<int>
-
-int(true) = 1
-
-int(false) = 0
-```
-
-### int() runtime error
-
-1) 
-
-### str()
-
-Преобразовывает входное значение к типу string
-
-```myebnf
-str(expression) =
-    expression<string>
-
-str(true) = "true"
-
-str(false) = "false"
-```
-
 ### bool()
 
 Преобразовывает значение к типу bool
@@ -114,43 +84,3 @@ bool(0) = false
 
 ## Встроенные функции для работы с типами
 
-### string
-
-#### reverse()
-
-```myebnf
-reverse(expression<string>) = string
-```
-
-принимает строку и возвращает её символы в обратном порядке
-
-#### find_substr()
-
-```myebnf
-find_substr(str: expression<string>, substr: expression<string>) = int
-```
-
-возвращает число - первое вхождение подстроки substr в строку str
-
-если подстрока не была найдена, возвращает `-1`
-
-#### substr()
-
-```myebnf
-substr(str: expression<string>, start: int, end: int) = string
-```
-
-возвращает подстроку от исходной строки
-
-если числа start или end выходят за пределы строки -> `runtime_error`
-если start > end -> `runtime_error`
-
-#### len()
-
-```myebnf
-len(str: expression<string>) = int
-```
-
-возвращает число - количество символов в строке
-
-если в строке присутствуют символы по типу `\n`, `\t`, они тоже учитываются
