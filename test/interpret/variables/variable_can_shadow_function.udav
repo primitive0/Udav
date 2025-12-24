@@ -1,0 +1,12 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    foo()
+
+fun foo():
+    let bar = 52
+    println(bar)              # CHECK:52
+    println("foo() finished") # CHECK-NEXT:foo() finished
+
+fun bar():
+    println("bar() called")
