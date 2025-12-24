@@ -1,0 +1,8 @@
+# RUN: not %udav %s
+
+fun main():
+    let x = "Text"
+    function()
+
+fun function():
+    println(x)
