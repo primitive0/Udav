@@ -1,0 +1,11 @@
+#=== CASE: empty_program ===
+# RUN: %select -c empty_program %s | not %udav
+
+#=== CASE: has_funcs_but_no_main ===
+# RUN: %select -c has_funcs_but_no_main %s | not %udav
+
+fun foo():
+    pass
+
+fun bar():
+    println("Hello, world")
