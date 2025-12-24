@@ -20,8 +20,7 @@ import udav.lexer;
 import udav.runtime;
 import udav.ast;
 import udav.parsing;
-import udav.sema;
-import udav.eval;
+import udav.interpreter;
 
 namespace udav {
 
@@ -97,56 +96,11 @@ private:
     {
         auto source_code = read_program_source();
 
-        auto stream = SemanticTokenStream{Lexer{source_code}};
-        auto parser = Parser{stream};
-
-        auto program_node = Unique<ast::Program>{};
         try {
-            program_node = parser.parse_program();
-        } catch (const LexerException&) {
-            std::cout << "Failed to lex code.\n";
+            Interpreter{}.execute(source_code);
+        } catch (const InterpreterException&) {
+            std::cout << "Failed to execute code.\n";
             throw ExitCliException{1};
-        } catch (const ParserException&) {
-            std::cout << "Failed to parse code.\n";
-            throw ExitCliException{1};
-        }
-
-        auto print_buffer = String{};
-        auto format_args_to_buffer = [&](const Vec<UdavValue>& args) {
-            print_buffer.clear();
-            for (const auto& arg : args) {
-                print_buffer.append(arg.format());
-            }
-        };
-
-        program_node->functions.push_back(
-            make_function(
-                "print",
-                [&](const Vec<UdavValue>& args) {
-                    format_args_to_buffer(args);
-                    std::cout << print_buffer << std::flush;
-                    return UdavValue{UdavNull{}};
-                }));
-
-        program_node->functions.push_back(
-            make_function(
-                "println",
-                [&](const Vec<UdavValue>& args) {
-                    format_args_to_buffer(args);
-                    std::cout << print_buffer << '\n';
-                    return UdavValue{UdavNull{}};
-                }));
-
-        perform_semantic_analysis(*program_node);
-
-        auto main_entry = program_node->function_map.find("main");
-        if (main_entry == program_node->function_map.end()) {
-            throw EvalException{};
-        }
-
-        auto value = FunctionEvaluator{*program_node}.eval(*main_entry->second, {});
-        if (!value.is_null()) {
-            throw EvalException{};
         }
     }
 

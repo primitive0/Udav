@@ -9,11 +9,18 @@ import udav.sema.pass.enforce_context_dependent_rules;
 
 namespace udav {
 
-export auto perform_semantic_analysis(ast::Program& program) -> void
+export class SemanticAnalyzer final
 {
-    EvalLiteralsPass{}.process(program);
-    CollectFunctionsPass{}.process(program);
-    EnforceContextDependentRulesPass{}.process(program);
-}
+public:
+    static auto run(ast::Program& program) -> void
+    {
+        EvalLiteralsPass{}.process(program);
+        CollectFunctionsPass{}.process(program);
+        EnforceContextDependentRulesPass{}.process(program);
+    }
+
+private:
+    explicit SemanticAnalyzer() = default;
+};
 
 } // namespace udav

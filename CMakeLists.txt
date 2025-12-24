@@ -81,6 +81,8 @@ target_sources(UdavLib
       src/sema/sema.cppm
       src/eval/variable_table.cppm
       src/eval/eval.cppm
+      src/interpreter/runtime_env/runtime_env.cppm
+      src/interpreter/interpreter.cppm
       src/cli/cli.cppm)
 target_link_libraries(UdavLib
   PUBLIC
