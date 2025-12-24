@@ -1,0 +1,6 @@
+# RUN: not %udav %s
+
+fun main():
+    let var = 1
+    let var = 2
+    println(var)

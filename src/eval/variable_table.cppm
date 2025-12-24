@@ -20,6 +20,7 @@ public:
         scopes_.emplace_back();
     }
 
+    [[nodiscard]]
     auto declare(StrView name, UdavValue value) -> bool
     {
         auto& current_scope = scopes_.back();

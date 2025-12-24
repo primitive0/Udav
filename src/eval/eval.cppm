@@ -88,7 +88,12 @@ private:
 
     auto visit(ast::VariableDecl& var_decl) -> void override
     {
-        var_table_.declare(var_decl.name, eval_expression(*var_decl.value));
+        auto success = var_table_.declare(
+            var_decl.name,
+            eval_expression(*var_decl.value));
+        if (!success) {
+            throw EvalException{};
+        }
     }
 
     auto visit(ast::AssignStmt& assign_stmt) -> void override
