@@ -1,0 +1,5 @@
+# RUN: not %udav %s
+
+fun main():
+    println("main() is going to return non-null value")
+    return 42

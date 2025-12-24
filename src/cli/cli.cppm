@@ -141,7 +141,10 @@ private:
             throw EvalException{};
         }
 
-        FunctionEvaluator{*program_node}.eval(*main_entry->second, {});
+        auto value = FunctionEvaluator{*program_node}.eval(*main_entry->second, {});
+        if (!value.is_null()) {
+            throw EvalException{};
+        }
     }
 
     auto check_syntax() -> void

@@ -61,6 +61,11 @@ public:
             [](const UdavNull& null) { return null.format(); });
     }
 
+    auto is_null() const -> bool
+    {
+        return std::holds_alternative<UdavNull>(inner_);
+    }
+
 private:
     using Value = Variant<
         UdavString,
