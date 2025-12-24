@@ -1,0 +1,51 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    return_string()
+    return_int()
+    return_bool()
+    return_variable()
+    return_call()
+    return_nothing()
+    no_return_stmt()
+
+    # Check that there are no side effects of calling functions above.
+    # If something is printed before this println, then FileCheck will
+    # emit an error.
+    println("---") # CHECK:---
+
+    println(return_string())   # CHECK:foo
+    println(return_int())      # CHECK:42
+    println(return_bool())     # CHECK:false
+    println(return_variable()) # CHECK:100
+    println(return_call())     # CHECK:123
+
+    # TODO: fix test cases
+    println(return_nothing())  # CHECK:false
+    println(no_return_stmt())  # CHECK:false
+
+fun return_string():
+    return "foo"
+
+fun return_int():
+    return 42
+
+fun return_bool():
+    return false
+
+fun return_nothing():
+    return
+
+fun no_return_stmt():
+    pass
+
+fun return_null():
+    # TODO: implement test case
+    pass
+
+fun return_variable():
+    let variable = 100
+    return variable
+
+fun return_call():
+    return return_variable() + 23

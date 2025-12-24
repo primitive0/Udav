@@ -41,28 +41,108 @@ private:
     String message_;
 };
 
-class ExpressionEvaluator final : private ast::Visitor
+export class FunctionEvaluator final : private ast::Visitor
 {
 public:
-    explicit ExpressionEvaluator(const VariableTable& var_table)
-        : var_table_{var_table}
+    explicit FunctionEvaluator(ast::Program& program)
+        : program_{program}
     {
     }
 
-    auto eval(ast::Expr& expr) -> UdavValue
+    auto eval(ast::Function& function, const Vec<UdavValue>& args) -> UdavValue
     {
-        expr.accept(*this);
-        return take_result();
+        if (function.native_callable) {
+            return function.native_callable(args);
+        }
+
+        // TODO: populate var table
+
+        function.accept(*this);
+
+        if (function_result_) {
+            auto result = std::move(*function_result_);
+            function_result_.reset();
+            return result;
+        } else {
+            return UdavValue{UdavBoolean{false}};
+        }
     }
 
 private:
+    auto visit(ast::Function& function) -> void override
+    {
+        for (auto& stmt : function.body.stmts) {
+            stmt->accept(*this);
+            if (should_exit_function()) {
+                break;
+            }
+        }
+    }
+
+    auto visit(ast::LetStmt& let_stmt) -> void override
+    {
+        for (auto& decl : let_stmt.decls) {
+            decl.accept(*this);
+        }
+    }
+
+    auto visit(ast::VariableDecl& var_decl) -> void override
+    {
+        var_table_.declare(var_decl.name, eval_expression(*var_decl.value));
+    }
+
+    auto visit(ast::AssignStmt& assign_stmt) -> void override
+    {
+        if (assign_stmt.kind != ast::AssignKind::Assign) {
+            assert(false && "WIP.");
+        }
+
+        auto target = var_table_.get(assign_stmt.target);
+        if (!target) {
+            throw EvalException{};
+        }
+        *target = eval_expression(*assign_stmt.value);
+    }
+
+    auto visit(ast::PassStmt& pass_stmt) -> void override
+    {
+        // Do nothing on pass statement
+    }
+
+    auto visit(ast::ReturnStmt& return_stmt) -> void override
+    {
+        if (return_stmt.value) {
+            function_result_ = eval_expression(**return_stmt.value);
+        } else {
+            function_result_ = UdavValue{UdavBoolean{false}};
+        }
+    }
+
+    auto visit(ast::CallStmt& call_stmt) -> void override
+    {
+        auto _ = call_function(call_stmt.call);
+    }
+
+    auto should_exit_function() -> bool
+    {
+        return function_result_.has_value();
+    }
+
+    auto eval_expression(ast::Expr& expr) -> UdavValue
+    {
+        expr.accept(*this);
+
+        assert(expr_result_ && "Evaluation of expression did not happen.");
+        auto result = std::move(*expr_result_);
+        expr_result_.reset();
+        return result;
+    }
+
     auto visit(ast::UnaryExpr& unary_expr) -> void override
     {
-        unary_expr.expr->accept(*this);
-
         switch (unary_expr.op) {
         case ast::UnaryOperation::Minus:
-            result_ = apply_unary_minus(take_result());
+            expr_result_ = apply_unary_minus(eval_expression(*unary_expr.expr));
             break;
 
         case ast::UnaryOperation::Not:
@@ -75,55 +155,52 @@ private:
 
     auto visit(ast::BinaryExpr& bin_expr) -> void override
     {
-        bin_expr.left->accept(*this);
-        auto lhs = take_result();
-
-        bin_expr.right->accept(*this);
-        auto rhs = take_result();
+        auto lhs = eval_expression(*bin_expr.left);
+        auto rhs = eval_expression(*bin_expr.right);
 
         switch (bin_expr.op) {
         case ast::BinaryOperation::Plus:
-            result_ = apply_plus(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_plus(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Minus:
-            result_ = apply_minus(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_minus(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Mul:
-            result_ = apply_mul(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_mul(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Div:
-            result_ = apply_div(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_div(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Modulo:
-            result_ = apply_modulo(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_modulo(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Power:
-            result_ = apply_power(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_power(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseOr:
-            result_ = apply_bitwise_or(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_bitwise_or(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseAnd:
-            result_ = apply_bitwise_and(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_bitwise_and(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseXor:
-            result_ = apply_bitwise_xor(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_bitwise_xor(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::RightShift:
-            result_ = apply_right_shift(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_right_shift(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::LeftShift:
-            result_ = apply_left_shift(std::move(lhs), std::move(rhs));
+            expr_result_ = apply_left_shift(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Or:
@@ -147,7 +224,7 @@ private:
         if (!value) {
             throw EvalException{};
         }
-        result_ = UdavValue{*value};
+        expr_result_ = UdavValue{*value};
     }
     auto visit(ast::IntegerExpr& expr) -> void override
     {
@@ -167,20 +244,32 @@ private:
     auto visit_literal(ast::LiteralExpr& expr) -> void
     {
         assert(expr.runtime_value && "Must contain runtime value.");
-        result_ = UdavValue{*expr.runtime_value};
+        expr_result_ = UdavValue{*expr.runtime_value};
     }
 
-    auto visit(ast::CallExpr&) -> void override
+    auto visit(ast::CallExpr& call_expr) -> void override
     {
-        assert(false && "WIP.");
+        expr_result_ = call_function(call_expr.call);
     }
 
-    auto take_result() -> UdavValue
+    auto call_function(ast::CallInfo& call_info) -> UdavValue
     {
-        assert(result_ && "Evaluation of expression did not happen.");
-        auto v = std::move(*result_);
-        result_.reset();
-        return v;
+        if (var_table_.get(call_info.function)) {
+            throw EvalException{};
+        }
+
+        auto entry = program_.function_map.find(call_info.function);
+        if (entry == program_.function_map.end()) {
+            throw EvalException{};
+        }
+        auto& function = *entry->second;
+
+        auto evaluated_args = Vec<UdavValue>{};
+        for (auto& arg : call_info.args) {
+            evaluated_args.push_back(eval_expression(*arg));
+        }
+
+        return FunctionEvaluator{program_}.eval(function, evaluated_args);
     }
 
     static auto apply_unary_minus(UdavValue value) -> UdavValue
@@ -283,117 +372,10 @@ private:
         return lhs;
     }
 
-    const VariableTable& var_table_;
-    Option<UdavValue> result_;
-};
-
-export class FunctionEvaluator final : private ast::Visitor
-{
-public:
-    explicit FunctionEvaluator(ast::Program& program)
-        : program_{program}
-    {
-    }
-
-    auto eval(ast::Function& function, const Vec<UdavValue>& args) -> UdavValue
-    {
-        if (function.native_callable) {
-            return function.native_callable(args);
-        }
-
-        // TODO: populate var table
-
-        function.accept(*this);
-
-        // assert(evaluator.result_ && "result_ must not be empty.");
-        // return std::move(*evaluator.result_);
-        return UdavValue{UdavBoolean{false}};
-    }
-
-private:
-    auto visit(ast::Function& function) -> void override
-    {
-        for (auto& stmt : function.body.stmts) {
-            stmt->accept(*this);
-            if (should_exit_function()) {
-                break;
-            }
-        }
-    }
-
-    auto visit(ast::LetStmt& let_stmt) -> void override
-    {
-        for (auto& decl : let_stmt.decls) {
-            decl.accept(*this);
-        }
-    }
-
-    auto visit(ast::VariableDecl& var_decl) -> void override
-    {
-        auto value = ExpressionEvaluator{var_table_}.eval(*var_decl.value);
-        var_table_.declare(var_decl.name, std::move(value));
-    }
-
-    auto visit(ast::AssignStmt& assign_stmt) -> void override
-    {
-        if (assign_stmt.kind != ast::AssignKind::Assign) {
-            assert(false && "WIP.");
-        }
-
-        auto target = var_table_.get(assign_stmt.target);
-        if (!target) {
-            throw EvalException{};
-        }
-        *target = ExpressionEvaluator{var_table_}.eval(*assign_stmt.value);
-    }
-
-    auto visit(ast::PassStmt& pass_stmt) -> void override
-    {
-        // Do nothing on pass statement
-    }
-
-    // auto visit(ast::ReturnStmt& return_stmt) -> void override
-    // {
-    //     if (return_stmt.value) {
-    //         result_ = ExpressionEvaluator{var_table_}.eval(**return_stmt.value);
-    //     } else {
-    //         result_ = UdavValue{UdavBoolean{false}};
-    //     }
-    // }
-
-    auto visit(ast::CallStmt& call_stmt) -> void override
-    {
-        auto _ = call_function(call_stmt.call);
-    }
-
-    auto call_function(ast::CallInfo& call_info) -> UdavValue
-    {
-        if (var_table_.get(call_info.function)) {
-            throw EvalException{};
-        }
-
-        auto entry = program_.function_map.find(call_info.function);
-        if (entry == program_.function_map.end()) {
-            throw EvalException{};
-        }
-        auto& function = *entry->second;
-
-        auto evaluated_args = Vec<UdavValue>{};
-        for (auto& arg : call_info.args) {
-            evaluated_args.push_back(ExpressionEvaluator{var_table_}.eval(*arg));
-        }
-
-        return FunctionEvaluator{program_}.eval(function, evaluated_args);
-    }
-
-    auto should_exit_function() -> bool
-    {
-        return result_.has_value();
-    }
-
     ast::Program& program_;
     VariableTable var_table_{};
-    Option<UdavValue> result_{};
+    Option<UdavValue> function_result_{};
+    Option<UdavValue> expr_result_{};
 };
 
 } // namespace udav

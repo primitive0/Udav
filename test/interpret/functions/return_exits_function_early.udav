@@ -1,0 +1,9 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+# TODO: add control flow statements to check early exit
+fun main():
+    print("foo")
+    return 0     # TODO: main function must not return anything, but null
+    print("bar")
+
+    # CHECK:foo
