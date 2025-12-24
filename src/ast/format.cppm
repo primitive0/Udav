@@ -166,6 +166,11 @@ public:
         print_field("value", node.value);
     }
 
+    auto visit(ast::NullExpr& node) -> void override
+    {
+        begin_node("NullExpr");
+    }
+
     auto visit(ast::CallExpr& node) -> void override
     {
         begin_node("CallExpr");

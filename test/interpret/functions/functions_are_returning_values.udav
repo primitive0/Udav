@@ -8,6 +8,7 @@ fun main():
     return_call()
     return_nothing()
     no_return_stmt()
+    return_null()
 
     # Check that there are no side effects of calling functions above.
     # If something is printed before this println, then FileCheck will
@@ -19,10 +20,9 @@ fun main():
     println(return_bool())     # CHECK:false
     println(return_variable()) # CHECK:100
     println(return_call())     # CHECK:123
-
-    # TODO: fix test cases
-    println(return_nothing())  # CHECK:false
-    println(no_return_stmt())  # CHECK:false
+    println(return_nothing())  # CHECK:null
+    println(no_return_stmt())  # CHECK:null
+    println(return_null())     # CHECK:null
 
 fun return_string():
     return "foo"
@@ -40,8 +40,7 @@ fun no_return_stmt():
     pass
 
 fun return_null():
-    # TODO: implement test case
-    pass
+    return null
 
 fun return_variable():
     let variable = 100

@@ -25,3 +25,5 @@ fun main():
     e = (((f())))
     e = -f()
     e = !f()
+
+    e = null

@@ -49,6 +49,7 @@ export enum class NodeKind {
     IntegerExpr,
     StringExpr,
     BoolExpr,
+    NullExpr,
     CallExpr,
     VariableExpr
 };
@@ -245,6 +246,16 @@ export struct BoolExpr final : public ConcreteNode<LiteralExpr, BoolExpr>
     auto node_kind() const -> NodeKind override
     {
         return NodeKind::BoolExpr;
+    }
+};
+
+export struct NullExpr final : public ConcreteNode<LiteralExpr, NullExpr>
+{
+    explicit NullExpr() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::NullExpr;
     }
 };
 
@@ -573,6 +584,7 @@ public:
     auto visit(IntegerExpr&)  -> void override { trace_.push_back(NodeKind::IntegerExpr); }
     auto visit(StringExpr&)   -> void override { trace_.push_back(NodeKind::StringExpr); }
     auto visit(BoolExpr&)     -> void override { trace_.push_back(NodeKind::BoolExpr); }
+    auto visit(NullExpr&)     -> void override { trace_.push_back(NodeKind::NullExpr); }
     auto visit(CallExpr&)     -> void override { trace_.push_back(NodeKind::CallExpr); }
     auto visit(VariableExpr&) -> void override { trace_.push_back(NodeKind::VariableExpr); }
     // clang-format on
@@ -605,7 +617,8 @@ TEMPLATE_TEST_CASE("AST nodes are visited", "[ast]",
     ReturnStmt, CallStmt, Branch, IfStmt, WhileStmt,
 
     // Expressions
-    UnaryExpr, BinaryExpr, IntegerExpr, StringExpr, BoolExpr, CallExpr, VariableExpr)
+    UnaryExpr, BinaryExpr, IntegerExpr, StringExpr, BoolExpr, NullExpr, CallExpr,
+    VariableExpr)
 {
     auto node = TestType{};
     CHECK_THAT(get_node_trace(node), RangeEquals({node.node_kind()}));

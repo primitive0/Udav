@@ -235,3 +235,8 @@ Program
                     CallExpr
                       function = f
                       args:
+            AssignStmt
+              kind = Assign
+              target = e
+              value:
+                NullExpr

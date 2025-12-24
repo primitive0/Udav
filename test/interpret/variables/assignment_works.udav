@@ -1,5 +1,7 @@
 # RUN: %udav %s | FileCheck %s
 
+# TODO: use strict FileCheck mode here
+
 fun main():
     let a = 1
     println(a)  # CHECK: 1
@@ -26,3 +28,10 @@ fun main():
     println(e)  # CHECK: true
     e = false
     println(e)  # CHECK: false
+
+    let f = null
+    println(f)  # CHECK: null
+    f = "non-null"
+    println(f)  # CHECK: non-null
+    f = null
+    println(f)  # CHECK: null

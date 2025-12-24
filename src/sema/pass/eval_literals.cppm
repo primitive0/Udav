@@ -47,6 +47,11 @@ private:
         expr.runtime_value = UdavValue{UdavBoolean{expr.value}};
     }
 
+    auto visit(ast::NullExpr& expr) -> void override
+    {
+        expr.runtime_value = UdavValue{UdavNull{}};
+    }
+
     StringLiteralParser string_parser_{};
     IntegerLiteralParser integer_parser_{};
 };

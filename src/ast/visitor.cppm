@@ -33,6 +33,7 @@ public:
     virtual auto visit(struct IntegerExpr&)  -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct StringExpr&)   -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct BoolExpr&)     -> void { assert(false && "Not implemented."); }
+    virtual auto visit(struct NullExpr&)     -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct CallExpr&)     -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct VariableExpr&) -> void { assert(false && "Not implemented."); }
     // clang-format on

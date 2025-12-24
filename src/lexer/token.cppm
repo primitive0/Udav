@@ -28,6 +28,7 @@ export enum class TokenKind {
     Break,
     False,
     True,
+    Null,
 
     Symbol,
 

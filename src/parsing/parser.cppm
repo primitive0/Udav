@@ -338,6 +338,7 @@ public:
     //     STRING_LITERAL |
     //     "true" |
     //     "false" |
+    //     "null" |
     //     SYMBOL |
     //     SYMBOL , "(" , [ expr_list ] , ")" |
     //     "(" , expr , ")" ;
@@ -356,6 +357,9 @@ public:
         case TokenKind::False:
         case TokenKind::True:
             return match_bool_expr(token.kind == TokenKind::True);
+
+        case TokenKind::Null:
+            return std::make_unique<ast::NullExpr>();
 
         case TokenKind::Symbol:
             return match_variable_or_call_expr(token.span);

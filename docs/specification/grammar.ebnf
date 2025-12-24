@@ -129,6 +129,7 @@ primary_expr =
     STRING_LITERAL |
     "true" |
     "false" |
+    "null" |
     SYMBOL |
     SYMBOL , "(" , [ expr_list ] , ")" |
     "(" , expr , ")" ;

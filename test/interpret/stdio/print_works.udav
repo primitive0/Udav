@@ -54,5 +54,10 @@ fun main():
 
     println()
 
-    print("value=", 2325, ", ok=", true, ", fail=", false)
-    # CHECK:value=2325, ok=true, fail=false
+    print(null)
+    # CHECK:null
+
+    println()
+
+    print("value=", 2325, ", ok=", true, ", fail=", false, ", null value=", null)
+    # CHECK:value=2325, ok=true, fail=false, null value=null

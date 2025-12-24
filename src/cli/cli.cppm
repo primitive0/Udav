@@ -122,7 +122,7 @@ private:
                 [&](const Vec<UdavValue>& args) {
                     format_args_to_buffer(args);
                     std::cout << print_buffer << std::flush;
-                    return UdavValue{UdavBoolean{false}};
+                    return UdavValue{UdavNull{}};
                 }));
 
         program_node->functions.push_back(
@@ -131,7 +131,7 @@ private:
                 [&](const Vec<UdavValue>& args) {
                     format_args_to_buffer(args);
                     std::cout << print_buffer << '\n';
-                    return UdavValue{UdavBoolean{false}};
+                    return UdavValue{UdavNull{}};
                 }));
 
         perform_semantic_analysis(*program_node);

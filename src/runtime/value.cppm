@@ -11,6 +11,7 @@ import udav.support.functional;
 import udav.runtime.string;
 import udav.runtime.integer;
 import udav.runtime.boolean;
+import udav.runtime.null;
 
 namespace udav {
 
@@ -46,19 +47,26 @@ public:
     {
     }
 
+    explicit UdavValue(UdavNull null)
+        : inner_{std::move(null)}
+    {
+    }
+
     auto format() const -> String
     {
         return visit(
             [](const UdavString& str) { return String{StrView{str}}; },
             [](const UdavInteger& integer) { return integer.format(); },
-            [](const UdavBoolean& boolean) { return boolean.format(); });
+            [](const UdavBoolean& boolean) { return boolean.format(); },
+            [](const UdavNull& null) { return null.format(); });
     }
 
 private:
     using Value = Variant<
         UdavString,
         UdavInteger,
-        UdavBoolean>;
+        UdavBoolean,
+        UdavNull>;
 
     Value inner_;
 };

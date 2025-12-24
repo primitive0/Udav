@@ -1,5 +1,7 @@
 # RUN: %udav %s | FileCheck %s
 
+# TODO: Use strict FileCheck mode
+
 fun main():
     let a = 5 ** 0
     let b = 2
@@ -15,3 +17,6 @@ fun main():
 
     let BoolVar = true
     println(BoolVar)          # CHECK: true
+
+    let nullvar = null
+    println(nullvar)          # CHECK: null

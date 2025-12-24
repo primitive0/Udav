@@ -30,6 +30,7 @@ public:
     auto visit(IntegerExpr& n)  -> void override { n.accept_children(*this); }
     auto visit(StringExpr& n)   -> void override { n.accept_children(*this); }
     auto visit(BoolExpr& n)     -> void override { n.accept_children(*this); }
+    auto visit(NullExpr& n)     -> void override { n.accept_children(*this); }
     auto visit(CallExpr& n)     -> void override { n.accept_children(*this); }
     auto visit(VariableExpr& n) -> void override { n.accept_children(*this); }
     // clang-format on

@@ -1,9 +1,24 @@
-# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+#=== CASE: early_exit_main ===
+# RUN: %select -c early_exit_main %s | %udav | FileCheck --match-full-lines --strict-whitespace --check-prefix=CHECK-1 %s
 
-# TODO: add control flow statements to check early exit
+# TODO: main function must not return anything, but null
 fun main():
     print("foo")
-    return 0     # TODO: main function must not return anything, but null
+    return
     print("bar")
 
-    # CHECK:foo
+    # CHECK-1:foo
+
+#=== CASE: early_exit_user_function ===
+# RUN: %select -c early_exit_user_function %s | %udav | FileCheck --match-full-lines --strict-whitespace --check-prefix=CHECK-2 %s
+
+fun main():
+    println(user_declared_function()) # CHECK-2:foo
+                                      # CHECK-2:null
+
+fun user_declared_function():
+    println("foo")
+    return
+    println("bar")
+
+# TODO: add control flow statements to check early exit

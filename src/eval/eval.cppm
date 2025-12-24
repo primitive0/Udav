@@ -64,7 +64,7 @@ public:
             function_result_.reset();
             return result;
         } else {
-            return UdavValue{UdavBoolean{false}};
+            return UdavValue{UdavNull{}};
         }
     }
 
@@ -114,7 +114,7 @@ private:
         if (return_stmt.value) {
             function_result_ = eval_expression(**return_stmt.value);
         } else {
-            function_result_ = UdavValue{UdavBoolean{false}};
+            function_result_ = UdavValue{UdavNull{}};
         }
     }
 
@@ -237,6 +237,11 @@ private:
     }
 
     auto visit(ast::BoolExpr& expr) -> void override
+    {
+        visit_literal(expr);
+    }
+
+    auto visit(ast::NullExpr& expr) -> void override
     {
         visit_literal(expr);
     }

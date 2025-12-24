@@ -539,6 +539,8 @@ private:
             return TokenKind::False;
         } else if (str == "true") {
             return TokenKind::True;
+        } else if (str == "null") {
+            return TokenKind::Null;
         }
 
         return std::nullopt;
@@ -658,7 +660,8 @@ TEST_CASE("Lexer parses keyword tokens", "[lexer]")
         TC{"continue", TokenKind::Continue},
         TC{"break",    TokenKind::Break},
         TC{"false",    TokenKind::False},
-        TC{"true",     TokenKind::True});
+        TC{"true",     TokenKind::True},
+        TC{"null",     TokenKind::Null});
     // clang-format on
 
     expect_single_token(keyword, Token{kind, keyword});

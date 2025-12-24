@@ -27,5 +27,6 @@ fun main():
     println(false)              # CHECK:false
     println(true, false, true)  # CHECK:truefalsetrue
 
+    println(null) # CHECK:null
 
-    println(1, " + ", 2, " = ", 3, ", valid=", true) # CHECK:1 + 2 = 3, valid=true
+    println(1, " + ", 2, " = ", 3, ", valid=", true, ", invalid=", null) # CHECK:1 + 2 = 3, valid=true, invalid=null
