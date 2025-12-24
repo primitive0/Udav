@@ -2,10 +2,13 @@ program =
     [ newline ] , { function } , EOF ;
 
 function =
-    "fun" , SYMBOL , "(" , [ argument_list ] , ")" , ":" , block ;
+    "fun" , SYMBOL , "(" , [ parameters ] , ")" , ":" , block ;
 
-argument_list =
-    SYMBOL , { "," , SYMBOL } ;
+parameters =
+    parameter , { "," , parameter } ;
+
+parameter =
+    SYMBOL ;
 
 block =
     newline , INDENT , { stmt } , DEDENT ;

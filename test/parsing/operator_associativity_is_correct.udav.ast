@@ -2,7 +2,7 @@ Program
   functions:
     Function
       name = main
-      args:
+      params:
       body:
         Block
           stmts:

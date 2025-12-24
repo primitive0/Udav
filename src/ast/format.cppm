@@ -39,8 +39,15 @@ public:
         begin_node("Function");
         auto g = IndentGuard{*this};
         print_field("name", node.name);
-        print_vec_strings("args", node.args);
+        print_children("params", node.params);
         print_children("body", node.body);
+    }
+
+    auto visit(ast::Parameter& node) -> void override
+    {
+        begin_node("Parameter");
+        auto g = IndentGuard{*this};
+        print_field("name", node.name);
     }
 
     auto visit(ast::Block& node) -> void override
@@ -259,16 +266,6 @@ private:
         } else {
             print_indent();
             os_ << "none\n";
-        }
-    }
-
-    auto print_vec_strings(StrView name, const Vec<StrView>& vec) -> void
-    {
-        begin_field_block(name);
-        auto g = IndentGuard{*this};
-        for (auto s : vec) {
-            print_indent();
-            os_ << s << '\n';
         }
     }
 

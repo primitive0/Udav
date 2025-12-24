@@ -2,8 +2,9 @@ Program
   functions:
     Function
       name = fizzbuzz
-      args:
-        n
+      params:
+        Parameter
+          name = n
       body:
         Block
           stmts:
@@ -118,7 +119,7 @@ Program
                           literal = 1
     Function
       name = main
-      args:
+      params:
       body:
         Block
           stmts:

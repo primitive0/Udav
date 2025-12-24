@@ -1,0 +1,10 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    cute_print("Hello") # CHECK:Hello~
+
+fun cute_print(text):
+    println(text, "~")
+
+fun text():
+    println("Sending message..")

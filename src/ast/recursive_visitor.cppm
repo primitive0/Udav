@@ -11,8 +11,9 @@ public:
     // clang-format off
     auto visit(Program& n)      -> void override { n.accept_children(*this); }
     auto visit(Function& n)     -> void override { n.accept_children(*this); }
-    auto visit(Block& n)        -> void override { n.accept_children(*this); }
+    auto visit(Parameter& n)    -> void override { n.accept_children(*this); }
 
+    auto visit(Block& n)        -> void override { n.accept_children(*this); }
     auto visit(VariableDecl& n) -> void override { n.accept_children(*this); }
     auto visit(LetStmt& n)      -> void override { n.accept_children(*this); }
     auto visit(AssignStmt& n)   -> void override { n.accept_children(*this); }

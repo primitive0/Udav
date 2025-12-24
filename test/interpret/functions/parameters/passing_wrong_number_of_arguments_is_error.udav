@@ -1,0 +1,38 @@
+#=== CASE: too_few_args ===
+# RUN: %select -c too_few_args %s | not %udav
+
+fun add(a, b):
+    return a + b
+
+fun main():
+    add(1)
+
+
+#=== CASE: too_many_args ===
+# RUN: %select -c too_many_args %s | not %udav
+
+fun add(a, b):
+    return a + b
+
+fun main():
+    add(1, 2, 3)
+
+
+#=== CASE: zero_expected_nonzero_given ===
+# RUN: %select -c zero_expected_nonzero_given %s | not %udav
+
+fun foo():
+    return 42
+
+fun main():
+    foo(1)
+
+
+#=== CASE: expected_one_zero_given ===
+# RUN: %select -c expected_one_zero_given %s | not %udav
+
+fun foo(a):
+    println(a)
+
+fun main():
+    foo()

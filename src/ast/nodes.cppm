@@ -28,6 +28,7 @@ export enum class NodeKind {
     // Top level
     Program,
     Function,
+    Parameter,
 
     // Statements
     Block,
@@ -503,12 +504,24 @@ export struct WhileStmt final : public ConcreteNode<Stmt, WhileStmt>
 
 // Top level nodes
 
+export struct Parameter final : public ConcreteNode<Node, Parameter>
+{
+    StrView name;
+
+    explicit Parameter() = default;
+
+    auto node_kind() const -> NodeKind override
+    {
+        return NodeKind::Parameter;
+    }
+};
+
 export struct Function final : public ConcreteNode<Node, Function>
 {
     using NativeCallable = std::function<auto(const Vec<UdavValue>&)->UdavValue>;
 
     StrView name{};
-    Vec<StrView> args{}; // TODO: add FunctionArg node
+    Vec<Parameter> params{};
     Block body{};
 
     NativeCallable native_callable{};
@@ -565,6 +578,7 @@ public:
     // clang-format off
     auto visit(Program&)      -> void override { trace_.push_back(NodeKind::Program); }
     auto visit(Function&)     -> void override { trace_.push_back(NodeKind::Function); }
+    auto visit(Parameter&)    -> void override { trace_.push_back(NodeKind::Parameter); }
 
     auto visit(Block&)        -> void override { trace_.push_back(NodeKind::Block); }
     auto visit(VariableDecl&) -> void override { trace_.push_back(NodeKind::VariableDecl); }
@@ -610,7 +624,7 @@ auto get_node_children_trace(Node& node) -> Vec<NodeKind>
 
 TEMPLATE_TEST_CASE("AST nodes are visited", "[ast]",
     // Top level
-    Program, Function,
+    Program, Function, Parameter,
 
     // Statements
     Block, LetStmt, VariableDecl, AssignStmt, PassStmt, ContinueStmt, BreakStmt,

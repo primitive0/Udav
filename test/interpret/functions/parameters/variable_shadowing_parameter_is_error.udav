@@ -1,0 +1,7 @@
+# RUN: not %udav %s
+
+fun foo(x):
+    let x = 42
+
+fun main():
+    foo(null)

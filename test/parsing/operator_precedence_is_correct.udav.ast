@@ -2,7 +2,7 @@ Program
   functions:
     Function
       name = operator_precedence
-      args:
+      params:
       body:
         Block
           stmts:

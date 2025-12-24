@@ -49,13 +49,22 @@ public:
     {
     }
 
+    // TODO: make this function static
+    // TODO: forward args
     auto eval(ast::Function& function, const Vec<UdavValue>& args) -> UdavValue
     {
         if (function.native_callable) {
             return function.native_callable(args);
         }
 
-        // TODO: populate var table
+        if (function.params.size() != args.size()) {
+            throw EvalException{};
+        }
+
+        for (auto i = 0uz; i < args.size(); ++i) {
+            // Duplicate parameter names are filtered at semantic analysis stage
+            auto _ = var_table_.declare(function.params[i].name, UdavValue{args[i]});
+        }
 
         function.accept(*this);
 

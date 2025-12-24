@@ -1,0 +1,8 @@
+# RUN: %udav %s | FileCheck %s
+
+fun foo(x):
+    x = 42
+    println(x) # CHECK: 42
+
+fun main():
+    foo(null)

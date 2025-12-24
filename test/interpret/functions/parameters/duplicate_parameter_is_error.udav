@@ -1,0 +1,7 @@
+# RUN: not %udav %s
+
+fun foo(x, x):
+    pass
+
+fun main():
+    pass

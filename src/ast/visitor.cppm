@@ -14,8 +14,9 @@ public:
     // clang-format off
     virtual auto visit(struct Program&)      -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct Function&)     -> void { assert(false && "Not implemented."); }
-    virtual auto visit(struct Block&)        -> void { assert(false && "Not implemented."); }
+    virtual auto visit(struct Parameter&)    -> void { assert(false && "Not implemented."); }
 
+    virtual auto visit(struct Block&)        -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct VariableDecl&) -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct LetStmt&)      -> void { assert(false && "Not implemented."); }
     virtual auto visit(struct AssignStmt&)   -> void { assert(false && "Not implemented."); }

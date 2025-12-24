@@ -2,7 +2,7 @@ Program
   functions:
     Function
       name = stmt_let
-      args:
+      params:
       body:
         Block
           stmts:
@@ -32,7 +32,7 @@ Program
                       literal = 4
     Function
       name = stmt_assign
-      args:
+      params:
       body:
         Block
           stmts:
@@ -110,7 +110,7 @@ Program
                   literal = 2
     Function
       name = stmt_call
-      args:
+      params:
       body:
         Block
           stmts:
@@ -133,7 +133,7 @@ Program
                   name = c
     Function
       name = stmt_return
-      args:
+      params:
       body:
         Block
           stmts:
@@ -147,21 +147,21 @@ Program
                     literal = 42
     Function
       name = stmt_pass
-      args:
+      params:
       body:
         Block
           stmts:
             PassStmt
     Function
       name = stmt_break
-      args:
+      params:
       body:
         Block
           stmts:
             BreakStmt
     Function
       name = stmt_continue
-      args:
+      params:
       body:
         Block
           stmts:

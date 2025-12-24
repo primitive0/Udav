@@ -1,0 +1,19 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    print_x(123)   # CHECK: 123
+    print_x("foo") # CHECK-NEXT: foo
+    print_x(false) # CHECK-NEXT: false
+    print_x(null)  # CHECK-NEXT: null
+
+    print_xyz(42, "text", true) # CHECK: 42
+                                # CHECK-NEXT: text
+                                # CHECK-NEXT: true
+
+fun print_x(x):
+    println(x)
+
+fun print_xyz(x, y, z):
+    println(x)
+    println(y)
+    println(z)

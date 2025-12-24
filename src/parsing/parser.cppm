@@ -468,7 +468,7 @@ public:
     }
 
     // function =
-    //     "fun" , SYMBOL , "(" , [ argument_list ] , ")" , ":" , block ;
+    //     "fun" , SYMBOL , "(" , [ parameters ] , ")" , ":" , block ;
     auto parse_function() -> ast::Function
     {
         auto function = ast::Function{};
@@ -479,7 +479,7 @@ public:
         expect(TokenKind::ParenOpen);
 
         if (stream_.peek().kind != TokenKind::ParenClose) {
-            function.args = parse_argument_list();
+            function.params = parse_parameters();
         }
 
         expect(TokenKind::ParenClose);
@@ -490,19 +490,28 @@ public:
         return function;
     }
 
-    //argument_list =
-    //    SYMBOL , { "," , SYMBOL } ;
-    auto parse_argument_list() -> Vec<StrView>
+    // parameters =
+    //     SYMBOL , { "," , SYMBOL } ;
+    auto parse_parameters() -> Vec<ast::Parameter>
     {
-        auto args = Vec<StrView>{};
+        auto params = Vec<ast::Parameter>{};
 
-        args.push_back(expect(TokenKind::Symbol).span);
+        params.push_back(parse_parameter());
         while (stream_.peek().kind == TokenKind::Comma) {
             stream_.advance();
-            args.push_back(expect(TokenKind::Symbol).span);
+            params.push_back(parse_parameter());
         }
 
-        return args;
+        return params;
+    }
+
+    // parameter =
+    //     SYMBOL ;
+    auto parse_parameter() -> ast::Parameter
+    {
+        auto param = ast::Parameter{};
+        param.name = expect(TokenKind::Symbol).span;
+        return param;
     }
 
     // block =

@@ -2,25 +2,29 @@ Program
   functions:
     Function
       name = foo
-      args:
+      params:
       body:
         Block
           stmts:
             PassStmt
     Function
       name = bar
-      args:
-        a
+      params:
+        Parameter
+          name = a
       body:
         Block
           stmts:
             PassStmt
     Function
       name = baz
-      args:
-        a
-        b
-        c
+      params:
+        Parameter
+          name = a
+        Parameter
+          name = b
+        Parameter
+          name = c
       body:
         Block
           stmts:
