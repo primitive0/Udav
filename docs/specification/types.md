@@ -1,5 +1,7 @@
 # Типы данных
 
+TODO: перенести types в expressions-grammar.md
+
 Языком будет поддерживаться только 3 типа данных
 
 - **int** - целый
@@ -58,22 +60,27 @@ let s = "my string"
 
 Поддерживает операторы:
 
-| Оператор | Описание           |
-|:---------|:-------------------|
-| `+`      | Сложение           |
-
-TODO: Подумать о умножении строк на число (мб киллер фича)
+| Оператор | Описание     |
+|:---------|:-------------|
+| `+`      | конкатенация |
 
 Для оператора `+` правый и левый элементы должны быть типа `string`. В случае нарушения правила - ошибка выполнения \
+В том числе поддерживает escape-последовательности (`\n`, `\t`, и пр.) \
+Результатом конкатенации строк является строка
 
-```myebnf
-expression<string> = 
-    expression<string> + expression<string>
+TODO: убрать все myebnf, дать определение терминам
+
+```Udav
+let s = "1" + "2"
+println(s) # выведет `12`
+let s = "1" + 1 # ошибка выполнения
 ```
 
 ## Булевый тип данных
 
 Поддерживает операторы
+
+Также поддерживает short evaluation
 
 | Оператор | Описание            |
 |:---------|:--------------------|
@@ -124,17 +131,17 @@ int(false) = 0
     int("1a435")
     ```
 
-### string()
+### str()
 
 Преобразовывает входное значение к типу string
 
 ```myebnf
-string(expression) =
+str(expression) =
     expression<string>
 
-string(true) = "true"
+str(true) = "true"
 
-string(false) = "false"
+str(false) = "false"
 ```
 
 ### bool()
@@ -161,20 +168,20 @@ reverse(expression<string>) = string
 
 принимает строку и возвращает её символы в обратном порядке
 
-#### index_of()
+#### find_substr()
 
 ```myebnf
-index_of(str: expression<string>, substr: expression<string>) = int
+find_substr(str: expression<string>, substr: expression<string>) = int
 ```
 
 возвращает число - первое вхождение подстроки substr в строку str
 
 если подстрока не была найдена, возвращает `-1`
 
-#### slice()
+#### substr()
 
 ```myebnf
-slice(str: expression<string>, start: int, end: int) = string
+substr(str: expression<string>, start: int, end: int) = string
 ```
 
 возвращает подстроку от исходной строки

@@ -1,16 +1,44 @@
 # Грамматика выражений языка Udav
 
-## О чём здесь написано
+## Содержание
 
-1) Синтаксис выражений
-   - арифметические выражения
-   - выражения со строками
-   - булевые выражения
-2) Операторы
-3) Приоритет операторов
-4) Грамматика в формате EBNF
+TODO: нормальное содержание с ссылками
+
+1) Операторы
+   - побитовые с отрицательным запрещены
+   - оператор вызова функции
+     - аргументы - то, что мы передаём
+     - порядок вычисления аргументов - слева направо
+     - количество параметров
+     - возвращаемое значение функции
+     - разрешение имени функции (все функции, объявленные в программе, доступны к вызову, подразумевается рекурсия, в том числе c main)
+2) Приоритет операторов
+3) Виды выражений
+    - целый
+        - литерал
+          - лидирующие нули не считаются
+        - операции
+          - отрицательные числа
+            - деление
+              - -5 / 2 = -2, типа по модулю
+            - остаток
+              - % 0 или % -2 - ошибка
+              - (a / b) * b + a % b = a
+            - побитовые операции
+              - запрещены
+        - функции для работы с числами
+    - строковой
+        - ...
+        - escape-последовательности Udav/src/sema/literal_parsing/literal_parsing.cppm
+    - булевый
+        - не забыть short circuit
+    - null
+        - сказать, что нет операций
+4) ebnf
 
 ## Синтаксис выражений
+
+TODO: вставить сюда информацию о типах
 
 ### Арифметические выражения
 
@@ -71,8 +99,11 @@ flag = true || false && true || !false
 
 ## Приоритет операторов
 
+TODO унарный минус имеет меньший приоритет, чем **
+
 | Оператор                         | Приоритет |
 |:---------------------------------|:----------|
+| `f()`                            | 0         |
 | `**`                             | 1         |
 | `*`, `/`, `%`                    | 2         |
 | `+`, `-`                         | 3         |
@@ -89,79 +120,4 @@ flag = true || false && true || !false
 
 ## Грамматика в формате EBNF
 
-```ebnf
-expr =
-    or_expr ;
-
-or_expr =
-    and_expr |
-    or_expr , "||" , and_expr ;
-
-and_expr =
-    relational_expr |
-    and_expr , "&&" , relational_expr ;
-
-relational_expr =
-    bitwise_or_expr |
-    relational_expr , relational_op , bitwise_or_expr ;
-
-relational_op = "==" | "!=" | ">=" | "<=" | ">" | "<" ;
-
-bitwise_or_expr =
-    bitwise_xor_expr |
-    bitwise_or_expr , "|" , bitwise_xor_expr ;
-
-bitwise_xor_expr =
-    bitwise_and_expr |
-    bitwise_xor_expr , "^" , bitwise_and_expr ;
-
-bitwise_and_expr =
-    shift_expr |
-    bitwise_and_expr , "&" , shift_expr ;
-
-shift_expr =
-    add_expr |
-    shift_expr , shift_op , add_expr ;
-
-shift_op = "<<" | ">>" ;
-
-add_expr =
-    mul_expr |
-    add_expr , add_op , mul_expr ;
-
-add_op = "+" | "-" ;
-
-mul_expr =
-    unary_expr |
-    mul_expr , mul_op , unary_expr ;
-
-mul_op = "*" | "/" | "%" ;
-
-unary_expr =
-    power_expr |
-    unary_op , power_expr ;
-
-unary_op = "!" | "-" ;
-
-power_expr =
-    postfix_expr,
-    | postfix_expr "**" power_expr ; (* Правая рекурсия для правой ассоциативности *)
-
-postfix_expr =
-    primary_expr |
-    primary_expr , "(" , [ expr_list ] , ")" ;
-
-primary_expr =
-    literal |
-    SYMBOL |
-    "(" , expr , ")" ;
-
-literal =
-    INTEGER_LITERAL |
-    STRING_LITERAL |
-    "true" |
-    "false" ;
-
-newline =
-    NEWLINE , { NEWLINE } ;
-```
+TODO кинуть ссылку на файл
