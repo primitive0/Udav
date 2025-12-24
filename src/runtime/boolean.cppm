@@ -32,6 +32,11 @@ public:
         return value_ ? "true" : "false";
     }
 
+    auto apply_not() -> void
+    {
+        value_ = !value_;
+    }
+
 private:
     bool value_;
 };

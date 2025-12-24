@@ -1,0 +1,43 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    check_simple()
+    check_short_circuit_semantics()
+    check_precedence_and_associativity()
+
+fun check_simple():
+    println(false || false) # CHECK:false
+    println(true  || false) # CHECK-NEXT:true
+    println(false || true)  # CHECK-NEXT:true
+    println(true  || true)  # CHECK-NEXT:true
+
+    println(false && false) # CHECK-NEXT:false
+    println(true  && false) # CHECK-NEXT:false
+    println(false && true)  # CHECK-NEXT:false
+    println(true  && true)  # CHECK-NEXT:true
+
+    println(!true)  # CHECK-NEXT:false
+    println(!false) # CHECK-NEXT:true
+
+fun check_short_circuit_semantics():
+    let _ = true || not_declared_function()
+    _     = false && not_declared_function()
+    println("ok") # CHECK-NEXT:ok
+
+fun check_precedence_and_associativity():
+    println(true || false && false) # CHECK-NEXT:true
+    println(false && false || true) # CHECK-NEXT:true
+
+    println(ptrue(1) && ptrue(2) && ptrue(3) && pfalse(4) && ptrue(5))   # CHECK-NEXT:1234false
+    println(pfalse(1) || pfalse(2) || ptrue(3) || pfalse(4) || ptrue(5)) # CHECK-NEXT:123true
+
+    println(!true && false) # CHECK-NEXT:false
+    println(!false || true) # CHECK-NEXT:true
+
+fun ptrue(v):
+    print(v)
+    return true
+
+fun pfalse(v):
+    print(v)
+    return false
