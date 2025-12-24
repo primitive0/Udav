@@ -60,6 +60,9 @@ public:
             do_run(argc, argv);
         } catch (const ExitCliException& e) {
             return e.exit_code();
+        } catch (const std::exception&) {
+            std::cout << "Uncaught std::exception!\n";
+            return 1;
         }
 
         return 0;
