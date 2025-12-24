@@ -4,6 +4,7 @@ module;
 
 #include "support/string.hpp"
 #include "support/unique.hpp"
+#include "support/vector.hpp"
 
 export module udav.interpreter;
 
@@ -53,8 +54,9 @@ public:
         if (main_entry == program->function_map.end()) {
             throw InterpreterException{};
         }
+        auto& main_function = *main_entry->second;
 
-        auto value = FunctionEvaluator{*program}.eval(*main_entry->second, {});
+        auto value = FunctionEvaluator::eval(*program, main_function, Vec<UdavValue>{});
         if (!value.is_null()) {
             throw InterpreterException{};
         }

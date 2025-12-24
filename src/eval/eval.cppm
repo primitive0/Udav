@@ -44,14 +44,12 @@ private:
 export class FunctionEvaluator final : private ast::Visitor
 {
 public:
-    explicit FunctionEvaluator(ast::Program& program)
-        : program_{program}
-    {
-    }
-
-    // TODO: make this function static
     // TODO: forward args
-    auto eval(ast::Function& function, const Vec<UdavValue>& args) -> UdavValue
+    static auto eval(
+        ast::Program& program,
+        ast::Function& function,
+        const Vec<UdavValue>& args)
+        -> UdavValue
     {
         if (function.native_callable) {
             return function.native_callable(args);
@@ -61,23 +59,29 @@ public:
             throw EvalException{};
         }
 
+        auto evaluator = FunctionEvaluator{program};
+
         for (auto i = 0uz; i < args.size(); ++i) {
             // Duplicate parameter names are filtered at semantic analysis stage
-            auto _ = var_table_.declare(function.params[i].name, UdavValue{args[i]});
+            auto _ = evaluator.var_table_.declare(
+                function.params[i].name, UdavValue{args[i]});
         }
 
-        function.accept(*this);
+        function.accept(evaluator);
 
-        if (function_result_) {
-            auto result = std::move(*function_result_);
-            function_result_.reset();
-            return result;
+        if (evaluator.function_result_) {
+            return std::move(*evaluator.function_result_);
         } else {
             return UdavValue{UdavNull{}};
         }
     }
 
 private:
+    explicit FunctionEvaluator(ast::Program& program)
+        : program_{program}
+    {
+    }
+
     auto visit(ast::Function& function) -> void override
     {
         for (auto& stmt : function.body.stmts) {
@@ -315,7 +319,7 @@ private:
             evaluated_args.push_back(eval_expression(*arg));
         }
 
-        return FunctionEvaluator{program_}.eval(function, evaluated_args);
+        return FunctionEvaluator::eval(program_, function, evaluated_args);
     }
 
     static auto apply_unary_minus(UdavValue value) -> UdavValue
