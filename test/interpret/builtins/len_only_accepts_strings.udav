@@ -1,0 +1,4 @@
+# RUN: not %udav %s
+
+fun main():
+    len(123)

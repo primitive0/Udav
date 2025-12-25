@@ -58,6 +58,11 @@ public:
         return *this;
     }
 
+    auto size() const -> size_t
+    {
+        return data_->size();
+    }
+
 private:
     auto get_mut() -> String&
     {

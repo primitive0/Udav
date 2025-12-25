@@ -1,0 +1,9 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    println(len(""))       # CHECK: 0
+    println(len("foo"))    # CHECK-NEXT: 3
+    println(len("foobar")) # CHECK-NEXT: 6
+
+    # Returns bytes count, not Unicode characters count
+    println(len("Ы")) # CHECK-NEXT: 2

@@ -24,6 +24,7 @@ public:
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
         program.functions.push_back(make_udav_func("str", &to_str));
+        program.functions.push_back(make_udav_func("len", &get_length));
     }
 
 private:
@@ -49,6 +50,19 @@ private:
             [](const UdavInteger& integer) { return UdavValue{UdavString{integer.format()}}; },
             [](const UdavBoolean& boolean) { return UdavValue{UdavString{boolean.format()}}; },
             [](const UdavNull& null) { return UdavValue{UdavString{null.format()}}; });
+    }
+
+    static auto get_length(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 1) {
+            throw EvalException{};
+        }
+
+        auto string = args[0].down_cast<UdavString>();
+        if (!string) {
+            throw EvalException{};
+        }
+        return UdavValue{UdavInteger{string->size()}};
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue
