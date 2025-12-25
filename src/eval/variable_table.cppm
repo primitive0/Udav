@@ -20,17 +20,15 @@ public:
         scopes_.emplace_back();
     }
 
-    // TODO: refactor it
-    template<typename Self>
-    decltype(auto) get(this Self&& self, StrView name) // NOLINT(modernize-use-trailing-return-type)
+    auto get(StrView name) -> UdavValue*
     {
-        for (auto it = self.scopes_.rbegin(); it != self.scopes_.rend(); ++it) {
+        for (auto it = scopes_.rbegin(); it != scopes_.rend(); ++it) {
             auto target_var = it->find(name);
             if (target_var != it->end()) {
                 return &target_var->second;
             }
         }
-        return decltype(&self.scopes_.rbegin()->find(name)->second){nullptr};
+        return nullptr;
     }
 
     [[nodiscard]]
