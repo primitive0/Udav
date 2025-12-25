@@ -1,0 +1,13 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println("Hello, " + "world!") # CHECK:Hello, world!
+    println("foo" + "")           # CHECK-NEXT:foo
+    println("" + "bar")           # CHECK-NEXT:bar
+
+    let buffer = ""
+    buffer += "1"
+    buffer += "234"
+    buffer += "5"
+
+    println(buffer) # CHECK-NEXT:12345

@@ -46,7 +46,22 @@ public:
         return *data_;
     }
 
+    auto operator+=(const UdavString& rhs) -> UdavString&
+    {
+        // TODO: ensure no aliasing problem corrupts memory here
+        get_mut() += *rhs.data_;
+        return *this;
+    }
+
 private:
+    auto get_mut() -> String&
+    {
+        if (!data_.unique()) {
+            data_ = std::make_shared<String>(*data_);
+        }
+        return *data_;
+    }
+
     Shared<String> data_;
 };
 

@@ -64,8 +64,8 @@ public:
             [](UdavInteger& l, UdavInteger& r) {
                 l += r;
             },
-            [](UdavString&, UdavString&) {
-                throw EvalException{};
+            [](UdavString& l, UdavString& r) {
+                l += r;
             },
             [](UdavBoolean&, UdavBoolean&) {
                 throw EvalException{};
