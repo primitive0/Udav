@@ -1,0 +1,26 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun is_even(n):
+    if n == 0:
+        return true
+    else:
+        return is_odd(n - 1)
+
+fun is_odd(n):
+    if n == 0:
+        return false
+    else:
+        return is_even(n - 1)
+
+fun main():
+    println(is_even(0))   # CHECK:true
+    println(is_odd(0))    # CHECK-NEXT:false
+
+    println(is_even(1))   # CHECK:false
+    println(is_odd(1))    # CHECK-NEXT:true
+
+    println(is_even(4))   # CHECK:true
+    println(is_odd(4))    # CHECK-NEXT:false
+
+    println(is_even(101)) # CHECK:false
+    println(is_odd(101))  # CHECK-NEXT:true
