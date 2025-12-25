@@ -41,6 +41,254 @@ private:
     String message_;
 };
 
+class ExprHelper final
+{
+public:
+    explicit ExprHelper() = delete;
+
+    static auto apply_unary_minus(UdavValue value) -> UdavValue
+    {
+        ExprHelper::expect_type<UdavInteger>(value).negate();
+        return value;
+    }
+
+    static auto apply_logical_not(UdavValue value) -> UdavValue
+    {
+        ExprHelper::expect_type<UdavBoolean>(value).apply_not();
+        return value;
+    }
+
+    static auto apply_plus(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l += r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_minus(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l -= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_mul(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l *= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_div(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l /= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_modulo(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l %= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_power(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l.pow(r);
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_bitwise_or(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l |= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_bitwise_and(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l &= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_bitwise_xor(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l ^= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_right_shift(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l >>= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    static auto apply_left_shift(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        match_operands(
+            lhs, rhs,
+            [](UdavInteger& l, UdavInteger& r) {
+                l <<= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return lhs;
+    }
+
+    template<typename OnInts, typename OnStrings, typename OnBools>
+    static auto match_operands(
+        UdavValue& lhs, UdavValue& rhs,
+        OnInts act_on_ints,
+        OnStrings act_on_strings,
+        OnBools act_on_bools)
+        -> void
+    {
+        if (auto left_int = lhs.down_cast<UdavInteger>()) {
+            if (auto right_int = rhs.down_cast<UdavInteger>()) {
+                act_on_ints(*left_int, *right_int);
+                return;
+            }
+        }
+
+        if (auto left_str = lhs.down_cast<UdavString>()) {
+            if (auto right_str = rhs.down_cast<UdavString>()) {
+                act_on_strings(*left_str, *right_str);
+                return;
+            }
+        }
+
+        if (auto left_bool = lhs.down_cast<UdavBoolean>()) {
+            if (auto right_bool = rhs.down_cast<UdavBoolean>()) {
+                act_on_bools(*left_bool, *right_bool);
+                return;
+            }
+        }
+
+        // Attempted operating on null
+        throw EvalException{};
+    }
+
+    template<typename T>
+    static auto expect_type(UdavValue& value) -> T&
+    {
+        auto inner = value.down_cast<T>();
+        if (!inner) {
+            throw EvalException{};
+        }
+        return *inner;
+    }
+};
+
 export class FunctionEvaluator final : private ast::Visitor
 {
 public:
@@ -103,7 +351,7 @@ private:
     {
         auto success = var_table_.declare(
             var_decl.name,
-            eval_expression(*var_decl.value));
+            eval_expr(*var_decl.value));
         if (!success) {
             throw EvalException{};
         }
@@ -119,7 +367,7 @@ private:
         if (!target) {
             throw EvalException{};
         }
-        *target = eval_expression(*assign_stmt.value);
+        *target = eval_expr(*assign_stmt.value);
     }
 
     auto visit(ast::PassStmt& pass_stmt) -> void override
@@ -130,7 +378,7 @@ private:
     auto visit(ast::ReturnStmt& return_stmt) -> void override
     {
         if (return_stmt.value) {
-            function_result_ = eval_expression(**return_stmt.value);
+            function_result_ = eval_expr(**return_stmt.value);
         } else {
             function_result_ = UdavValue{UdavNull{}};
         }
@@ -146,7 +394,7 @@ private:
         return function_result_.has_value();
     }
 
-    auto eval_expression(ast::Expr& expr) -> UdavValue
+    auto eval_expr(ast::Expr& expr) -> UdavValue
     {
         expr.accept(*this);
 
@@ -158,15 +406,13 @@ private:
 
     auto visit(ast::UnaryExpr& unary_expr) -> void override
     {
-        auto value = eval_expression(*unary_expr.expr);
-
         switch (unary_expr.op) {
         case ast::UnaryOperation::Minus:
-            expr_result_ = apply_unary_minus(std::move(value));
+            expr_result_ = ExprHelper::apply_unary_minus(eval_expr(*unary_expr.expr));
             break;
 
         case ast::UnaryOperation::Not:
-            expr_result_ = apply_logical_not(std::move(value));
+            expr_result_ = ExprHelper::apply_logical_not(eval_expr(*unary_expr.expr));
             break;
 
         default:
@@ -177,77 +423,59 @@ private:
     auto visit(ast::BinaryExpr& bin_expr) -> void override
     {
         if (bin_expr.op == ast::BinaryOperation::Or) {
-            auto lhs = eval_expression(*bin_expr.left);
-            auto lhs_bool = ensure_value<UdavBoolean>(lhs);
-            if (lhs_bool) {
-                expr_result_ = std::move(lhs);
-            } else {
-                auto rhs = eval_expression(*bin_expr.right);
-                ensure_value<UdavBoolean>(rhs);
-                expr_result_ = std::move(rhs);
-            }
-
+            visit_or_expr(bin_expr);
             return;
         } else if (bin_expr.op == ast::BinaryOperation::And) {
-            auto lhs = eval_expression(*bin_expr.left);
-            auto lhs_bool = ensure_value<UdavBoolean>(lhs);
-            if (!lhs_bool) {
-                expr_result_ = std::move(lhs);
-            } else {
-                auto rhs = eval_expression(*bin_expr.right);
-                ensure_value<UdavBoolean>(rhs);
-                expr_result_ = std::move(rhs);
-            }
-
+            visit_and_expr(bin_expr);
             return;
         }
 
-        auto lhs = eval_expression(*bin_expr.left);
-        auto rhs = eval_expression(*bin_expr.right);
+        auto lhs = eval_expr(*bin_expr.left);
+        auto rhs = eval_expr(*bin_expr.right);
 
         switch (bin_expr.op) {
         case ast::BinaryOperation::Plus:
-            expr_result_ = apply_plus(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_plus(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Minus:
-            expr_result_ = apply_minus(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_minus(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Mul:
-            expr_result_ = apply_mul(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_mul(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Div:
-            expr_result_ = apply_div(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_div(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Modulo:
-            expr_result_ = apply_modulo(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_modulo(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Power:
-            expr_result_ = apply_power(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_power(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseOr:
-            expr_result_ = apply_bitwise_or(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_bitwise_or(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseAnd:
-            expr_result_ = apply_bitwise_and(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_bitwise_and(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::BitwiseXor:
-            expr_result_ = apply_bitwise_xor(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_bitwise_xor(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::RightShift:
-            expr_result_ = apply_right_shift(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_right_shift(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::LeftShift:
-            expr_result_ = apply_left_shift(std::move(lhs), std::move(rhs));
+            expr_result_ = ExprHelper::apply_left_shift(std::move(lhs), std::move(rhs));
             break;
 
         case ast::BinaryOperation::Equals:
@@ -260,6 +488,30 @@ private:
             break;
         default:
             assert(false && "Unreachable.");
+        }
+    }
+
+    auto visit_or_expr(ast::BinaryExpr& or_expr) -> void
+    {
+        auto lhs = eval_expr(*or_expr.left);
+        if (ExprHelper::expect_type<UdavBoolean>(lhs)) {
+            expr_result_ = std::move(lhs);
+        } else {
+            auto rhs = eval_expr(*or_expr.right);
+            ExprHelper::expect_type<UdavBoolean>(rhs);
+            expr_result_ = std::move(rhs);
+        }
+    }
+
+    auto visit_and_expr(ast::BinaryExpr& and_expr) -> void
+    {
+        auto lhs = eval_expr(*and_expr.left);
+        if (!ExprHelper::expect_type<UdavBoolean>(lhs)) {
+            expr_result_ = std::move(lhs);
+        } else {
+            auto rhs = eval_expr(*and_expr.right);
+            ExprHelper::expect_type<UdavBoolean>(rhs);
+            expr_result_ = std::move(rhs);
         }
     }
 
@@ -316,149 +568,10 @@ private:
 
         auto evaluated_args = Vec<UdavValue>{};
         for (auto& arg : call_info.args) {
-            evaluated_args.push_back(eval_expression(*arg));
+            evaluated_args.push_back(eval_expr(*arg));
         }
 
         return FunctionEvaluator::eval(program_, function, evaluated_args);
-    }
-
-    static auto apply_unary_minus(UdavValue value) -> UdavValue
-    {
-        auto integer = value.down_cast<UdavInteger>();
-        if (!integer) {
-            throw EvalException{};
-        }
-        integer->negate();
-        return value;
-    }
-
-    static auto apply_logical_not(UdavValue value) -> UdavValue
-    {
-        auto boolean = value.down_cast<UdavBoolean>();
-        if (!boolean) {
-            throw EvalException{};
-        }
-        boolean->apply_not();
-        return value;
-    }
-
-    static auto apply_plus(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs += rhs;
-        });
-    }
-
-    static auto apply_minus(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs -= rhs;
-        });
-    }
-
-    static auto apply_mul(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs *= rhs;
-        });
-    }
-
-    static auto apply_div(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs /= rhs;
-        });
-    }
-
-    static auto apply_modulo(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs %= rhs;
-        });
-    }
-
-    static auto apply_power(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs.pow(rhs);
-        });
-    }
-
-    static auto apply_bitwise_or(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs |= rhs;
-        });
-    }
-
-    static auto apply_bitwise_and(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs &= rhs;
-        });
-    }
-
-    static auto apply_bitwise_xor(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs ^= rhs;
-        });
-    }
-
-    static auto apply_right_shift(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs >>= rhs;
-        });
-    }
-
-    static auto apply_left_shift(UdavValue lhs, UdavValue rhs) -> UdavValue
-    {
-        return act_on_value(lhs, rhs, [](UdavInteger& lhs, UdavInteger& rhs) {
-            lhs <<= rhs;
-        });
-    }
-
-    // TODO: rename
-    template<typename T>
-    static auto ensure_value(UdavValue& value) -> T&
-    {
-        auto downcasted = value.down_cast<T>();
-        if (!downcasted) {
-            throw EvalException{};
-        }
-        return *downcasted;
-    }
-
-    // TODO: refactor
-    template<typename I>
-    static auto act_on_value(
-        UdavValue lhs, UdavValue rhs,
-        I int_action)
-        -> UdavValue
-    {
-        if (auto lhs_int = lhs.down_cast<UdavInteger>()) {
-            if (auto rhs_int = rhs.down_cast<UdavInteger>()) {
-                int_action(*lhs_int, *rhs_int);
-                return lhs;
-            }
-        }
-
-        // if (auto lhs_str = lhs.down_cast<UdavString>()) {
-        //     if (auto rhs_str = rhs.down_cast<UdavString>()) {
-        //         string_action(*lhs_str, *rhs_str);
-        //         return lhs;
-        //     }
-        // }
-
-        // if (auto lhs_bool = lhs.down_cast<UdavBoolean>()) {
-        //     if (auto rhs_bool = rhs.down_cast<UdavBoolean>()) {
-        //         bool_action(*lhs_bool, *rhs_bool);
-        //         return lhs;
-        //     }
-        // }
-
-        throw EvalException{};
     }
 
     ast::Program& program_;
