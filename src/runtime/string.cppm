@@ -36,6 +36,11 @@ public:
     {
     }
 
+    explicit UdavString(const char* cstr)
+        : data_{std::make_shared<String>(cstr)}
+    {
+    }
+
     auto operator==(const UdavString& rhs) const -> bool
     {
         return *data_ == *rhs.data_;

@@ -9,6 +9,7 @@ module;
 export module udav.interpreter.runtime_env;
 
 import udav.ast;
+import udav.eval;
 import udav.runtime;
 
 namespace udav {
@@ -22,6 +23,7 @@ public:
     {
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
+        program.functions.push_back(make_udav_func("str", &to_str));
     }
 
 private:
@@ -34,6 +36,19 @@ private:
         function_node.name = name;
         function_node.native_callable = std::move(callable);
         return function_node;
+    }
+
+    static auto to_str(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 1) {
+            throw EvalException{};
+        }
+
+        return args[0].visit(
+            [](const UdavString& string) { return UdavValue{UdavString{string}}; },
+            [](const UdavInteger& integer) { return UdavValue{UdavString{integer.format()}}; },
+            [](const UdavBoolean& boolean) { return UdavValue{UdavString{boolean.format()}}; },
+            [](const UdavNull& null) { return UdavValue{UdavString{null.format()}}; });
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue

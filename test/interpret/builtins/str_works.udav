@@ -1,0 +1,12 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    let buffer = ""
+    buffer += str("Text")
+    buffer += str(123)
+    buffer += str(true)
+    buffer += str(false)
+    buffer += str(null)
+    println(buffer)
+
+    # CHECK:Text123truefalsenull
