@@ -31,6 +31,8 @@ public:
     {
     }
 
+    auto operator==(const UdavInteger& rhs) const -> bool = default;
+
     auto format() const -> String
     {
         return value_.convert_to<String>();

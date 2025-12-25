@@ -36,6 +36,11 @@ public:
     {
     }
 
+    auto operator==(const UdavString& rhs) const -> bool
+    {
+        return *data_ == *rhs.data_;
+    }
+
     explicit operator StrView() const
     {
         return *data_;

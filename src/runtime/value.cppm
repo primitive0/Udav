@@ -52,6 +52,8 @@ public:
     {
     }
 
+    auto operator==(const UdavValue& value) const -> bool = default;
+
     auto format() const -> String
     {
         return visit(

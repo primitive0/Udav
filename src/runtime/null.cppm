@@ -17,6 +17,8 @@ public:
 
     explicit UdavNull() = default;
 
+    auto operator==(const UdavNull& rhs) const -> bool = default;
+
     auto format() const -> String
     {
         return "null";

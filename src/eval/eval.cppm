@@ -524,7 +524,13 @@ private:
             break;
 
         case ast::BinaryOperation::Equals:
+            expr_result_ = UdavValue{UdavBoolean{lhs == rhs}};
+            break;
+
         case ast::BinaryOperation::NotEquals:
+            expr_result_ = UdavValue{UdavBoolean{lhs != rhs}};
+            break;
+
         case ast::BinaryOperation::Less:
         case ast::BinaryOperation::Greater:
         case ast::BinaryOperation::LessOrEqual:

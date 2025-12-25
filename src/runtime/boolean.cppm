@@ -22,6 +22,8 @@ public:
     {
     }
 
+    auto operator==(const UdavBoolean& rhs) const -> bool = default;
+
     explicit operator bool() const
     {
         return value_;
