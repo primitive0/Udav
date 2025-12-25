@@ -20,18 +20,6 @@ public:
         scopes_.emplace_back();
     }
 
-    [[nodiscard]]
-    auto declare(StrView name, UdavValue value) -> bool
-    {
-        auto& current_scope = scopes_.back();
-        if (current_scope.contains(name)) {
-            return false;
-        }
-
-        current_scope.emplace(name, std::move(value));
-        return true;
-    }
-
     // TODO: refactor it
     template<typename Self>
     decltype(auto) get(this Self&& self, StrView name) // NOLINT(modernize-use-trailing-return-type)
@@ -43,6 +31,17 @@ public:
             }
         }
         return decltype(&self.scopes_.rbegin()->find(name)->second){nullptr};
+    }
+
+    [[nodiscard]]
+    auto declare(StrView name, UdavValue value) -> bool
+    {
+        if (get(name)) {
+            return false;
+        }
+
+        scopes_.back().emplace(name, std::move(value));
+        return true;
     }
 
     auto push_scope() -> void

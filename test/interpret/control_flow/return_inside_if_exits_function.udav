@@ -1,0 +1,8 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    if true:
+       print("foo") # CHECK:foo
+       return
+
+    print("bar")

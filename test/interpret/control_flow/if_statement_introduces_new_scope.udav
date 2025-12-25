@@ -1,0 +1,15 @@
+#=== CASE: cannot_shadow_var_from_parent_scope ===
+# RUN: %select -c cannot_shadow_var_from_parent_scope %s | not %udav
+
+fun main():
+    let a = 1
+    if true:
+       let a = 2
+
+#=== CASE: cannot_access_var_from_if_scope ===
+# RUN: %select -c cannot_access_var_from_if_scope %s | not %udav
+
+fun main():
+    if true:
+       let b = 42
+    println(b)

@@ -338,6 +338,20 @@ private:
         }
     }
 
+    auto visit(ast::Block& block) -> void override
+    {
+        var_table_.push_scope();
+
+        for (auto& stmt : block.stmts) {
+            stmt->accept(*this);
+            if (should_exit_function()) {
+                break;
+            }
+        }
+
+        var_table_.pop_scope();
+    }
+
     auto visit(ast::LetStmt& let_stmt) -> void override
     {
         for (auto& decl : let_stmt.decls) {
@@ -432,6 +446,21 @@ private:
     auto visit(ast::CallStmt& call_stmt) -> void override
     {
         auto _ = call_function(call_stmt.call);
+    }
+
+    auto visit(ast::IfStmt& if_stmt) -> void override
+    {
+        for (auto& branch : if_stmt.branches) {
+            auto cond_value = eval_expr(*branch.condition);
+            if (ExprHelper::expect_type<UdavBoolean>(cond_value)) {
+                branch.body.accept(*this);
+                return;
+            }
+        }
+
+        if (if_stmt.else_block) {
+            if_stmt.else_block->accept(*this);
+        }
     }
 
     auto should_exit_function() -> bool

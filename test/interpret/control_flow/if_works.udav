@@ -1,0 +1,50 @@
+#=== CASE: only_if ===
+# RUN: %select -c only_if %s | %udav | FileCheck --match-full-lines --strict-whitespace --check-prefix=CHECK-1 %s
+
+fun main():
+    let var = 3
+
+    if var + 2 == 5:
+       print("x")
+
+    if var - 2 != 1:
+       print("y")
+
+    # CHECK-1:x
+
+#=== CASE: if_else ===
+# RUN: %select -c if_else %s | %udav | FileCheck --match-full-lines --strict-whitespace --check-prefix=CHECK-2 %s
+
+fun main():
+    let var = "a"
+    if var == "b":
+        print("b")
+    else:
+        print("not b")
+
+    # CHECK-2:not b
+    println()
+
+    var = "c"
+    if var == "c":
+        print("c")
+    else:
+        print("not c")
+
+    # CHECK-2:c
+
+#=== CASE: if_elif_else ===
+# RUN: %select -c if_elif_else %s | %udav | FileCheck --match-full-lines --strict-whitespace --check-prefix=CHECK-3 %s
+
+fun main():
+    let var = 42
+    if var == 40:
+        print(40)
+    elif var == 41:
+        print(41)
+    elif var == 42:
+        print(42)
+    else:
+        print("else")
+
+    # CHECK-3:42
