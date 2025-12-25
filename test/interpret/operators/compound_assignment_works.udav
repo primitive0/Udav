@@ -1,0 +1,51 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    let a = 0
+
+    a = 5
+    print(a) # CHECK: 5
+
+    a = 5
+    a += 3
+    print(a) # CHECK: 8
+
+    a = 10
+    a -= 4
+    print(a) # CHECK: 6
+
+    a = 6
+    a *= 7
+    print(a) # CHECK: 42
+
+    a = 20
+    a /= 5
+    print(a) # CHECK: 4
+
+    a = 23
+    a %= 7
+    print(a) # CHECK: 2
+
+    a = 2
+    a **= 5
+    print(a) # CHECK: 32
+
+    a = 10 # 1010
+    a |= 5 # 0101
+    print(a) # CHECK: 15
+
+    a = 12  # 1100
+    a &= 10 # 1010
+    print(a) # CHECK: 8
+
+    a = 12
+    a ^= 10
+    print(a) # CHECK: 6
+
+    a = 16
+    a >>= 2
+    print(a) # CHECK: 4
+
+    a = 1
+    a <<= 4
+    print(a) # CHECK: 16

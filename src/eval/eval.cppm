@@ -291,7 +291,6 @@ public:
 export class FunctionEvaluator final : private ast::Visitor
 {
 public:
-    // TODO: forward args
     static auto eval(
         ast::Program& program,
         ast::Function& function,
@@ -358,15 +357,62 @@ private:
 
     auto visit(ast::AssignStmt& assign_stmt) -> void override
     {
-        if (assign_stmt.kind != ast::AssignKind::Assign) {
-            assert(false && "WIP.");
-        }
-
         auto target = var_table_.get(assign_stmt.target);
         if (!target) {
             throw EvalException{};
         }
-        *target = eval_expr(*assign_stmt.value);
+
+        auto value = eval_expr(*assign_stmt.value);
+
+        switch (assign_stmt.kind) {
+        case ast::AssignKind::Assign:
+            *target = std::move(value);
+            break;
+
+        case ast::AssignKind::PlusAssign:
+            *target = ExprHelper::apply_plus(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::MinusAssign:
+            *target = ExprHelper::apply_minus(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::MulAssign:
+            *target = ExprHelper::apply_mul(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::DivAssign:
+            *target = ExprHelper::apply_div(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::ModuloAssign:
+            *target = ExprHelper::apply_modulo(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::PowerAssign:
+            *target = ExprHelper::apply_power(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::BitwiseOrAssign:
+            *target = ExprHelper::apply_bitwise_or(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::BitwiseAndAssign:
+            *target = ExprHelper::apply_bitwise_and(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::BitwiseXorAssign:
+            *target = ExprHelper::apply_bitwise_xor(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::RightShiftAssign:
+            *target = ExprHelper::apply_right_shift(std::move(*target), std::move(value));
+            break;
+
+        case ast::AssignKind::LeftShiftAssign:
+            *target = ExprHelper::apply_left_shift(std::move(*target), std::move(value));
+            break;
+        }
     }
 
     auto visit(ast::PassStmt& pass_stmt) -> void override
