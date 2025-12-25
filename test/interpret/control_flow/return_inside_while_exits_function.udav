@@ -1,0 +1,13 @@
+# RUN: %udav %s | FileCheck %s
+
+fun find_first_greater_than_three():
+    let i = 0
+    while i < 10:
+        if i > 3:
+            return i
+        i += 1
+    return -1
+
+fun main():
+    let result = find_first_greater_than_three()
+    print(result)       # CHECK: 4

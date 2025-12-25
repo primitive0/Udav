@@ -1,6 +1,7 @@
 module;
 
 #include "support/hash_set.hpp"
+#include "support/numerics.hpp"
 #include "support/string.hpp"
 #include "support/vector.hpp"
 
@@ -51,6 +52,29 @@ private:
             throw PassException{};
         }
     }
+
+    auto visit(ast::WhileStmt& while_stmt) -> void override
+    {
+        ++loop_depth_;
+        ast::RecursiveVisitor::visit(while_stmt);
+        --loop_depth_;
+    }
+
+    auto visit(ast::BreakStmt& break_stmt) -> void override
+    {
+        if (loop_depth_ == 0) {
+            throw PassException{};
+        }
+    }
+
+    auto visit(ast::ContinueStmt& continue_stmt) -> void override
+    {
+        if (loop_depth_ == 0) {
+            throw PassException{};
+        }
+    }
+
+    i64 loop_depth_ = 0;
 };
 
 } // namespace udav

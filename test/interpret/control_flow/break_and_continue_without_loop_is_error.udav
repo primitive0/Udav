@@ -1,0 +1,11 @@
+#=== CASE: break ===
+# RUN: %select -c break %s | not %udav
+
+fun main():
+    break
+
+#=== CASE: continue ===
+# RUN: %select -c continue %s | not %udav
+
+fun main():
+    continue

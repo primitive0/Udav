@@ -1,0 +1,22 @@
+# RUN: %udav %s | FileCheck %s
+
+fun main():
+    let i = 0
+    while i < 5:
+        i += 1
+        if i % 2 == 0:
+            continue
+        println(i)      # CHECK: 1
+                        # CHECK-NEXT: 3
+                        # CHECK-NEXT: 5
+
+    let j = 0
+    while true:
+        println(j)      # CHECK-NEXT: 0
+                        # CHECK-NEXT: 1
+                        # CHECK-NEXT: 2
+        if j == 2:
+            break
+        j += 1
+
+    println("done")       # CHECK-NEXT: done

@@ -399,6 +399,11 @@ public:
     }
 
 private:
+    enum class ControlFlow {
+        Break,
+        Continue,
+    };
+
     explicit FunctionEvaluator(ast::Program& program)
         : program_{program}
     {
@@ -420,7 +425,7 @@ private:
 
         for (auto& stmt : block.stmts) {
             stmt->accept(*this);
-            if (should_exit_function()) {
+            if (should_exit_function() || loop_control_flow_) {
                 break;
             }
         }
@@ -510,6 +515,16 @@ private:
         // Do nothing on pass statement
     }
 
+    auto visit(ast::ContinueStmt& continue_stmt) -> void override
+    {
+        loop_control_flow_ = ControlFlow::Continue;
+    }
+
+    auto visit(ast::BreakStmt& break_stmt) -> void override
+    {
+        loop_control_flow_ = ControlFlow::Break;
+    }
+
     auto visit(ast::ReturnStmt& return_stmt) -> void override
     {
         if (return_stmt.value) {
@@ -527,8 +542,8 @@ private:
     auto visit(ast::IfStmt& if_stmt) -> void override
     {
         for (auto& branch : if_stmt.branches) {
-            auto cond_value = eval_expr(*branch.condition);
-            if (ExprHelper::expect_type<UdavBoolean>(cond_value)) {
+            auto condition_value = eval_expr(*branch.condition);
+            if (ExprHelper::expect_type<UdavBoolean>(condition_value)) {
                 branch.body.accept(*this);
                 return;
             }
@@ -536,6 +551,27 @@ private:
 
         if (if_stmt.else_block) {
             if_stmt.else_block->accept(*this);
+        }
+    }
+
+    auto visit(ast::WhileStmt& while_stmt) -> void override
+    {
+        auto condition_value = eval_expr(*while_stmt.condition);
+        while (ExprHelper::expect_type<UdavBoolean>(condition_value)) {
+            while_stmt.body.accept(*this);
+            if (should_exit_function()) {
+                return;
+            }
+
+            if (loop_control_flow_ == ControlFlow::Break) {
+                loop_control_flow_.reset();
+                return;
+            }
+            if (loop_control_flow_ == ControlFlow::Continue) {
+                loop_control_flow_.reset();
+            }
+
+            condition_value = eval_expr(*while_stmt.condition);
         }
     }
 
@@ -744,6 +780,7 @@ private:
     VariableTable var_table_{};
     Option<UdavValue> function_result_{};
     Option<UdavValue> expr_result_{};
+    Option<ControlFlow> loop_control_flow_{};
 };
 
 } // namespace udav
