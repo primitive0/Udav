@@ -244,6 +244,82 @@ public:
         return lhs;
     }
 
+    static auto apply_less(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        auto result = false;
+
+        match_operands(
+            lhs, rhs,
+            [&](UdavInteger& l, UdavInteger& r) {
+                result = l < r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return UdavValue{UdavBoolean{result}};
+    }
+
+    static auto apply_greater(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        auto result = false;
+
+        match_operands(
+            lhs, rhs,
+            [&](UdavInteger& l, UdavInteger& r) {
+                result = l > r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return UdavValue{UdavBoolean{result}};
+    }
+
+    static auto apply_less_or_equal(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        auto result = false;
+
+        match_operands(
+            lhs, rhs,
+            [&](UdavInteger& l, UdavInteger& r) {
+                result = l <= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return UdavValue{UdavBoolean{result}};
+    }
+
+    static auto apply_greater_or_equal(UdavValue lhs, UdavValue rhs) -> UdavValue
+    {
+        auto result = false;
+
+        match_operands(
+            lhs, rhs,
+            [&](UdavInteger& l, UdavInteger& r) {
+                result = l >= r;
+            },
+            [](UdavString&, UdavString&) {
+                throw EvalException{};
+            },
+            [](UdavBoolean&, UdavBoolean&) {
+                throw EvalException{};
+            });
+
+        return UdavValue{UdavBoolean{result}};
+    }
+
     template<typename OnInts, typename OnStrings, typename OnBools>
     static auto match_operands(
         UdavValue& lhs, UdavValue& rhs,
@@ -561,11 +637,21 @@ private:
             break;
 
         case ast::BinaryOperation::Less:
-        case ast::BinaryOperation::Greater:
-        case ast::BinaryOperation::LessOrEqual:
-        case ast::BinaryOperation::GreaterOrEqual:
-            assert(false && "WIP.");
+            expr_result_ = ExprHelper::apply_less(std::move(lhs), std::move(rhs));
             break;
+
+        case ast::BinaryOperation::Greater:
+            expr_result_ = ExprHelper::apply_greater(std::move(lhs), std::move(rhs));
+            break;
+
+        case ast::BinaryOperation::LessOrEqual:
+            expr_result_ = ExprHelper::apply_less_or_equal(std::move(lhs), std::move(rhs));
+            break;
+
+        case ast::BinaryOperation::GreaterOrEqual:
+            expr_result_ = ExprHelper::apply_greater_or_equal(std::move(lhs), std::move(rhs));
+            break;
+
         default:
             assert(false && "Unreachable.");
         }

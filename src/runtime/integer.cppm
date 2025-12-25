@@ -1,5 +1,6 @@
 module;
 
+#include <compare>
 #include <limits>
 #include <utility>
 
@@ -32,6 +33,17 @@ public:
     }
 
     auto operator==(const UdavInteger& rhs) const -> bool = default;
+
+    auto operator<=>(const UdavInteger& rhs) const -> std::strong_ordering
+    {
+        if (value_ < rhs.value_) {
+            return std::strong_ordering::less;
+        } else if (value_ > rhs.value_) {
+            return std::strong_ordering::greater;
+        } else {
+            return std::strong_ordering::equal;
+        }
+    }
 
     auto format() const -> String
     {
