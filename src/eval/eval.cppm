@@ -2,7 +2,6 @@ module;
 
 #include <cassert>
 #include <exception>
-#include <iostream>
 
 #include "support/hash_map.hpp"
 #include "support/option.hpp"
