@@ -491,7 +491,7 @@ public:
     }
 
     // parameters =
-    //     SYMBOL , { "," , SYMBOL } ;
+    //     parameter , { "," , parameter } ;
     auto parse_parameters() -> Vec<ast::Parameter>
     {
         auto params = Vec<ast::Parameter>{};
