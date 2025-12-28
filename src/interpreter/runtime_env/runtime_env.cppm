@@ -21,10 +21,12 @@ public:
 
     auto attach(ast::Program& program) -> void
     {
+        program.functions.push_back(make_udav_func("len", &get_length));
+        program.functions.push_back(make_udav_func("str", &to_str));
+
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
-        program.functions.push_back(make_udav_func("str", &to_str));
-        program.functions.push_back(make_udav_func("len", &get_length));
+        program.functions.push_back(make_udav_func("readln", &readln));
     }
 
 private:
@@ -37,19 +39,6 @@ private:
         function_node.name = name;
         function_node.native_callable = std::move(callable);
         return function_node;
-    }
-
-    static auto to_str(const Vec<UdavValue>& args) -> UdavValue
-    {
-        if (args.size() != 1) {
-            throw EvalException{};
-        }
-
-        return args[0].visit(
-            [](const UdavString& string) { return UdavValue{UdavString{string}}; },
-            [](const UdavInteger& integer) { return UdavValue{UdavString{integer.format()}}; },
-            [](const UdavBoolean& boolean) { return UdavValue{UdavString{boolean.format()}}; },
-            [](const UdavNull& null) { return UdavValue{UdavString{null.format()}}; });
     }
 
     static auto get_length(const Vec<UdavValue>& args) -> UdavValue
@@ -65,6 +54,19 @@ private:
         return UdavValue{UdavInteger{string->size()}};
     }
 
+    static auto to_str(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 1) {
+            throw EvalException{};
+        }
+
+        return args[0].visit(
+            [](const UdavString& string) { return UdavValue{UdavString{string}}; },
+            [](const UdavInteger& integer) { return UdavValue{UdavString{integer.format()}}; },
+            [](const UdavBoolean& boolean) { return UdavValue{UdavString{boolean.format()}}; },
+            [](const UdavNull& null) { return UdavValue{UdavString{null.format()}}; });
+    }
+
     static auto print(const Vec<UdavValue>& args) -> UdavValue
     {
         // Forcefully flush stdout, because of specification requirements.
@@ -76,6 +78,23 @@ private:
     {
         std::cout << format_args(args) << std::endl;
         return UdavValue{UdavNull{}};
+    }
+
+    static auto readln(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (!args.empty()) {
+            throw EvalException{};
+        }
+
+        auto line = String{};
+        std::getline(std::cin, line);
+        if (std::cin.eof()) {
+            return UdavValue{UdavNull{}};
+        }
+        if (!std::cin) {
+            throw EvalException{};
+        }
+        return UdavValue{UdavString{std::move(line)}};
     }
 
     static auto format_args(const Vec<UdavValue>& args) -> String

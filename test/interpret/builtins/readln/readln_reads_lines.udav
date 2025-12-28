@@ -1,0 +1,9 @@
+# RUN: %udav %s < %s.stdin | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    let i = 0
+    while i < 12:
+        print(readln())
+        i += 1
+
+    # CHECK:12345678
