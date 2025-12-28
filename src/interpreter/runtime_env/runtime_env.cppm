@@ -24,6 +24,7 @@ public:
         program.functions.push_back(make_udav_func("len", &get_length));
         program.functions.push_back(make_udav_func("str", &to_str));
         program.functions.push_back(make_udav_func("int", &to_int));
+        program.functions.push_back(make_udav_func("reverse", &reverse));
 
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
@@ -47,7 +48,6 @@ private:
         if (args.size() != 1) {
             throw EvalException{};
         }
-
         auto string = args[0].down_cast<UdavString>();
         if (!string) {
             throw EvalException{};
@@ -91,6 +91,21 @@ private:
             []([[maybe_unused]] const UdavNull& null) {
                 return UdavValue{UdavInteger{0}};
             });
+    }
+
+    static auto reverse(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 1) {
+            throw EvalException{};
+        }
+        auto string = args[0].down_cast<UdavString>();
+        if (!string) {
+            throw EvalException{};
+        }
+
+        auto copy = UdavString{*string};
+        copy.reverse();
+        return UdavValue{std::move(copy)};
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue

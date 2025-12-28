@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <utility>
 
 #include "support/shared.hpp"
@@ -61,6 +62,12 @@ public:
     auto size() const -> size_t
     {
         return data_->size();
+    }
+
+    auto reverse() -> void
+    {
+        auto& data = get_mut();
+        std::reverse(data.begin(), data.end());
     }
 
 private:
