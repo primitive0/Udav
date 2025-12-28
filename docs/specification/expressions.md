@@ -299,8 +299,7 @@ int("1a435")
 str(true) # = "true"
 str(false) # = "false"
 str(2134) # = "2134"
-str() # = ""
-str(null) # = ""
+str(null) # = "null"
 ```
 
 ##### reverse()
