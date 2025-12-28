@@ -7,6 +7,7 @@ module;
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include "support/numerics.hpp"
+#include "support/option.hpp"
 #include "support/string.hpp"
 
 #include <catch2/catch_test_macros.hpp>
@@ -157,6 +158,38 @@ public:
         return big_int.convert_to<i64>();
     }
 
+    static auto parse_decimal(StrView input) -> Option<UdavInteger>
+    {
+        if (input.empty()) {
+            return std::nullopt;
+        }
+
+        auto negative = false;
+        if (input[0] == '-') {
+            negative = true;
+            input = input.substr(1);
+        }
+        if (input.empty()) {
+            return std::nullopt;
+        }
+
+        while (input.size() != 1 && input[0] == '0') {
+            input = input.substr(1);
+        }
+
+        for (auto ch : input) {
+            if (ch < '0' || '9' < ch) {
+                return std::nullopt;
+            }
+        }
+
+        auto integer = UdavInteger{boost::multiprecision::cpp_int{input}};
+        if (negative) {
+            integer.negate();
+        }
+        return integer;
+    }
+
 private:
     boost::multiprecision::cpp_int value_;
 };
@@ -181,6 +214,47 @@ TEST_CASE("UdavInteger is constructed and formatted", "[runtime]")
 
     CHECK(udav_integer.value() == input);
     CHECK(udav_integer.format() == format);
+}
+
+TEST_CASE("UdavInteger::parse_decimal parses decimal integers", "[runtime]")
+{
+    struct TC
+    {
+        StrView input;
+        boost::multiprecision::cpp_int expected;
+    };
+
+    // clang-format off
+    auto [input, expected] = GENERATE(
+        TC{"0",          0},
+        TC{"-0",         0},
+        TC{"0000",       0},
+        TC{"-0000",      0},
+        TC{"0009",       9}, // This must be parsed as decimal
+        TC{"0123",       123},
+        TC{"-0123",      -123},
+        TC{"1234567890", 1234567890},
+        TC{"-1",         -1},
+        TC{"-42",        -42});
+    // clang-format on
+
+    auto result = UdavInteger::parse_decimal(input);
+    CHECK((result && result->value() == expected));
+}
+
+TEST_CASE("UdavInteger::parse_decimal does not parse invalid integers", "[runtime]")
+{
+    auto input = GENERATE(
+        as<StrView>{},
+        "",
+        "-",
+        "aaa",
+        "0b010"
+        "0b00F",
+        "-0x1",
+        "-0b1");
+
+    CHECK(!UdavInteger::parse_decimal(input));
 }
 
 } // namespace udav

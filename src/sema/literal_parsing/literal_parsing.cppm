@@ -1,7 +1,5 @@
 module;
 
-#include <boost/multiprecision/cpp_int.hpp>
-
 #include "support/option.hpp"
 #include "support/string.hpp"
 
@@ -90,13 +88,7 @@ public:
     auto parse(StrView literal) -> Option<UdavInteger>
     {
         assert(!literal.empty() && "Integer literal must not be empty.");
-
-        auto input = literal;
-        while (input.size() != 1 && input[0] == '0') {
-            input = input.substr(1);
-        }
-
-        return UdavInteger{boost::multiprecision::cpp_int{input}};
+        return UdavInteger::parse_decimal(literal);
     }
 };
 
@@ -142,27 +134,6 @@ TEST_CASE("StringLiteralParser does not parse invalid escape sequences", "[sema]
         R"("\t\0 \2")");
 
     CHECK(!StringLiteralParser().parse(input));
-}
-
-TEST_CASE("IntegerLiteralParser parses correct literals", "[sema]")
-{
-    struct TC
-    {
-        StrView input;
-        boost::multiprecision::cpp_int expected;
-    };
-
-    // clang-format off
-    auto [input, expected] = GENERATE(
-        TC{"0",          0},
-        TC{"0000",       0},
-        TC{"0009",       9}, // This must be parsed as decimal
-        TC{"0123",       123},
-        TC{"1234567890", 1234567890});
-    // clang-format on
-
-    auto result = IntegerLiteralParser{}.parse(input);
-    CHECK((result && result->value() == expected));
 }
 
 } // namespace udav

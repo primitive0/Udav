@@ -23,6 +23,7 @@ public:
     {
         program.functions.push_back(make_udav_func("len", &get_length));
         program.functions.push_back(make_udav_func("str", &to_str));
+        program.functions.push_back(make_udav_func("int", &to_int));
 
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
@@ -65,6 +66,31 @@ private:
             [](const UdavInteger& integer) { return UdavValue{UdavString{integer.format()}}; },
             [](const UdavBoolean& boolean) { return UdavValue{UdavString{boolean.format()}}; },
             [](const UdavNull& null) { return UdavValue{UdavString{null.format()}}; });
+    }
+
+    static auto to_int(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 1) {
+            throw EvalException{};
+        }
+
+        return args[0].visit(
+            [&](const UdavString& string) {
+                if (auto integer = UdavInteger::parse_decimal(StrView{string}); integer) {
+                    return UdavValue{std::move(*integer)};
+                } else {
+                    return UdavValue{UdavNull{}};
+                }
+            },
+            [](const UdavInteger& integer) {
+                return UdavValue{UdavInteger{integer}};
+            },
+            [](const UdavBoolean& boolean) {
+                return UdavValue{UdavInteger{boolean ? 1 : 0}};
+            },
+            []([[maybe_unused]] const UdavNull& null) {
+                return UdavValue{UdavInteger{0}};
+            });
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue

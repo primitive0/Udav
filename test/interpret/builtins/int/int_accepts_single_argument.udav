@@ -1,0 +1,11 @@
+#=== CASE: no_args ===
+# RUN: %select -c no_args %s | not %udav
+
+fun main():
+    int()
+
+#=== CASE: too_many_args ===
+# RUN: %select -c too_many_args %s | not %udav
+
+fun main():
+    int("foo", 52)

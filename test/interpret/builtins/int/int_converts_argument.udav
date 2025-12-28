@@ -1,0 +1,17 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    let checksum = 0
+
+    checksum += intlog(100)   # CHECK:100
+    checksum += intlog(true)  # CHECK-NEXT:1
+    checksum += intlog(false) # CHECK-NEXT:0
+    checksum += intlog(null)  # CHECK-NEXT:0
+    checksum += intlog("20")  # CHECK-NEXT:20
+
+    println(checksum) # CHECK-NEXT:121
+
+fun intlog(x):
+    let result = int(x)
+    println(result)
+    return result
