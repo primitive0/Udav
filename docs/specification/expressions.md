@@ -307,7 +307,7 @@ str(null) # = "null"
 ```udav
 # str: string
 # return: string
-fun reverce(str):
+fun reverse(str):
     ...
 ```
 
