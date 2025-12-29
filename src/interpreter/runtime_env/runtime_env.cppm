@@ -26,6 +26,7 @@ public:
         program.functions.push_back(make_udav_func("int", &to_int));
         program.functions.push_back(make_udav_func("reverse", &reverse));
         program.functions.push_back(make_udav_func("find_substr", &find_substr));
+        program.functions.push_back(make_udav_func("substr", &substr));
 
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
@@ -126,6 +127,35 @@ private:
             return UdavValue{UdavNull{}};
         }
         return UdavValue{UdavInteger{index}};
+    }
+
+    static auto substr(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 3) {
+            throw EvalException{};
+        }
+
+        auto string = args[0].down_cast<UdavString>();
+        auto start = args[1].down_cast<UdavInteger>();
+        auto count = args[2].down_cast<UdavInteger>();
+        if (!string || !start || !count) {
+            throw EvalException{};
+        }
+
+        auto start_i64 = start->to_i64();
+        auto count_i64 = count->to_i64();
+        if (start_i64 < 0 || count_i64 < 0) {
+            throw EvalException{};
+        }
+
+        if (start_i64 > string->size()) {
+            throw EvalException{};
+        }
+
+        return UdavValue{
+            *string->substr(
+                static_cast<size_t>(start_i64),
+                static_cast<size_t>(count_i64))};
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue

@@ -1,0 +1,26 @@
+#=== CASE: all_invalid ===
+# RUN: %select -c all_invalid %s | not %udav
+
+fun main():
+    substr(true, false, true)
+
+
+#=== CASE: invalid_first ===
+# RUN: %select -c invalid_first %s | not %udav
+
+fun main():
+    substr(123, 0, 1)
+
+
+#=== CASE: invalid_second ===
+# RUN: %select -c invalid_second %s | not %udav
+
+fun main():
+    substr("hello", "0", 1)
+
+
+#=== CASE: invalid_third ===
+# RUN: %select -c invalid_third %s | not %udav
+
+fun main():
+    substr("hello", 0, "1")

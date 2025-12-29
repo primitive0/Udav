@@ -1,0 +1,19 @@
+#=== CASE: bounds1 ===
+# RUN: %select -c bounds1 %s | not %udav
+
+fun main():
+    substr("", -1, 0)
+
+
+#=== CASE: bounds2 ===
+# RUN: %select -c bounds2 %s | not %udav
+
+fun main():
+    substr("", 1, 0)
+
+
+#=== CASE: bounds3 ===
+# RUN: %select -c bounds3 %s | not %udav
+
+fun main():
+    substr("foo", 4, 0)

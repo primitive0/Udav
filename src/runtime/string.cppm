@@ -5,6 +5,7 @@ module;
 #include <utility>
 
 #include "support/numerics.hpp"
+#include "support/option.hpp"
 #include "support/shared.hpp"
 #include "support/string.hpp"
 
@@ -83,6 +84,14 @@ public:
     {
         auto& data = get_mut();
         std::reverse(data.begin(), data.end());
+    }
+
+    auto substr(size_t start, size_t count) const -> Option<UdavString>
+    {
+        if (start > size()) {
+            return std::nullopt;
+        }
+        return UdavString{data_->substr(start, count)};
     }
 
 private:

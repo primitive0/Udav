@@ -1,0 +1,17 @@
+#=== CASE: no_args ===
+# RUN: %select -c no_args %s | not %udav
+
+fun main():
+    substr()
+
+#=== CASE: too_few_args ===
+# RUN: %select -c too_few_args %s | not %udav
+
+fun main():
+    substr("hello", 1)
+
+#=== CASE: too_many_args ===
+# RUN: %select -c too_many_args %s | not %udav
+
+fun main():
+    substr("hello", 1, 3, 4)

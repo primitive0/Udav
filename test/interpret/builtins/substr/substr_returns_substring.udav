@@ -1,0 +1,15 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println("---") # CHECK:---
+
+    println(substr("", 0, 0))    # CHECK-EMPTY:
+    println(substr("foo", 0, 0)) # CHECK-EMPTY:
+    println(substr("foo", 1, 0)) # CHECK-EMPTY:
+    println(substr("foo", 2, 0)) # CHECK-EMPTY:
+    println(substr("foo", 3, 0)) # CHECK-EMPTY:
+
+    println(substr("foobar", 0, 3)) # CHECK-NEXT:foo
+    println(substr("foobar", 3, 3)) # CHECK-NEXT:bar
+
+    println(substr("Something here...", 0, 9999)) # CHECK-NEXT:Something here...

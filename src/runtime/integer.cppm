@@ -51,6 +51,15 @@ public:
         return value_.convert_to<String>();
     }
 
+    auto to_i64() const -> i64
+    {
+        if (value_ < std::numeric_limits<i64>::min() ||
+            std::numeric_limits<i64>::max() < value_) {
+            throw UdavRuntimeException{"UdavInteger is too big to be converted to i64."};
+        }
+        return value_.convert_to<i64>();
+    }
+
     auto value() -> boost::multiprecision::cpp_int&
     {
         return value_;
