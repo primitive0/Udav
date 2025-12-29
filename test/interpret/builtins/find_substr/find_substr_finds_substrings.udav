@@ -1,0 +1,14 @@
+# RUN: %udav %s | FileCheck --match-full-lines --strict-whitespace %s
+
+fun main():
+    println(find_substr("", "foo")) # CHECK:null
+    println(find_substr("", ""))    # CHECK-NEXT:0
+    println(find_substr("foo", "")) # CHECK-NEXT:0
+
+    println(find_substr("foo", "foo")) # CHECK-NEXT:0
+
+    println(find_substr("Hello, world!", "world")) # CHECK-NEXT:7
+    println(find_substr("mommommy", "mommy"))      # CHECK-NEXT:3
+    println(find_substr("foo", "foobar"))          # CHECK-NEXT:null
+
+    println(find_substr("123 FOO 123", "foo")) # CHECK-NEXT:null

@@ -1,0 +1,12 @@
+#=== CASE: invalid_first ===
+# RUN: %select -c invalid_first %s | not %udav
+
+fun main():
+    find_substr(1, "foo")
+
+
+#=== CASE: invalid_second ===
+# RUN: %select -c invalid_second %s | not %udav
+
+fun main():
+    find_substr("foo", 1)

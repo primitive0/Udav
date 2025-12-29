@@ -1,8 +1,10 @@
 module;
 
 #include <algorithm>
+#include <limits>
 #include <utility>
 
+#include "support/numerics.hpp"
 #include "support/shared.hpp"
 #include "support/string.hpp"
 
@@ -16,6 +18,8 @@ namespace udav {
 export class UdavString final
 {
 public:
+    static constexpr size_t kNoPos = std::numeric_limits<size_t>::max();
+
     explicit UdavString(const UdavString&) = default; // NOLINT(google-explicit-constructor)
     auto operator=(const UdavString&) -> UdavString& = delete("Use copy constructor.");
 
@@ -62,6 +66,17 @@ public:
     auto size() const -> size_t
     {
         return data_->size();
+    }
+
+    auto find(const UdavString& substr) const -> size_t
+    {
+        return find(StrView{substr});
+    }
+
+    auto find(StrView substr) const -> size_t
+    {
+        auto index = StrView(*this).find(substr);
+        return index != StrView::npos ? index : kNoPos;
     }
 
     auto reverse() -> void

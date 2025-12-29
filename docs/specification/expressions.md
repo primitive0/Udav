@@ -318,7 +318,7 @@ fun reverce(str):
 ```udav
 # str: string
 # substr: string
-# return: int
+# return: int|null
 fun find_substr(str, substr):
     ...
 ```
@@ -327,7 +327,7 @@ fun find_substr(str, substr):
 
 Возвращает число - первое вхождение подстроки substr в строку str \
 
-Если подстрока не была найдена, возвращает `-1`  \
+Если подстрока не была найдена, возвращает `null`  \
 
 ##### substr()
 

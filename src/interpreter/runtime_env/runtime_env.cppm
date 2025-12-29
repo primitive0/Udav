@@ -25,6 +25,7 @@ public:
         program.functions.push_back(make_udav_func("str", &to_str));
         program.functions.push_back(make_udav_func("int", &to_int));
         program.functions.push_back(make_udav_func("reverse", &reverse));
+        program.functions.push_back(make_udav_func("find_substr", &find_substr));
 
         program.functions.push_back(make_udav_func("print", &print));
         program.functions.push_back(make_udav_func("println", &println));
@@ -106,6 +107,25 @@ private:
         auto copy = UdavString{*string};
         copy.reverse();
         return UdavValue{std::move(copy)};
+    }
+
+    static auto find_substr(const Vec<UdavValue>& args) -> UdavValue
+    {
+        if (args.size() != 2) {
+            throw EvalException{};
+        }
+
+        auto haystack = args[0].down_cast<UdavString>();
+        auto needle = args[1].down_cast<UdavString>();
+        if (!haystack || !needle) {
+            throw EvalException{};
+        }
+
+        auto index = haystack->find(*needle);
+        if (index == UdavString::kNoPos) {
+            return UdavValue{UdavNull{}};
+        }
+        return UdavValue{UdavInteger{index}};
     }
 
     static auto print(const Vec<UdavValue>& args) -> UdavValue

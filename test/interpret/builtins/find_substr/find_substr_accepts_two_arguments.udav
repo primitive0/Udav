@@ -1,0 +1,19 @@
+#=== CASE: no_args ===
+# RUN: %select -c no_args %s | not %udav
+
+fun main():
+    find_substr()
+
+
+#=== CASE: single_arg ===
+# RUN: %select -c single_arg %s | not %udav
+
+fun main():
+    find_substr("foo")
+
+
+#=== CASE: too_many ===
+# RUN: %select -c too_many %s | not %udav
+
+fun main():
+    find_substr("foo", "bar", "baz")
