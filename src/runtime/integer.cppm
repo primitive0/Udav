@@ -60,16 +60,6 @@ public:
         return value_.convert_to<i64>();
     }
 
-    auto value() -> boost::multiprecision::cpp_int&
-    {
-        return value_;
-    }
-
-    auto value() const -> const boost::multiprecision::cpp_int&
-    {
-        return value_;
-    }
-
     auto negate() -> void
     {
         value_ *= -1;
@@ -207,7 +197,7 @@ TEST_CASE("UdavInteger is constructed and formatted", "[runtime]")
 {
     struct TC
     {
-        boost::multiprecision::cpp_int input;
+        i64 input;
         StrView format;
     };
 
@@ -221,7 +211,7 @@ TEST_CASE("UdavInteger is constructed and formatted", "[runtime]")
     const auto udav_integer = UdavInteger{
         boost::multiprecision::cpp_int{input}};
 
-    CHECK(udav_integer.value() == input);
+    CHECK(udav_integer.to_i64() == input);
     CHECK(udav_integer.format() == format);
 }
 
@@ -230,7 +220,7 @@ TEST_CASE("UdavInteger::parse_decimal parses decimal integers", "[runtime]")
     struct TC
     {
         StrView input;
-        boost::multiprecision::cpp_int expected;
+        i64 expected;
     };
 
     // clang-format off
@@ -248,7 +238,7 @@ TEST_CASE("UdavInteger::parse_decimal parses decimal integers", "[runtime]")
     // clang-format on
 
     auto result = UdavInteger::parse_decimal(input);
-    CHECK((result && result->value() == expected));
+    CHECK((result && result->to_i64() == expected));
 }
 
 TEST_CASE("UdavInteger::parse_decimal does not parse invalid integers", "[runtime]")
