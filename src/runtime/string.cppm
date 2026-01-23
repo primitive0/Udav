@@ -97,9 +97,10 @@ public:
 private:
     auto get_mut() -> String&
     {
-        if (!data_.unique()) {
+        if (data_.use_count() != 1) {
             data_ = std::make_shared<String>(*data_);
         }
+
         return *data_;
     }
 
