@@ -4,3 +4,5 @@ build/
 .cache/
 CMakeUserPresets.json
 .direnv/
+CMakeFiles/
+CMakeCache.txt

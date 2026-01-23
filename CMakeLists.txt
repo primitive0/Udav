@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 3.28)
 project(Udav LANGUAGES CXX)
 enable_testing()
 
+if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  if(EXISTS "/opt/homebrew/opt/llvm/lib/c++")
+    add_link_options("-L/opt/homebrew/opt/llvm/lib/c++" "-Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++")
+  endif()
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 
@@ -18,7 +24,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #
 # TODO: probably this should be enabled per target.
 include(ClangEnableReducedBMI)
-include(IPOSupport)
+# include(IPOSupport)
 
 
 find_package(Catch2 REQUIRED)

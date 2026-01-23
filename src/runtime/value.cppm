@@ -52,7 +52,11 @@ public:
     {
     }
 
-    auto operator==(const UdavValue& value) const -> bool = default;
+    auto operator==(const UdavValue& value) const -> bool
+    {
+        return inner_ == value.inner_;
+    }
+
 
     auto format() const -> String
     {
